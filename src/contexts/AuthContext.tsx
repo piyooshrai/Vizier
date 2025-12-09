@@ -8,7 +8,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => Promise<void>;
+  loginWithDemo: () => Promise<void>;
   isAuthenticated: boolean;
+  isDemoMode: boolean;
   refreshUser: () => Promise<void>;
 }
 
@@ -50,7 +52,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await authService.logout();
     } finally {
+      localStorage.removeItem('is_demo');
       setUser(null);
+    }
+  }, []);
+
+  const loginWithDemo = useCallback(async () => {
+    try {
+      // Use demo credentials
+      const demoCredentials = {
+        email: 'demo@vizier.health',
+        password: 'Demo123!@#'
+      };
+
+      const response = await authService.login(demoCredentials);
+      localStorage.setItem('is_demo', 'true');
+      setUser(response.user);
+    } catch (error) {
+      // If demo account doesn't exist, show helpful error
+      throw new Error('Demo account not available. Please contact support.');
     }
   }, []);
 
@@ -73,7 +93,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         signup,
         logout,
+        loginWithDemo,
         isAuthenticated: !!user,
+        isDemoMode: localStorage.getItem('is_demo') === 'true',
         refreshUser,
       }}
     >

@@ -1,17 +1,19 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle, AlertCircle, HelpCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertCircle, HelpCircle, Lock } from 'lucide-react';
 import { Button, Card } from '../components/common';
 import { FileDropZone, UploadProgress, ProcessingStatus } from '../components/upload';
 import { pipelineService, getErrorMessage } from '../services';
 import { PipelineStatus } from '../types';
 import { formatNumber } from '../utils/formatters';
+import { useAuth } from '../contexts/AuthContext';
 
 type UploadState = 'select' | 'uploading' | 'processing' | 'complete' | 'error';
 
 export const Upload: React.FC = () => {
   const navigate = useNavigate();
+  const { isDemoMode } = useAuth();
   const [state, setState] = useState<UploadState>('select');
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -27,6 +29,12 @@ export const Upload: React.FC = () => {
 
   const handleUpload = async () => {
     if (files.length === 0) return;
+
+    // Check for demo mode restriction
+    if (isDemoMode) {
+      setError('Upload is disabled in demo mode. Create an account to upload your own data.');
+      return;
+    }
 
     setState('uploading');
     setError(null);
@@ -79,6 +87,30 @@ export const Upload: React.FC = () => {
             exit={{ opacity: 0, y: -20 }}
             className="space-y-8"
           >
+            {/* Demo Mode Restriction Banner */}
+            {isDemoMode && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Lock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-amber-800">
+                      Upload is disabled in demo mode
+                    </p>
+                    <p className="text-sm text-amber-700 mt-1">
+                      You're viewing sample data. To upload your own healthcare data,{' '}
+                      <button
+                        onClick={() => navigate('/signup')}
+                        className="underline hover:text-amber-900 font-medium"
+                      >
+                        create an account
+                      </button>
+                      .
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Header with Vizier message */}
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto">
@@ -97,6 +129,13 @@ export const Upload: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="p-4 bg-error-50 border border-error-200 rounded-lg">
+                <p className="text-sm text-error-600">{error}</p>
+              </div>
+            )}
 
             {/* Drop Zone */}
             <Card variant="elevated" padding="lg">

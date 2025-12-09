@@ -17,9 +17,10 @@ const roleOptions = [
 ];
 
 export const SignupForm: React.FC = () => {
-  const { signup } = useAuth();
+  const { signup, loginWithDemo } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   const {
     register,
@@ -39,6 +40,19 @@ export const SignupForm: React.FC = () => {
       navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed. Please try again.');
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError(null);
+    setDemoLoading(true);
+    try {
+      await loginWithDemo();
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Demo login failed. Please try again.');
+    } finally {
+      setDemoLoading(false);
     }
   };
 
@@ -142,6 +156,29 @@ export const SignupForm: React.FC = () => {
         <button type="button" className="text-primary-600 hover:underline">
           Privacy Policy
         </button>
+      </p>
+
+      {/* Demo Mode Section */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-neutral-300" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-4 bg-white text-neutral-500">Or</span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleDemoLogin}
+        disabled={demoLoading || isSubmitting}
+        className="w-full py-3 px-4 border-2 border-primary-200 text-primary-600 rounded-lg font-medium hover:bg-primary-50 hover:border-primary-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {demoLoading ? 'Loading demo...' : 'Try Demo (No signup required)'}
+      </button>
+
+      <p className="mt-3 text-center text-sm text-neutral-500">
+        Experience Vizier with sample healthcare data
       </p>
     </form>
   );

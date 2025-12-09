@@ -8,9 +8,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { loginSchema, LoginFormData } from '../../utils/validators';
 
 export const LoginForm: React.FC = () => {
-  const { login } = useAuth();
+  const { login, loginWithDemo } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   const {
     register,
@@ -27,6 +28,19 @@ export const LoginForm: React.FC = () => {
       navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError(null);
+    setDemoLoading(true);
+    try {
+      await loginWithDemo();
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Demo login failed. Please try again.');
+    } finally {
+      setDemoLoading(false);
     }
   };
 
@@ -83,6 +97,42 @@ export const LoginForm: React.FC = () => {
           Create an account
         </Link>
       </p>
+
+      {/* Demo Mode Section */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-neutral-300" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-4 bg-white text-neutral-500">Or</span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleDemoLogin}
+        disabled={demoLoading || isSubmitting}
+        className="w-full py-3 px-4 border-2 border-primary-200 text-primary-600 rounded-lg font-medium hover:bg-primary-50 hover:border-primary-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {demoLoading ? 'Loading demo...' : 'Try Demo (No signup required)'}
+      </button>
+
+      <p className="mt-3 text-center text-sm text-neutral-500">
+        Experience Vizier with sample healthcare data
+      </p>
+
+      {/* Demo Benefits */}
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+        <h4 className="text-sm font-semibold text-blue-900 mb-2">
+          What's included in the demo:
+        </h4>
+        <ul className="text-sm text-blue-800 space-y-1">
+          <li>Sample patient data from 12,847 encounters</li>
+          <li>Full conversational AI capabilities</li>
+          <li>Interactive healthcare dashboards</li>
+          <li>All analytics features</li>
+        </ul>
+      </div>
     </form>
   );
 };
