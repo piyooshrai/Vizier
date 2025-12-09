@@ -4,16 +4,21 @@ import { VizierAvatar } from './VizierAvatar';
 import { ResultsDisplay } from './ResultsDisplay';
 import { ThreeDotsLoader } from '../common/LoadingSpinner';
 import { Message } from '../../services';
+import { VannaResponse } from '../../types';
 import { formatTimestamp } from '../../utils/formatters';
 
 interface ChatInterfaceProps {
   messages: Message[];
   onSuggestionClick?: (suggestion: string) => void;
+  onSaveInsight?: (question: string, data: VannaResponse) => void;
+  savedQuestions?: Set<string>;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   onSuggestionClick,
+  onSaveInsight,
+  savedQuestions = new Set(),
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +84,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               {/* Data visualization */}
               {!message.isLoading && message.data && (
                 <div className="mt-4">
-                  <ResultsDisplay data={message.data} />
+                  <ResultsDisplay
+                    data={message.data}
+                    onSave={onSaveInsight ? (data) => onSaveInsight(message.content, data) : undefined}
+                    isSaved={savedQuestions.has(message.content)}
+                  />
                 </div>
               )}
 

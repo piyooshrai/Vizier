@@ -1,4 +1,5 @@
 import { VannaResponse, ChartType } from '../types';
+import { SavedInsight } from '../utils/savedInsights';
 
 interface MockQAResponse {
   question: string;
@@ -321,6 +322,38 @@ export const demoSuggestions = [
   'Which patients have the highest costs?',
   'Show me encounters by month',
   'Which providers see the most patients?',
+];
+
+// Demo saved insights for the dashboard
+export const demoSavedInsights: SavedInsight[] = [
+  {
+    id: 'demo_1',
+    question: 'What are my top 5 diagnoses?',
+    answer: "I found your most common diagnoses. Here's what I see:",
+    data: mockHealthcareData.qaResponses['top diagnoses'].data.slice(0, 5),
+    chartType: 'bar_chart',
+    chartTitle: 'Top 5 Diagnoses by Patient Volume',
+    savedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+  },
+  {
+    id: 'demo_2',
+    question: 'Show me patient demographics',
+    answer: "Here's the breakdown of your patient population by age group:",
+    data: mockHealthcareData.qaResponses['patient demographics'].data,
+    chartType: 'pie_chart',
+    chartTitle: 'Patient Age Distribution',
+    savedAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+  },
+  {
+    id: 'demo_3',
+    question: 'What is my readmission rate?',
+    answer:
+      "Your 30-day readmission rate is 12.3%, which is below the national average of 14.5%.",
+    data: mockHealthcareData.qaResponses['readmission'].data,
+    chartType: 'line_chart',
+    chartTitle: '30-Day Readmission Rate Trend',
+    savedAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+  },
 ];
 
 export default mockHealthcareData;

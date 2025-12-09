@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Download, Code } from 'lucide-react';
+import { Copy, Check, Download, Code, Pin, CheckCircle } from 'lucide-react';
 import { ChartRenderer } from './ChartRenderer';
 import { VannaResponse } from '../../types';
 
 interface ResultsDisplayProps {
   data: VannaResponse;
+  onSave?: (data: VannaResponse) => void;
+  isSaved?: boolean;
 }
 
-export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data }) => {
+export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data, onSave, isSaved = false }) => {
   const [showSql, setShowSql] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+
+  const handleSave = () => {
+    if (onSave && !isSaved) {
+      onSave(data);
+      setJustSaved(true);
+    }
+  };
+
+  const showSavedState = isSaved || justSaved;
 
   const handleCopySql = async () => {
     try {
@@ -97,6 +109,27 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data }) => {
             <Download className="w-4 h-4" />
             Export CSV
           </button>
+        )}
+
+        {/* Save to Dashboard */}
+        {onSave && data.results && data.results.length > 0 && (
+          showSavedState ? (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-success-600">
+              <CheckCircle className="w-4 h-4" />
+              Saved
+            </span>
+          ) : (
+            <button
+              onClick={handleSave}
+              className="
+                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
+                text-primary-600 hover:bg-primary-50 transition-colors font-medium
+              "
+            >
+              <Pin className="w-4 h-4" />
+              Save to Dashboard
+            </button>
+          )
         )}
       </div>
 
