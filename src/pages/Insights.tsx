@@ -1,14 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RefreshCw } from 'lucide-react';
 import { ChatInterface, QueryInput } from '../components/conversation';
+import { Toast } from '../components/common';
 import { VizierProvider, useVizier } from '../contexts/VizierContext';
+import { VannaResponse } from '../types';
+import { savedInsightsManager } from '../utils/savedInsights';
 
 const InsightsContent: React.FC = () => {
   const location = useLocation();
   const { messages, isLoading, suggestions, askQuestion, clearMessages, loadSuggestions } =
     useVizier();
+  const [savedQuestions, setSavedQuestions] = useState<Set<string>>(new Set());
+  const [showToast, setShowToast] = useState(false);
+
+  // Load already saved questions on mount
+  useEffect(() => {
+    const saved = savedInsightsManager.getAll();
+    setSavedQuestions(new Set(saved.map((s) => s.question)));
+  }, []);
 
   // Handle initial question from navigation state (e.g., from Upload page)
   useEffect(() => {
@@ -28,6 +39,22 @@ const InsightsContent: React.FC = () => {
   const handleSuggestionClick = (suggestion: string) => {
     askQuestion(suggestion);
   };
+
+  // Handle saving insight to dashboard
+  const handleSaveInsight = useCallback((question: string, data: VannaResponse) => {
+    if (!data.results || data.results.length === 0) return;
+
+    savedInsightsManager.save({
+      question,
+      answer: data.summary || "Here's what I found:",
+      data: data.results,
+      chartType: data.chart_type,
+      chartTitle: data.chart_title,
+    });
+
+    setSavedQuestions((prev) => new Set(prev).add(question));
+    setShowToast(true);
+  }, []);
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] max-w-4xl mx-auto">
@@ -57,6 +84,8 @@ const InsightsContent: React.FC = () => {
         <ChatInterface
           messages={messages}
           onSuggestionClick={handleSuggestionClick}
+          onSaveInsight={handleSaveInsight}
+          savedQuestions={savedQuestions}
         />
       </div>
 
@@ -94,6 +123,17 @@ const InsightsContent: React.FC = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Toast notification */}
+      <AnimatePresence>
+        {showToast && (
+          <Toast
+            message="Insight saved to dashboard!"
+            type="success"
+            onClose={() => setShowToast(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

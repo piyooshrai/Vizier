@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Upload, MessageSquare, ArrowRight, Database, Users, Activity, TrendingDown, BarChart3 } from 'lucide-react';
+import { Upload, MessageSquare, ArrowRight, Database, Users, Activity, TrendingDown, BarChart3, X, Pin } from 'lucide-react';
 import { Card, Button } from '../components/common';
-import { VizierAvatar } from '../components/conversation';
+import { VizierAvatar, ChartRenderer } from '../components/conversation';
 import { useAuth } from '../contexts/AuthContext';
-import { mockHealthcareData } from '../data/mockData';
+import { mockHealthcareData, demoSavedInsights } from '../data/mockData';
 import { formatNumber } from '../utils/formatters';
+import { savedInsightsManager, SavedInsight } from '../utils/savedInsights';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isDemoMode } = useAuth();
+  const [savedInsights, setSavedInsights] = useState<SavedInsight[]>([]);
+
+  // Load saved insights
+  useEffect(() => {
+    if (isDemoMode) {
+      // Show demo saved insights in demo mode
+      setSavedInsights(demoSavedInsights);
+    } else {
+      const insights = savedInsightsManager.getAll();
+      setSavedInsights(insights);
+    }
+  }, [isDemoMode]);
+
+  // Handle removing insight
+  const handleRemoveInsight = (id: string) => {
+    if (!isDemoMode) {
+      savedInsightsManager.remove(id);
+    }
+    setSavedInsights((prev) => prev.filter((i) => i.id !== id));
+  };
 
   // Show demo data when in demo mode
   const hasData = isDemoMode;
@@ -234,6 +255,62 @@ export const Dashboard: React.FC = () => {
             </div>
           </Card>
         </div>
+
+        {/* Saved Insights */}
+        {savedInsights.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Pin className="w-5 h-5 text-primary-600" />
+                <h2 className="text-lg font-semibold text-neutral-900">Saved Insights</h2>
+                <span className="text-sm text-neutral-500">({savedInsights.length})</span>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {savedInsights.map((insight) => (
+                <Card key={insight.id} padding="md" className="relative group">
+                  {/* Remove button */}
+                  {!isDemoMode && (
+                    <button
+                      onClick={() => handleRemoveInsight(insight.id)}
+                      className="absolute top-2 right-2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-neutral-700 transition-all"
+                      title="Remove from dashboard"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Question */}
+                  <h4 className="font-medium text-neutral-900 text-sm mb-2 pr-8">
+                    {insight.question}
+                  </h4>
+
+                  {/* Mini chart */}
+                  <div className="bg-neutral-50 rounded-lg p-3 mb-3">
+                    <ChartRenderer
+                      type={insight.chartType}
+                      data={insight.data}
+                      title={insight.chartTitle}
+                    />
+                  </div>
+
+                  {/* Saved date */}
+                  <p className="text-xs text-neutral-400">
+                    Saved {new Date(insight.savedAt).toLocaleDateString()}
+                  </p>
+
+                  {/* Actions */}
+                  <button
+                    onClick={() => navigate('/insights', { state: { initialQuestion: insight.question } })}
+                    className="mt-2 text-xs text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Ask follow-up →
+                  </button>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Top Conditions and Age Distribution */}
         <div className="grid md:grid-cols-2 gap-6">

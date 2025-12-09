@@ -3,3 +3,4 @@ export { Input } from './Input';
 export { Card } from './Card';
 export { Avatar } from './Avatar';
 export { LoadingSpinner, ThreeDotsLoader } from './LoadingSpinner';
+export { Toast, ToastContainer } from './Toast';
