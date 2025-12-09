@@ -4,3 +4,7 @@ export { Card } from './Card';
 export { Avatar } from './Avatar';
 export { LoadingSpinner, ThreeDotsLoader } from './LoadingSpinner';
 export { Toast, ToastContainer } from './Toast';
+export { ErrorMessage } from './ErrorMessage';
+export { Select } from './Select';
+export { Modal } from './Modal';
+export { Badge } from './Badge';

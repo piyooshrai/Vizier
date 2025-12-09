@@ -3,7 +3,18 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppLayout } from './components/layout';
 import { LoadingSpinner } from './components/common';
-import { Login, Signup, Dashboard, Upload, Insights, Profile } from './pages';
+import {
+  Login,
+  Signup,
+  Dashboard,
+  Upload,
+  Insights,
+  Profile,
+  Settings,
+  NotFound,
+  ForgotPassword,
+  ResetPassword,
+} from './pages';
 
 // Protected Route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -64,6 +75,22 @@ const AppRoutes: React.FC = () => {
           </PublicRoute>
         }
       />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
+        }
+      />
 
       {/* Protected routes with layout */}
       <Route
@@ -77,13 +104,14 @@ const AppRoutes: React.FC = () => {
         <Route path="/upload" element={<Upload />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* Catch all - redirect to dashboard */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* 404 Not Found */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

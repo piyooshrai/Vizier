@@ -22,10 +22,11 @@ export default {
         },
         // Success - Clinical Green
         success: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
+          50: '#f0fdf4',
+          100: '#dcfce7',
           500: '#10b981',
           600: '#059669',
+          700: '#047857',
         },
         // Warning - Attention Orange
         warning: {
@@ -33,6 +34,7 @@ export default {
           100: '#fef3c7',
           500: '#f59e0b',
           600: '#d97706',
+          700: '#b45309',
         },
         // Error - Alert Red
         error: {
@@ -40,6 +42,7 @@ export default {
           100: '#fee2e2',
           500: '#ef4444',
           600: '#dc2626',
+          700: '#b91c1c',
         },
         // Neutral - Professional Grays
         neutral: {
@@ -65,6 +68,7 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-subtle': 'pulseSubtle 2s ease-in-out infinite',
         'fade-in': 'fadeIn 0.3s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
       },
@@ -76,6 +80,10 @@ export default {
         slideUp: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        pulseSubtle: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
         },
       },
     },

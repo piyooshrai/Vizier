@@ -52,6 +52,18 @@ export const authService = {
     }
     return null;
   },
+
+  // Password recovery
+  forgotPassword: async (email: string): Promise<void> => {
+    await api.post('/auth/forgot-password', { email });
+  },
+
+  resetPassword: async (token: string, newPassword: string): Promise<void> => {
+    await api.post('/auth/reset-password', {
+      token,
+      new_password: newPassword,
+    });
+  },
 };
 
 export default authService;
