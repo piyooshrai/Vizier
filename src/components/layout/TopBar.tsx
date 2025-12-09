@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { Avatar } from '../common/Avatar';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,13 +13,29 @@ const pageTitles: Record<string, string> = {
 
 export const TopBar: React.FC = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, isDemoMode } = useAuth();
 
   const title = pageTitles[location.pathname] || 'Vizier';
   const userName = user ? `${user.first_name} ${user.last_name}` : 'User';
 
   return (
-    <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6 lg:px-8">
+    <div className="flex flex-col">
+      {/* Demo Mode Banner */}
+      {isDemoMode && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center">
+          <p className="text-sm text-amber-800">
+            <span className="font-semibold">Demo Mode</span> - You're exploring with sample data.
+            <button
+              onClick={() => navigate('/signup')}
+              className="ml-2 underline hover:text-amber-900"
+            >
+              Create your account
+            </button>
+          </p>
+        </div>
+      )}
+      <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6 lg:px-8">
       {/* Page title - hidden on mobile to make room for hamburger */}
       <div className="pl-12 lg:pl-0">
         <h1 className="text-lg font-semibold text-neutral-900">{title}</h1>
@@ -50,7 +66,8 @@ export const TopBar: React.FC = () => {
           </div>
         </div>
       </div>
-    </header>
+      </header>
+    </div>
   );
 };
 
