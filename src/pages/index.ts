@@ -4,3 +4,7 @@ export { Dashboard } from './Dashboard';
 export { Upload } from './Upload';
 export { Insights } from './Insights';
 export { Profile } from './Profile';
+export { Settings } from './Settings';
+export { NotFound } from './NotFound';
+export { ForgotPassword } from './ForgotPassword';
+export { ResetPassword } from './ResetPassword';

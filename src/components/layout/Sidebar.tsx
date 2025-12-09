@@ -6,6 +6,7 @@ import {
   Upload,
   MessageSquare,
   User,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -25,13 +26,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
+  { path: '/insights', icon: <MessageSquare className="w-5 h-5" />, label: 'Healthcare Insights' },
   { path: '/upload', icon: <Upload className="w-5 h-5" />, label: 'Upload Data' },
-  { path: '/insights', icon: <MessageSquare className="w-5 h-5" />, label: 'Insights' },
   { path: '/profile', icon: <User className="w-5 h-5" />, label: 'Profile' },
+  { path: '/settings', icon: <Settings className="w-5 h-5" />, label: 'Settings' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const handleLogout = async () => {
@@ -123,8 +125,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
           </ul>
         </nav>
 
-        {/* Footer */}
-        <div className="p-3 border-t border-neutral-100">
+        {/* User Info & Footer */}
+        <div className="p-4 border-t border-neutral-200">
+          {/* User Info */}
+          <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-neutral-50 mb-3">
+            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-semibold text-primary-700">
+                {user?.first_name?.[0]}{user?.last_name?.[0]}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-neutral-900 truncate">
+                {user?.first_name} {user?.last_name}
+              </p>
+              <p className="text-xs text-neutral-500 truncate">
+                {user?.email}
+              </p>
+            </div>
+          </div>
+
+          {/* Logout Button */}
           <button
             onClick={handleLogout}
             className="
