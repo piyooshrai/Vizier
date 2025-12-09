@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Copy, Check, Download, Code } from 'lucide-react';
+import { ChartRenderer } from './ChartRenderer';
+import { VannaResponse } from '../../types';
+
+interface ResultsDisplayProps {
+  data: VannaResponse;
+}
+
+export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data }) => {
+  const [showSql, setShowSql] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopySql = async () => {
+    try {
+      await navigator.clipboard.writeText(data.sql);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy SQL:', error);
+    }
+  };
+
+  const handleExportCsv = () => {
+    if (!data.results || data.results.length === 0) return;
+
+    const columns = Object.keys(data.results[0]);
+    const csvContent = [
+      columns.join(','),
+      ...data.results.map((row) =>
+        columns
+          .map((col) => {
+            const value = row[col];
+            // Escape quotes and wrap in quotes if contains comma
+            const stringValue = String(value ?? '');
+            if (stringValue.includes(',') || stringValue.includes('"')) {
+              return `"${stringValue.replace(/"/g, '""')}"`;
+            }
+            return stringValue;
+          })
+          .join(',')
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `vizier-export-${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
+    >
+      {/* Chart/Table */}
+      <div className="bg-neutral-50 rounded-lg p-4">
+        <ChartRenderer
+          type={data.chart_type}
+          data={data.results}
+          title={data.chart_title}
+        />
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2">
+        {/* Show SQL toggle */}
+        <button
+          onClick={() => setShowSql(!showSql)}
+          className={`
+            flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
+            transition-colors
+            ${
+              showSql
+                ? 'bg-neutral-200 text-neutral-700'
+                : 'text-neutral-500 hover:bg-neutral-100'
+            }
+          `}
+        >
+          <Code className="w-4 h-4" />
+          {showSql ? 'Hide SQL' : 'Show SQL'}
+        </button>
+
+        {/* Export CSV */}
+        {data.results && data.results.length > 0 && (
+          <button
+            onClick={handleExportCsv}
+            className="
+              flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
+              text-neutral-500 hover:bg-neutral-100 transition-colors
+            "
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </button>
+        )}
+      </div>
+
+      {/* SQL Code Block */}
+      {showSql && data.sql && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="relative"
+        >
+          <pre className="bg-neutral-900 text-neutral-100 rounded-lg p-4 text-sm overflow-x-auto">
+            <code>{data.sql}</code>
+          </pre>
+
+          <button
+            onClick={handleCopySql}
+            className="
+              absolute top-2 right-2 p-2 rounded-lg
+              bg-neutral-800 hover:bg-neutral-700
+              text-neutral-400 hover:text-neutral-200
+              transition-colors
+            "
+            title="Copy SQL"
+          >
+            {copied ? (
+              <Check className="w-4 h-4 text-success-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
+          </button>
+        </motion.div>
+      )}
+
+      {/* Summary */}
+      {data.summary && (
+        <p className="text-sm text-neutral-600 italic">
+          {data.summary}
+        </p>
+      )}
+    </motion.div>
+  );
+};
+
+export default ResultsDisplay;
