@@ -1,6 +1,20 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { vannaService, createUserMessage, createVizierMessage, Message } from '../services';
 import { VannaResponse } from '../types';
+import { mockHealthcareData } from '../data/mockData';
+
+// Check if user is in demo mode
+const isDemoMode = (): boolean => {
+  return localStorage.getItem('is_demo') === 'true';
+};
+
+// Get the appropriate welcome message
+const getWelcomeMessage = (): string => {
+  if (isDemoMode()) {
+    return `Hello! I'm Vizier, your healthcare analytics assistant. I've analyzed the sample dataset containing ${mockHealthcareData.summary.totalPatients.toLocaleString()} patients and ${mockHealthcareData.summary.totalEncounters.toLocaleString()} encounters. Ask me anything about this healthcare data!`;
+  }
+  return "Hello! I'm Vizier, your healthcare analytics assistant. I've analyzed your data and I'm ready to help you find insights. What would you like to know?";
+};
 
 interface VizierContextType {
   messages: Message[];
@@ -16,6 +30,11 @@ const VizierContext = createContext<VizierContextType | undefined>(undefined);
 
 // Generate conversational responses based on the data
 function generateConversationalResponse(data: VannaResponse): string {
+  // Use summary if provided (from mock responses or AI)
+  if (data.summary) {
+    return data.summary;
+  }
+
   const results = data.results;
 
   if (!results || results.length === 0) {
@@ -43,9 +62,7 @@ function generateConversationalResponse(data: VannaResponse): string {
 
 export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [messages, setMessages] = useState<Message[]>([
-    createVizierMessage(
-      "Hello! I'm Vizier, your healthcare analytics assistant. I've analyzed your data and I'm ready to help you find insights. What would you like to know?"
-    ),
+    createVizierMessage(getWelcomeMessage()),
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +71,11 @@ export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     'Show me patient demographics breakdown',
     'What is my readmission rate?',
   ]);
+
+  // Update welcome message when demo mode changes
+  useEffect(() => {
+    setMessages([createVizierMessage(getWelcomeMessage())]);
+  }, []);
 
   const askQuestion = useCallback(async (question: string) => {
     // Add user message
@@ -106,11 +128,7 @@ export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const clearMessages = useCallback(() => {
-    setMessages([
-      createVizierMessage(
-        "Hello! I'm Vizier, your healthcare analytics assistant. I've analyzed your data and I'm ready to help you find insights. What would you like to know?"
-      ),
-    ]);
+    setMessages([createVizierMessage(getWelcomeMessage())]);
     setError(null);
   }, []);
 

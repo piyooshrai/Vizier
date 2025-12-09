@@ -1,14 +1,35 @@
 import api from './api';
-import { VannaQuestion, VannaResponse } from '../types';
+import { VannaResponse } from '../types';
+import { findMockResponse, demoSuggestions } from '../data/mockData';
+
+// Check if user is in demo mode
+const isDemoMode = (): boolean => {
+  return localStorage.getItem('is_demo') === 'true';
+};
 
 export const vannaService = {
   ask: async (question: string): Promise<VannaResponse> => {
-    const response = await api.post<VannaResponse>('/vanna/ask', { question } as VannaQuestion);
+    // Check if in demo mode - return mock data
+    if (isDemoMode()) {
+      // Simulate API delay for realistic UX
+      await new Promise((resolve) => setTimeout(resolve, 1200 + Math.random() * 800));
+
+      // Return mock response
+      return findMockResponse(question);
+    }
+
+    // Real API call for non-demo users
+    const response = await api.post<VannaResponse>('/vanna/ask', { question });
     return response.data;
   },
 
   // Get suggested questions based on the current data
   getSuggestions: async (): Promise<string[]> => {
+    // Return demo suggestions in demo mode
+    if (isDemoMode()) {
+      return demoSuggestions;
+    }
+
     try {
       const response = await api.get<{ suggestions: string[] }>('/vanna/suggestions');
       return response.data.suggestions;

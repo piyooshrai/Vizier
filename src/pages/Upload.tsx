@@ -1,15 +1,26 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle, AlertCircle, HelpCircle, Lock } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertCircle, HelpCircle, Lock, Play } from 'lucide-react';
 import { Button, Card } from '../components/common';
 import { FileDropZone, UploadProgress, ProcessingStatus } from '../components/upload';
 import { pipelineService, getErrorMessage } from '../services';
 import { PipelineStatus } from '../types';
 import { formatNumber } from '../utils/formatters';
 import { useAuth } from '../contexts/AuthContext';
+import { mockHealthcareData } from '../data/mockData';
 
-type UploadState = 'select' | 'uploading' | 'processing' | 'complete' | 'error';
+type UploadState = 'select' | 'uploading' | 'processing' | 'complete' | 'error' | 'demo-processing';
+
+// Demo processing steps
+const demoProcessingSteps = [
+  'Analyzing patient demographics...',
+  'Validating diagnosis codes (ICD-10)...',
+  'Mapping encounter patterns...',
+  'Detecting quality measures...',
+  'Building analytics indexes...',
+  'Preparing conversational AI...',
+];
 
 export const Upload: React.FC = () => {
   const navigate = useNavigate();
@@ -21,11 +32,56 @@ export const Upload: React.FC = () => {
   const [uploadRunId, setUploadRunId] = useState<string | null>(null);
   const [completedStatus, setCompletedStatus] = useState<PipelineStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [demoStep, setDemoStep] = useState(0);
+  const [demoProgress, setDemoProgress] = useState(0);
 
   const handleFilesSelected = useCallback((selectedFiles: File[]) => {
     setFiles(selectedFiles);
     setError(null);
   }, []);
+
+  // Demo processing simulation
+  useEffect(() => {
+    if (state !== 'demo-processing') return;
+
+    const stepDuration = 800; // ms per step
+    const totalSteps = demoProcessingSteps.length;
+
+    const interval = setInterval(() => {
+      setDemoStep((prev) => {
+        const next = prev + 1;
+        setDemoProgress(Math.round((next / totalSteps) * 100));
+
+        if (next >= totalSteps) {
+          clearInterval(interval);
+          // Set demo completion status
+          setCompletedStatus({
+            status: 'completed',
+            upload_run_id: 'demo-run',
+            completed_steps: demoProcessingSteps,
+            current_step: null,
+            progress_percent: 100,
+            insights_summary: {
+              total_patients: mockHealthcareData.summary.totalPatients,
+              total_encounters: mockHealthcareData.summary.totalEncounters,
+              date_range: `${mockHealthcareData.summary.dateRange.start} to ${mockHealthcareData.summary.dateRange.end}`,
+            },
+          });
+          setState('complete');
+        }
+        return next;
+      });
+    }, stepDuration);
+
+    return () => clearInterval(interval);
+  }, [state]);
+
+  // Start demo processing
+  const handleStartDemoProcessing = () => {
+    setDemoStep(0);
+    setDemoProgress(0);
+    setState('demo-processing');
+  };
 
   const handleUpload = async () => {
     if (files.length === 0) return;
@@ -87,28 +143,41 @@ export const Upload: React.FC = () => {
             exit={{ opacity: 0, y: -20 }}
             className="space-y-8"
           >
-            {/* Demo Mode Restriction Banner */}
+            {/* Demo Mode Banner - Show simulation option */}
             {isDemoMode && (
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Lock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <Card variant="elevated" padding="lg" className="bg-gradient-to-br from-primary-50 to-white border-primary-200">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto">
+                    <Play className="w-8 h-8 text-primary-600 ml-1" />
+                  </div>
                   <div>
-                    <p className="text-sm font-medium text-amber-800">
-                      Upload is disabled in demo mode
-                    </p>
-                    <p className="text-sm text-amber-700 mt-1">
-                      You're viewing sample data. To upload your own healthcare data,{' '}
-                      <button
-                        onClick={() => navigate('/signup')}
-                        className="underline hover:text-amber-900 font-medium"
-                      >
-                        create an account
-                      </button>
-                      .
+                    <h3 className="text-lg font-semibold text-neutral-900">
+                      Demo Mode: See How Data Import Works
+                    </h3>
+                    <p className="mt-2 text-neutral-600">
+                      Watch a simulated data import process with sample healthcare data.
+                      You'll see exactly how Vizier analyzes and prepares your data.
                     </p>
                   </div>
+                  <Button
+                    onClick={handleStartDemoProcessing}
+                    size="lg"
+                    icon={<ArrowRight className="w-5 h-5" />}
+                    iconPosition="right"
+                  >
+                    Start Demo Import
+                  </Button>
+                  <p className="text-xs text-neutral-500">
+                    Want to upload your own data?{' '}
+                    <button
+                      onClick={() => navigate('/signup')}
+                      className="text-primary-600 hover:underline font-medium"
+                    >
+                      Create an account
+                    </button>
+                  </p>
                 </div>
-              </div>
+              </Card>
             )}
 
             {/* Header with Vizier message */}
@@ -218,6 +287,92 @@ export const Upload: React.FC = () => {
                 onComplete={handleProcessingComplete}
                 onError={handleProcessingError}
               />
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Demo Processing State */}
+        {state === 'demo-processing' && (
+          <motion.div
+            key="demo-processing"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <Card variant="elevated" padding="lg">
+              <div className="text-center mb-8">
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <svg viewBox="0 0 24 24" className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="12" cy="6" r="1.5" fill="currentColor" />
+                  </svg>
+                </motion.div>
+                <h3 className="text-lg font-semibold text-neutral-900">
+                  Analyzing sample healthcare data...
+                </h3>
+                <p className="text-sm text-neutral-500 mt-1">
+                  This is a simulated demo using sample data
+                </p>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mb-6">
+                <div className="flex justify-between text-sm text-neutral-600 mb-2">
+                  <span>Progress</span>
+                  <span>{demoProgress}%</span>
+                </div>
+                <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-primary-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${demoProgress}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </div>
+
+              {/* Processing steps */}
+              <div className="space-y-3">
+                {demoProcessingSteps.map((step, index) => (
+                  <div
+                    key={index}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                      index < demoStep
+                        ? 'bg-success-50'
+                        : index === demoStep
+                        ? 'bg-primary-50'
+                        : 'bg-neutral-50'
+                    }`}
+                  >
+                    {index < demoStep ? (
+                      <CheckCircle className="w-5 h-5 text-success-500 flex-shrink-0" />
+                    ) : index === demoStep ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-5 h-5 border-2 border-neutral-300 rounded-full flex-shrink-0" />
+                    )}
+                    <span
+                      className={`text-sm ${
+                        index < demoStep
+                          ? 'text-success-700'
+                          : index === demoStep
+                          ? 'text-primary-700 font-medium'
+                          : 'text-neutral-500'
+                      }`}
+                    >
+                      {step}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </Card>
           </motion.div>
         )}

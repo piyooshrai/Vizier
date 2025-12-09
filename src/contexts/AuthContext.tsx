@@ -49,29 +49,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [login]);
 
   const logout = useCallback(async () => {
+    const isDemoMode = localStorage.getItem('is_demo') === 'true';
     try {
-      await authService.logout();
+      // Skip API call for demo mode
+      if (!isDemoMode) {
+        await authService.logout();
+      }
     } finally {
       localStorage.removeItem('is_demo');
+      localStorage.removeItem('demo_data_loaded');
       setUser(null);
     }
   }, []);
 
   const loginWithDemo = useCallback(async () => {
-    try {
-      // Use demo credentials
-      const demoCredentials = {
-        email: 'demo@vizier.health',
-        password: 'Demo123!@#'
-      };
+    // Simulate a small delay for UX
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-      const response = await authService.login(demoCredentials);
-      localStorage.setItem('is_demo', 'true');
-      setUser(response.user);
-    } catch (error) {
-      // If demo account doesn't exist, show helpful error
-      throw new Error('Demo account not available. Please contact support.');
-    }
+    // Create a mock demo user (no API call needed)
+    const demoUser = {
+      id: 'demo-user-id',
+      email: 'demo@vizier.health',
+      first_name: 'Demo',
+      last_name: 'User',
+      role: 'hospital_administrator',
+      created_at: new Date().toISOString(),
+    };
+
+    // Store in localStorage
+    localStorage.setItem('user', JSON.stringify(demoUser));
+    localStorage.setItem('access_token', 'demo-token');
+    localStorage.setItem('is_demo', 'true');
+    localStorage.setItem('demo_data_loaded', 'true');
+
+    setUser(demoUser as User);
   }, []);
 
   const refreshUser = useCallback(async () => {
