@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle, AlertCircle, HelpCircle, Lock, Play } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertCircle, HelpCircle, Play } from 'lucide-react';
 import { Button, Card } from '../components/common';
 import { FileDropZone, UploadProgress, ProcessingStatus } from '../components/upload';
 import { pipelineService, getErrorMessage } from '../services';
