@@ -8,30 +8,28 @@ import { useAuth } from '../contexts/AuthContext';
 export const Signup: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
 
-  // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
-        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  // Redirect if already logged in
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
   return (
     <AuthLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-neutral-900 mb-2">
-            Let's get started
-          </h2>
-          <p className="text-neutral-600">
-            Create your account and start asking questions
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Create your account
+          </h1>
+          <p className="mt-1 text-slate-500">
+            Get started with Vizier in minutes
           </p>
         </div>
 
@@ -41,10 +39,10 @@ export const Signup: React.FC = () => {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-neutral-300" />
+            <div className="w-full border-t border-slate-200" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-neutral-50 text-neutral-500">Or</span>
+            <span className="px-3 bg-white text-slate-400">or</span>
           </div>
         </div>
 
@@ -52,11 +50,11 @@ export const Signup: React.FC = () => {
         <DemoCard />
 
         {/* Sign in link */}
-        <p className="text-center text-sm text-neutral-600">
+        <p className="text-center text-sm text-slate-500">
           Already have an account?{' '}
           <Link
             to="/login"
-            className="font-medium text-primary-600 hover:text-primary-700 transition-colors"
+            className="font-medium text-blue-600 hover:text-blue-700"
           >
             Sign in
           </Link>
