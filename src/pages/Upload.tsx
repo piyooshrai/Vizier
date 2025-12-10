@@ -1,501 +1,312 @@
-import React, { useState, useCallback, useEffect } from 'react';
+// src/pages/Upload.tsx
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle, AlertCircle, HelpCircle, Play } from 'lucide-react';
-import { Button, Card } from '../components/common';
-import { FileDropZone, UploadProgress, ProcessingStatus } from '../components/upload';
-import { pipelineService, getErrorMessage } from '../services';
-import { PipelineStatus } from '../types';
-import { formatNumber } from '../utils/formatters';
-import { useAuth } from '../contexts/AuthContext';
-import { mockHealthcareData } from '../data/mockData';
+import { FileDropZone } from '../components/upload/FileDropZone';
+import { FileList } from '../components/upload/FileList';
+import { ProcessingAnimation } from '../components/upload/ProcessingAnimation';
+import { UploadComplete } from '../components/upload/UploadComplete';
+import { useAuth } from '../hooks/useAuth';
+import { pipelineService } from '../services/pipeline.service';
 
-type UploadState = 'select' | 'uploading' | 'processing' | 'complete' | 'error' | 'demo-processing';
+type UploadState = 'initial' | 'uploading' | 'processing' | 'complete' | 'error';
 
-// Demo processing steps
-const demoProcessingSteps = [
-  'Analyzing patient demographics...',
-  'Validating diagnosis codes (ICD-10)...',
-  'Mapping encounter patterns...',
-  'Detecting quality measures...',
-  'Building analytics indexes...',
-  'Preparing conversational AI...',
-];
+interface ProcessingStep {
+  name: string;
+  completed: boolean;
+}
 
-export const Upload: React.FC = () => {
+const Upload: React.FC = () => {
   const navigate = useNavigate();
   const { isDemoMode } = useAuth();
-  const [state, setState] = useState<UploadState>('select');
-  const [files, setFiles] = useState<File[]>([]);
+  const [uploadState, setUploadState] = useState<UploadState>('initial');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [currentFileIndex, setCurrentFileIndex] = useState(0);
-  const [uploadRunId, setUploadRunId] = useState<string | null>(null);
-  const [completedStatus, setCompletedStatus] = useState<PipelineStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [demoStep, setDemoStep] = useState(0);
-  const [demoProgress, setDemoProgress] = useState(0);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [processingSteps, setProcessingSteps] = useState<ProcessingStep[]>([]);
+  const [error, setError] = useState('');
 
-  const handleFilesSelected = useCallback((selectedFiles: File[]) => {
-    setFiles(selectedFiles);
-    setError(null);
-  }, []);
+  const handleFilesSelected = (files: File[]) => {
+    setSelectedFiles(files);
+    setError('');
+  };
 
-  // Demo processing simulation
-  useEffect(() => {
-    if (state !== 'demo-processing') return;
-
-    const stepDuration = 800; // ms per step
-    const totalSteps = demoProcessingSteps.length;
-
-    const interval = setInterval(() => {
-      setDemoStep((prev) => {
-        const next = prev + 1;
-        setDemoProgress(Math.round((next / totalSteps) * 100));
-
-        if (next >= totalSteps) {
-          clearInterval(interval);
-          // Set demo completion status
-          setCompletedStatus({
-            status: 'completed',
-            upload_run_id: 'demo-run',
-            completed_steps: demoProcessingSteps,
-            current_step: null,
-            progress_percent: 100,
-            insights_summary: {
-              total_patients: mockHealthcareData.summary.totalPatients,
-              total_encounters: mockHealthcareData.summary.totalEncounters,
-              date_range: `${mockHealthcareData.summary.dateRange.start} to ${mockHealthcareData.summary.dateRange.end}`,
-            },
-          });
-          setState('complete');
-        }
-        return next;
-      });
-    }, stepDuration);
-
-    return () => clearInterval(interval);
-  }, [state]);
-
-  // Start demo processing
-  const handleStartDemoProcessing = () => {
-    setDemoStep(0);
-    setDemoProgress(0);
-    setState('demo-processing');
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
+    if (selectedFiles.length === 0) return;
 
-    // Check for demo mode restriction
+    // Demo mode simulation
     if (isDemoMode) {
-      setError('Upload is disabled in demo mode. Create an account to upload your own data.');
+      await simulateDemoUpload();
       return;
     }
 
-    setState('uploading');
-    setError(null);
-
+    // Real upload
     try {
-      const response = await pipelineService.uploadAndTrigger(files, (progress) => {
-        // Calculate which file we're on based on overall progress
-        const fileIndex = Math.floor((progress / 100) * files.length);
-        setCurrentFileIndex(Math.min(fileIndex, files.length - 1));
-        setUploadProgress(progress);
-      });
+      setUploadState('uploading');
 
-      setUploadRunId(response.upload_run_id);
-      setState('processing');
-    } catch (err) {
-      setError(getErrorMessage(err));
-      setState('error');
+      const response = await pipelineService.uploadAndTrigger(
+        selectedFiles,
+        (progress) => setUploadProgress(progress)
+      );
+
+      setUploadState('processing');
+      await pollPipelineStatus(response.upload_run_id);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Upload failed. Please try again.');
+      setUploadState('error');
     }
   };
 
-  const handleProcessingComplete = useCallback((status: PipelineStatus) => {
-    setCompletedStatus(status);
-    setState('complete');
-  }, []);
+  const simulateDemoUpload = async () => {
+    setUploadState('uploading');
 
-  const handleProcessingError = useCallback((errorMessage: string) => {
-    setError(errorMessage);
-    setState('error');
-  }, []);
+    // Simulate upload progress
+    for (let i = 0; i <= 100; i += 10) {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      setUploadProgress(i);
+    }
 
-  const handleStartOver = () => {
-    setState('select');
-    setFiles([]);
-    setUploadProgress(0);
-    setCurrentFileIndex(0);
-    setUploadRunId(null);
-    setCompletedStatus(null);
-    setError(null);
+    setUploadState('processing');
+
+    // Processing steps
+    const steps = [
+      'Patient demographics recognized',
+      'Diagnosis codes validated',
+      'Encounter patterns identified',
+      'Care plans analyzed',
+      'Quality measures detected',
+    ];
+
+    setProcessingSteps(steps.map((name) => ({ name, completed: false })));
+
+    // Simulate each step
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      setProcessingSteps((prev) =>
+        prev.map((step, idx) =>
+          idx === i ? { ...step, completed: true } : step
+        )
+      );
+
+      setProcessingProgress(((i + 1) / steps.length) * 100);
+    }
+
+    setUploadState('complete');
+    localStorage.setItem('demo_data_loaded', 'true');
+
+    // Redirect after 2 seconds
+    setTimeout(() => navigate('/insights'), 2000);
   };
 
-  return (
-    <div className="max-w-4xl mx-auto">
-      <AnimatePresence mode="wait">
-        {/* Select Files State */}
-        {state === 'select' && (
-          <motion.div
-            key="select"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-8"
-          >
-            {/* Demo Mode Banner - Show simulation option */}
-            {isDemoMode && (
-              <Card variant="elevated" padding="lg" className="bg-gradient-to-br from-primary-50 to-white border-primary-200">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto">
-                    <Play className="w-8 h-8 text-primary-600 ml-1" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-neutral-900">
-                      Demo Mode: See How Data Import Works
-                    </h3>
-                    <p className="mt-2 text-neutral-600">
-                      Watch a simulated data import process with sample healthcare data.
-                      You'll see exactly how Vizier analyzes and prepares your data.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handleStartDemoProcessing}
-                    size="lg"
-                    icon={<ArrowRight className="w-5 h-5" />}
-                    iconPosition="right"
-                  >
-                    Start Demo Import
-                  </Button>
-                  <p className="text-xs text-neutral-500">
-                    Want to upload your own data?{' '}
-                    <button
-                      onClick={() => navigate('/signup')}
-                      className="text-primary-600 hover:underline font-medium"
-                    >
-                      Create an account
-                    </button>
-                  </p>
-                </div>
-              </Card>
-            )}
+  const pollPipelineStatus = async (runId: string) => {
+    const maxAttempts = 60;
+    let attempts = 0;
 
-            {/* Header with Vizier message */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto">
-                <svg viewBox="0 0 24 24" className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-                </svg>
+    const poll = setInterval(async () => {
+      try {
+        const status = await pipelineService.getStatus(runId);
+
+        const steps = status.completed_steps.map((name) => ({
+          name,
+          completed: true,
+        }));
+        setProcessingSteps(steps);
+        setProcessingProgress(status.progress_percent);
+
+        if (status.status === 'completed') {
+          clearInterval(poll);
+          setUploadState('complete');
+          setTimeout(() => navigate('/insights'), 2000);
+        } else if (status.status === 'failed') {
+          clearInterval(poll);
+          setError(status.error_message || 'Processing failed');
+          setUploadState('error');
+        }
+
+        attempts++;
+        if (attempts >= maxAttempts) {
+          clearInterval(poll);
+          setError('Processing timeout. Please check your data.');
+          setUploadState('error');
+        }
+      } catch (err) {
+        console.error('Status check failed:', err);
+      }
+    }, 5000);
+  };
+
+  // Initial state
+  if (uploadState === 'initial') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+        {/* Subtle grid overlay */}
+        <div
+          className="fixed inset-0 opacity-5"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 175, 55, 0.1) 1px, transparent 1px)',
+            backgroundSize: '50px 50px',
+          }}
+        />
+
+        <div className="relative min-h-screen flex items-center justify-center p-6">
+          <div className="w-full max-w-4xl">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg">
+                  <svg
+                    className="w-7 h-7 text-black"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                  </svg>
+                </div>
+                <span className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent tracking-wide">
+                  VIZIER
+                </span>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-neutral-900">
-                  Share your healthcare data with me
-                </h2>
-                <p className="mt-2 text-neutral-600 max-w-lg mx-auto">
-                  I can work with CSV exports from Epic, Cerner, Allscripts, and most other EHR systems.
-                  I'll analyze your data and prepare it for exploration.
-                </p>
-              </div>
+
+              <h1 className="text-4xl font-bold text-white mb-4">
+                Share your data with me
+              </h1>
+              <p className="text-xl text-gray-400">
+                I can work with CSV exports from Epic, Cerner, Allscripts, or most EHR systems
+              </p>
             </div>
 
-            {/* Error Display */}
+            {/* File Drop Zone */}
+            <FileDropZone
+              onFilesSelected={handleFilesSelected}
+              selectedFiles={selectedFiles}
+            />
+
+            {/* Selected Files */}
+            {selectedFiles.length > 0 && (
+              <div className="mt-8">
+                <FileList
+                  files={selectedFiles}
+                  onRemove={handleRemoveFile}
+                />
+              </div>
+            )}
+
+            {/* Error Message */}
             {error && (
-              <div className="p-4 bg-error-50 border border-error-200 rounded-lg">
-                <p className="text-sm text-error-600">{error}</p>
+              <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                {error}
               </div>
             )}
 
-            {/* Drop Zone */}
-            <Card variant="elevated" padding="lg">
-              <FileDropZone onFilesSelected={handleFilesSelected} />
-
-              {files.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-neutral-200">
-                  <Button
-                    onClick={handleUpload}
-                    size="lg"
-                    fullWidth
-                    icon={<ArrowRight className="w-5 h-5" />}
-                    iconPosition="right"
-                  >
-                    Continue with {files.length} file{files.length > 1 ? 's' : ''}
-                  </Button>
-                </div>
-              )}
-            </Card>
-
-            {/* Help Section */}
-            <div className="flex items-start gap-3 p-4 bg-neutral-50 rounded-lg">
-              <HelpCircle className="w-5 h-5 text-neutral-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Need help with file formats?</p>
-                <p className="text-sm text-neutral-500 mt-1">
-                  Most EHR systems can export data as CSV files. Look for "Export" or "Reports" in your system.
-                  Common files include patients.csv, encounters.csv, conditions.csv, and observations.csv.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Uploading State */}
-        {state === 'uploading' && (
-          <motion.div
-            key="uploading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card variant="elevated" padding="lg">
-              <div className="text-center mb-8">
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            {/* Continue Button */}
+            {selectedFiles.length > 0 && (
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={handleUpload}
+                  className="px-8 py-4 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-400 hover:to-yellow-500 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl text-lg"
                 >
-                  <svg viewBox="0 0 24 24" className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-                  </svg>
-                </motion.div>
-                <h3 className="text-lg font-semibold text-neutral-900">
-                  Uploading your files securely...
-                </h3>
+                  Continue with {selectedFiles.length} file
+                  {selectedFiles.length !== 1 ? 's' : ''}
+                </button>
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-              <UploadProgress
-                files={files}
-                progress={uploadProgress}
-                currentFileIndex={currentFileIndex}
-              />
-            </Card>
-          </motion.div>
-        )}
+  // Uploading state
+  if (uploadState === 'uploading') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-2xl">
+            <svg
+              className="w-10 h-10 text-black animate-pulse"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            </svg>
+          </div>
 
-        {/* Processing State */}
-        {state === 'processing' && uploadRunId && (
-          <motion.div
-            key="processing"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Uploading securely...
+          </h2>
+
+          <div className="w-full bg-gray-800 rounded-full h-3 mb-4">
+            <div
+              className="bg-gradient-to-r from-yellow-600 to-yellow-500 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+
+          <p className="text-gray-400">{uploadProgress}% complete</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Processing state
+  if (uploadState === 'processing') {
+    return (
+      <ProcessingAnimation
+        steps={processingSteps}
+        progress={processingProgress}
+      />
+    );
+  }
+
+  // Complete state
+  if (uploadState === 'complete') {
+    return <UploadComplete />;
+  }
+
+  // Error state
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+      <div className="text-center max-w-md">
+        <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-6">
+          <svg
+            className="w-10 h-10 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <Card variant="elevated" padding="lg">
-              <ProcessingStatus
-                uploadRunId={uploadRunId}
-                onComplete={handleProcessingComplete}
-                onError={handleProcessingError}
-              />
-            </Card>
-          </motion.div>
-        )}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
 
-        {/* Demo Processing State */}
-        {state === 'demo-processing' && (
-          <motion.div
-            key="demo-processing"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card variant="elevated" padding="lg">
-              <div className="text-center mb-8">
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"
-                >
-                  <svg viewBox="0 0 24 24" className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-                  </svg>
-                </motion.div>
-                <h3 className="text-lg font-semibold text-neutral-900">
-                  Analyzing sample healthcare data...
-                </h3>
-                <p className="text-sm text-neutral-500 mt-1">
-                  This is a simulated demo using sample data
-                </p>
-              </div>
+        <h2 className="text-3xl font-bold text-white mb-4">
+          Something went wrong
+        </h2>
+        <p className="text-gray-400 mb-8">{error}</p>
 
-              {/* Progress bar */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm text-neutral-600 mb-2">
-                  <span>Progress</span>
-                  <span>{demoProgress}%</span>
-                </div>
-                <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-primary-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${demoProgress}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-              </div>
-
-              {/* Processing steps */}
-              <div className="space-y-3">
-                {demoProcessingSteps.map((step, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                      index < demoStep
-                        ? 'bg-success-50'
-                        : index === demoStep
-                        ? 'bg-primary-50'
-                        : 'bg-neutral-50'
-                    }`}
-                  >
-                    {index < demoStep ? (
-                      <CheckCircle className="w-5 h-5 text-success-500 flex-shrink-0" />
-                    ) : index === demoStep ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-5 h-5 border-2 border-neutral-300 rounded-full flex-shrink-0" />
-                    )}
-                    <span
-                      className={`text-sm ${
-                        index < demoStep
-                          ? 'text-success-700'
-                          : index === demoStep
-                          ? 'text-primary-700 font-medium'
-                          : 'text-neutral-500'
-                      }`}
-                    >
-                      {step}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Complete State */}
-        {state === 'complete' && completedStatus && (
-          <motion.div
-            key="complete"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
-          >
-            <Card variant="elevated" padding="lg">
-              <div className="text-center space-y-4">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                  className="w-20 h-20 bg-success-100 rounded-full flex items-center justify-center mx-auto"
-                >
-                  <CheckCircle className="w-10 h-10 text-success-500" />
-                </motion.div>
-
-                <div>
-                  <h2 className="text-2xl font-bold text-neutral-900">
-                    Analysis complete!
-                  </h2>
-                  {completedStatus.insights_summary && (
-                    <p className="mt-2 text-neutral-600">
-                      I've structured{' '}
-                      <span className="font-semibold text-neutral-900">
-                        {formatNumber(completedStatus.insights_summary.total_encounters || 0)}
-                      </span>{' '}
-                      encounters across{' '}
-                      <span className="font-semibold text-neutral-900">
-                        {formatNumber(completedStatus.insights_summary.total_patients || 0)}
-                      </span>{' '}
-                      unique patients.
-                      {completedStatus.insights_summary.date_range && (
-                        <span className="block mt-1">
-                          Data from {completedStatus.insights_summary.date_range}
-                        </span>
-                      )}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-4">
-                  <Button
-                    onClick={() => navigate('/insights')}
-                    size="lg"
-                    icon={<ArrowRight className="w-5 h-5" />}
-                    iconPosition="right"
-                  >
-                    Start asking questions
-                  </Button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Suggested Questions */}
-            <Card padding="md">
-              <h4 className="text-sm font-medium text-neutral-700 mb-3">
-                Try asking me:
-              </h4>
-              <div className="space-y-2">
-                {[
-                  'What are my top 10 diagnoses by volume?',
-                  'Show me readmission rates by condition',
-                  'Which patients have the highest costs?',
-                ].map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => navigate('/insights', { state: { initialQuestion: question } })}
-                    className="block w-full text-left px-4 py-3 rounded-lg bg-neutral-50 hover:bg-neutral-100 text-neutral-700 text-sm transition-colors"
-                  >
-                    "{question}"
-                  </button>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Error State */}
-        {state === 'error' && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card variant="elevated" padding="lg">
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-error-100 rounded-full flex items-center justify-center mx-auto">
-                  <AlertCircle className="w-8 h-8 text-error-500" />
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-bold text-neutral-900">
-                    Something went wrong
-                  </h2>
-                  <p className="mt-2 text-neutral-600 max-w-md mx-auto">
-                    {error || 'I encountered an issue while processing your data. Please try again.'}
-                  </p>
-                </div>
-
-                <div className="pt-4 space-x-4">
-                  <Button onClick={handleStartOver} variant="secondary">
-                    Start over
-                  </Button>
-                  <Button onClick={handleUpload}>
-                    Try again
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <button
+          onClick={() => {
+            setUploadState('initial');
+            setError('');
+            setSelectedFiles([]);
+          }}
+          className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all"
+        >
+          Try again
+        </button>
+      </div>
     </div>
   );
 };
 
+export { Upload };
 export default Upload;
