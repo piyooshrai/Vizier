@@ -1,138 +1,141 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock } from 'lucide-react';
-import { Button, Input } from '../common';
+import { z } from 'zod';
 import { useAuth } from '../../contexts/AuthContext';
-import { loginSchema, LoginFormData } from '../../utils/validators';
+import { Mail, Lock, Loader2 } from 'lucide-react';
+
+const loginSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm: React.FC = () => {
-  const { login, loginWithDemo } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
-  const [demoLoading, setDemoLoading] = useState(false);
+  const { login } = useAuth();
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setError(null);
     try {
+      setIsSubmitting(true);
+      setError('');
       await login(data.email, data.password);
       navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
-    }
-  };
-
-  const handleDemoLogin = async () => {
-    setError(null);
-    setDemoLoading(true);
-    try {
-      await loginWithDemo();
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Demo login failed. Please try again.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '';
+      setError(
+        errorMessage ||
+        "I couldn't sign you in. Please check your email and password."
+      );
     } finally {
-      setDemoLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {error && (
-        <div className="p-4 bg-error-50 border border-error-200 rounded-lg">
-          <p className="text-sm text-error-600">{error}</p>
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          {error}
         </div>
       )}
 
-      <Input
-        label="Email"
-        type="email"
-        placeholder="you@healthcare.org"
-        icon={<Mail className="w-5 h-5" />}
-        error={errors.email?.message}
-        {...register('email')}
-      />
-
-      <Input
-        label="Password"
-        type="password"
-        placeholder="Enter your password"
-        icon={<Lock className="w-5 h-5" />}
-        showPasswordToggle
-        error={errors.password?.message}
-        {...register('password')}
-      />
-
-      <div className="flex items-center justify-between">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            className="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
-          />
-          <span className="text-sm text-neutral-600">Remember me</span>
+      {/* Email */}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+          Email address
         </label>
-        <button
-          type="button"
-          className="text-sm font-medium text-primary-600 hover:text-primary-700"
-        >
-          Forgot password?
-        </button>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Mail className="h-5 w-5 text-neutral-400" />
+          </div>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@hospital.com"
+            autoComplete="email"
+            className={`
+              w-full pl-11 pr-4 py-3
+              border rounded-xl
+              ${errors.email ? 'border-red-300' : 'border-neutral-300'}
+              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+              transition-shadow
+              bg-white
+            `}
+            {...register('email')}
+          />
+        </div>
+        {errors.email && (
+          <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+        )}
       </div>
 
-      <Button type="submit" fullWidth loading={isSubmitting} size="lg">
-        Sign in to Vizier
-      </Button>
-
-      <p className="text-center text-sm text-neutral-600">
-        New to Vizier?{' '}
-        <Link to="/signup" className="font-medium text-primary-600 hover:text-primary-700">
-          Create an account
-        </Link>
-      </p>
-
-      {/* Demo Mode Section */}
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-neutral-300" />
+      {/* Password */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-neutral-700">
+            Password
+          </label>
+          <Link
+            to="/forgot-password"
+            className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
+          >
+            Forgot password?
+          </Link>
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-neutral-500">Or</span>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Lock className="h-5 w-5 text-neutral-400" />
+          </div>
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            className={`
+              w-full pl-11 pr-4 py-3
+              border rounded-xl
+              ${errors.password ? 'border-red-300' : 'border-neutral-300'}
+              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+              transition-shadow
+              bg-white
+            `}
+            {...register('password')}
+          />
         </div>
+        {errors.password && (
+          <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+        )}
       </div>
 
+      {/* Submit button */}
       <button
-        type="button"
-        onClick={handleDemoLogin}
-        disabled={demoLoading || isSubmitting}
-        className="w-full py-3 px-4 border-2 border-primary-200 text-primary-600 rounded-lg font-medium hover:bg-primary-50 hover:border-primary-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        type="submit"
+        disabled={isSubmitting}
+        className="
+          w-full py-3 px-6
+          bg-primary-600 hover:bg-primary-700
+          text-white font-semibold rounded-xl
+          transition-colors
+          disabled:opacity-50 disabled:cursor-not-allowed
+          flex items-center justify-center gap-2
+        "
       >
-        {demoLoading ? 'Loading demo...' : 'Try Demo (No signup required)'}
+        {isSubmitting && <Loader2 className="w-5 h-5 animate-spin" />}
+        {isSubmitting ? 'Signing in...' : 'Sign in to Vizier'}
       </button>
-
-      <p className="mt-3 text-center text-sm text-neutral-500">
-        Experience Vizier with sample healthcare data
-      </p>
-
-      {/* Demo Benefits */}
-      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-        <h4 className="text-sm font-semibold text-blue-900 mb-2">
-          What's included in the demo:
-        </h4>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>Sample patient data from 12,847 encounters</li>
-          <li>Full conversational AI capabilities</li>
-          <li>Interactive healthcare dashboards</li>
-          <li>All analytics features</li>
-        </ul>
-      </div>
     </form>
   );
 };
