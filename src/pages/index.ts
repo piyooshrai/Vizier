@@ -8,3 +8,4 @@ export { Settings } from './Settings';
 export { NotFound } from './NotFound';
 export { ForgotPassword } from './ForgotPassword';
 export { ResetPassword } from './ResetPassword';
+export { default as ChatLanding } from './ChatLanding';

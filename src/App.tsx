@@ -5,8 +5,6 @@ import { ToastProvider } from './contexts/ToastContext';
 import { AppLayout } from './components/layout';
 import { LoadingSpinner } from './components/common';
 import {
-  Login,
-  Signup,
   Dashboard,
   Upload,
   Insights,
@@ -15,6 +13,7 @@ import {
   NotFound,
   ForgotPassword,
   ResetPassword,
+  ChatLanding,
 } from './pages';
 
 // Protected Route wrapper
@@ -30,7 +29,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -59,23 +58,21 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Landing page - chat-first, no login wall */}
       <Route
-        path="/login"
+        path="/"
         element={
           <PublicRoute>
-            <Login />
+            <ChatLanding />
           </PublicRoute>
         }
       />
-      <Route
-        path="/signup"
-        element={
-          <PublicRoute>
-            <Signup />
-          </PublicRoute>
-        }
-      />
+
+      {/* Redirect old auth routes to landing */}
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/signup" element={<Navigate to="/" replace />} />
+
+      {/* Password recovery routes */}
       <Route
         path="/forgot-password"
         element={
@@ -107,9 +104,6 @@ const AppRoutes: React.FC = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
-
-      {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
       {/* 404 Not Found */}
       <Route path="*" element={<NotFound />} />
