@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../contexts/AuthContext';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string().email('Please enter a valid email'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -35,88 +35,75 @@ export const LoginForm: React.FC = () => {
       navigate('/dashboard');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : '';
-      setError(
-        errorMessage ||
-        "I couldn't sign you in. Please check your email and password."
-      );
+      setError(errorMessage || 'Invalid email or password');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
           {error}
         </div>
       )}
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-          Email address
+        <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
+          Email
         </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Mail className="h-5 w-5 text-neutral-400" />
-          </div>
-          <input
-            id="email"
-            type="email"
-            placeholder="you@hospital.com"
-            autoComplete="email"
-            className={`
-              w-full pl-11 pr-4 py-3
-              border rounded-xl
-              ${errors.email ? 'border-red-300' : 'border-neutral-300'}
-              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-              transition-shadow
-              bg-white
-            `}
-            {...register('email')}
-          />
-        </div>
+        <input
+          id="email"
+          type="email"
+          placeholder="name@company.com"
+          autoComplete="email"
+          className={`
+            w-full px-3 py-2.5
+            border rounded-lg
+            text-slate-900 placeholder-slate-400
+            ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-slate-300 focus:ring-blue-500'}
+            focus:outline-none focus:ring-2 focus:border-transparent
+            transition-shadow
+          `}
+          {...register('email')}
+        />
         {errors.email && (
-          <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+          <p className="mt-1.5 text-sm text-red-600">{errors.email.message}</p>
         )}
       </div>
 
       {/* Password */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label htmlFor="password" className="block text-sm font-medium text-neutral-700">
+        <div className="flex items-center justify-between mb-1.5">
+          <label htmlFor="password" className="block text-sm font-medium text-slate-700">
             Password
           </label>
           <Link
             to="/forgot-password"
-            className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
+            className="text-sm text-blue-600 hover:text-blue-700"
           >
-            Forgot password?
+            Forgot?
           </Link>
         </div>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Lock className="h-5 w-5 text-neutral-400" />
-          </div>
-          <input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            className={`
-              w-full pl-11 pr-4 py-3
-              border rounded-xl
-              ${errors.password ? 'border-red-300' : 'border-neutral-300'}
-              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-              transition-shadow
-              bg-white
-            `}
-            {...register('password')}
-          />
-        </div>
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          autoComplete="current-password"
+          className={`
+            w-full px-3 py-2.5
+            border rounded-lg
+            text-slate-900 placeholder-slate-400
+            ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-slate-300 focus:ring-blue-500'}
+            focus:outline-none focus:ring-2 focus:border-transparent
+            transition-shadow
+          `}
+          {...register('password')}
+        />
         {errors.password && (
-          <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+          <p className="mt-1.5 text-sm text-red-600">{errors.password.message}</p>
         )}
       </div>
 
@@ -125,16 +112,16 @@ export const LoginForm: React.FC = () => {
         type="submit"
         disabled={isSubmitting}
         className="
-          w-full py-3 px-6
-          bg-primary-600 hover:bg-primary-700
-          text-white font-semibold rounded-xl
+          w-full py-2.5 px-4
+          bg-blue-600 hover:bg-blue-700
+          text-white font-medium rounded-lg
           transition-colors
           disabled:opacity-50 disabled:cursor-not-allowed
           flex items-center justify-center gap-2
         "
       >
-        {isSubmitting && <Loader2 className="w-5 h-5 animate-spin" />}
-        {isSubmitting ? 'Signing in...' : 'Sign in to Vizier'}
+        {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+        {isSubmitting ? 'Signing in...' : 'Sign in'}
       </button>
     </form>
   );
