@@ -21,11 +21,11 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
         </svg>
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-3">
+      <h2 className="text-2xl font-bold text-white mb-3">
         Your dashboard is empty
       </h2>
 
-      <p className="text-gray-600 max-w-md mx-auto mb-8">
+      <p className="text-gray-400 max-w-md mx-auto mb-8">
         {isDemoMode
           ? 'Explore the insights page and save your favorite visualizations here for quick access.'
           : 'Save insights from your conversations to build your personalized dashboard.'}
@@ -52,7 +52,7 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
             </button>
             <button
               onClick={() => navigate('/insights')}
-              className="px-6 py-3 bg-white hover:bg-gray-50 text-gray-900 font-semibold rounded-xl transition-all border border-gray-200 shadow-lg inline-flex items-center gap-2"
+              className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all border border-gray-600 shadow-lg inline-flex items-center gap-2"
             >
               <MessageSquare className="w-5 h-5" />
               Ask questions
@@ -62,8 +62,8 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
       </div>
 
       {/* Tips */}
-      <div className="p-6 bg-gray-50 rounded-xl max-w-lg mx-auto">
-        <h3 className="font-semibold text-gray-900 mb-4">
+      <div className="p-6 bg-gray-900/50 rounded-xl max-w-lg mx-auto border border-gray-700">
+        <h3 className="font-semibold text-white mb-4">
           How to build your dashboard
         </h3>
         <div className="space-y-3 text-left">
@@ -76,7 +76,7 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
               <div className="w-6 h-6 bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-xs font-bold text-black">{index + 1}</span>
               </div>
-              <p className="text-sm text-gray-700">{tip}</p>
+              <p className="text-sm text-gray-300">{tip}</p>
             </div>
           ))}
         </div>
