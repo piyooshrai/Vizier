@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 40" fill="none">
+  <!-- Icon -->
+  <rect width="32" height="32" rx="8" fill="#2563eb" y="4"/>
+  <path d="M8 16L16 26L24 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0, 4)"/>
+  <circle cx="16" cy="14" r="2" fill="white"/>
+
+  <!-- Text -->
+  <text x="42" y="27" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="600" fill="#171717">Vizier</text>
+</svg>
