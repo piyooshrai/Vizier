@@ -1,27 +1,15 @@
+// src/components/dashboard/QuickActions.tsx
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {
-  Upload,
-  MessageSquare,
-  Users,
-  Activity,
-  LucideIcon
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Upload, MessageSquare, Users, Activity, LucideIcon } from 'lucide-react';
 
 interface QuickAction {
   id: string;
   label: string;
   description: string;
   icon: LucideIcon;
-  href?: string;
-  onClick?: () => void;
+  href: string;
   color: string;
-}
-
-interface QuickActionsProps {
-  actions?: QuickAction[];
-  onAction?: (actionId: string) => void;
 }
 
 const defaultActions: QuickAction[] = [
@@ -31,7 +19,7 @@ const defaultActions: QuickAction[] = [
     description: 'Add new healthcare data',
     icon: Upload,
     href: '/upload',
-    color: 'bg-primary-500',
+    color: 'from-blue-500 to-blue-600',
   },
   {
     id: 'ask',
@@ -39,7 +27,7 @@ const defaultActions: QuickAction[] = [
     description: 'Get instant insights',
     icon: MessageSquare,
     href: '/insights',
-    color: 'bg-success-500',
+    color: 'from-green-500 to-green-600',
   },
   {
     id: 'top-diagnoses',
@@ -47,7 +35,7 @@ const defaultActions: QuickAction[] = [
     description: 'View common conditions',
     icon: Activity,
     href: '/insights',
-    color: 'bg-warning-500',
+    color: 'from-yellow-500 to-yellow-600',
   },
   {
     id: 'patient-demographics',
@@ -55,86 +43,45 @@ const defaultActions: QuickAction[] = [
     description: 'Population overview',
     icon: Users,
     href: '/insights',
-    color: 'bg-purple-500',
+    color: 'from-purple-500 to-purple-600',
   },
 ];
 
+interface QuickActionsProps {
+  actions?: QuickAction[];
+}
+
 export const QuickActions: React.FC<QuickActionsProps> = ({
   actions = defaultActions,
-  onAction,
 }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const handleClick = (action: QuickAction) => {
-    if (onAction) {
-      onAction(action.id);
-    }
-    if (action.onClick) {
-      action.onClick();
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-medium text-neutral-700">Quick Actions</h3>
+    <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-lg p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {actions.map((action) => {
           const Icon = action.icon;
-          const content = (
-            <motion.div
-              variants={itemVariants}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="
-                bg-white rounded-xl border border-neutral-200 p-4
-                hover:border-primary-300 hover:shadow-md
-                transition-all duration-200 cursor-pointer
-                flex flex-col items-center text-center
-              "
-              onClick={() => handleClick(action)}
+          return (
+            <button
+              key={action.id}
+              onClick={() => navigate(action.href)}
+              className="p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all text-center group"
             >
-              <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center mb-3`}>
+              <div
+                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform`}
+              >
                 <Icon className="w-6 h-6 text-white" />
               </div>
-              <h4 className="font-medium text-neutral-900 text-sm mb-1">
+              <h4 className="font-medium text-gray-900 text-sm mb-1">
                 {action.label}
               </h4>
-              <p className="text-xs text-neutral-500">
-                {action.description}
-              </p>
-            </motion.div>
+              <p className="text-xs text-gray-500">{action.description}</p>
+            </button>
           );
-
-          if (action.href) {
-            return (
-              <Link key={action.id} to={action.href} className="block">
-                {content}
-              </Link>
-            );
-          }
-
-          return <div key={action.id}>{content}</div>;
         })}
-      </motion.div>
+      </div>
     </div>
   );
 };
