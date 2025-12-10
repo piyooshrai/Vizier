@@ -99,7 +99,7 @@ const ChatLanding: React.FC = () => {
   const handleDemo = async () => {
     try {
       await loginWithDemo();
-      navigate('/dashboard');
+      navigate('/upload');
     } catch (error) {
       console.error('Demo failed:', error);
     }
