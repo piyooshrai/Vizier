@@ -27,11 +27,11 @@ export const Dashboard: React.FC = () => {
   const demoStats = {
     totalPatients: 12847,
     totalEncounters: 47293,
-    readmissionRate: 8.2,
+    readmissionRate: 12.3,
     avgCost: 4250,
   };
 
-  // Demo saved insights
+  // Demo saved insights - all gold themed
   const demoInsights: SavedInsight[] = [
     {
       id: '1',
@@ -55,10 +55,10 @@ export const Dashboard: React.FC = () => {
       answer: '45-64 is the largest age group',
       chartType: 'pie',
       chartData: [
-        { name: '0-17', value: 1285, color: '#3B82F6' },
-        { name: '18-44', value: 3456, color: '#10B981' },
-        { name: '45-64', value: 4567, color: '#F59E0B' },
-        { name: '65+', value: 3539, color: '#8B5CF6' },
+        { name: '0-17', value: 1285 },
+        { name: '18-44', value: 3456 },
+        { name: '45-64', value: 4567 },
+        { name: '65+', value: 3539 },
       ],
       timestamp: new Date('2024-01-14'),
       explanation:
@@ -109,15 +109,25 @@ export const Dashboard: React.FC = () => {
   const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      {/* Subtle grid overlay */}
+      <div
+        className="fixed inset-0 opacity-5 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 175, 55, 0.1) 1px, transparent 1px)',
+          backgroundSize: '50px 50px',
+        }}
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-white">
               Welcome back{user?.first_name ? `, ${user.first_name}` : ''}
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-400 mt-1">
               Here's an overview of your healthcare analytics
             </p>
           </div>
@@ -139,7 +149,7 @@ export const Dashboard: React.FC = () => {
             {/* Saved Insights */}
             {savedInsights.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-white mb-4">
                   Saved Insights
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -158,7 +168,7 @@ export const Dashboard: React.FC = () => {
             <QuickActions />
           </div>
         ) : (
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-lg">
+          <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 shadow-lg">
             <EmptyDashboard isDemoMode={isDemoMode} />
           </div>
         )}

@@ -31,6 +31,9 @@ interface SavedInsightCardProps {
   onRemove: (id: string) => void;
 }
 
+// Gold color palette for all charts
+const GOLD_COLORS = ['#F59E0B', '#D97706', '#B45309', '#92400E', '#78350F'];
+
 export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
   insight,
   onRemove,
@@ -50,14 +53,15 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
                 angle={-45}
                 textAnchor="end"
                 height={100}
-                tick={{ fontSize: 12, fill: '#6B7280' }}
+                tick={{ fontSize: 12, fill: '#9CA3AF' }}
               />
-              <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} />
+              <YAxis tick={{ fontSize: 12, fill: '#9CA3AF' }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#FFF',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: '#1F2937',
+                  border: '1px solid #374151',
                   borderRadius: '8px',
+                  color: '#F3F4F6',
                 }}
               />
               <Bar dataKey="value" fill={chartColor} radius={[8, 8, 0, 0]} />
@@ -76,25 +80,21 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
-                label
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               >
-                {insight.chartData.map((entry: any, index: number) => (
+                {insight.chartData.map((_entry: any, index: number) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={
-                      entry.color ||
-                      ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444'][
-                        index % 5
-                      ]
-                    }
+                    fill={GOLD_COLORS[index % GOLD_COLORS.length]}
                   />
                 ))}
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#FFF',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: '#1F2937',
+                  border: '1px solid #374151',
                   borderRadius: '8px',
+                  color: '#F3F4F6',
                 }}
               />
             </RechartsPie>
@@ -107,14 +107,15 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
             <LineChart data={insight.chartData}>
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 12, fill: '#6B7280' }}
+                tick={{ fontSize: 12, fill: '#9CA3AF' }}
               />
-              <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} />
+              <YAxis tick={{ fontSize: 12, fill: '#9CA3AF' }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#FFF',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: '#1F2937',
+                  border: '1px solid #374151',
                   borderRadius: '8px',
+                  color: '#F3F4F6',
                 }}
               />
               <Line
@@ -149,19 +150,19 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
   const ChartIcon = getChartIcon();
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all overflow-hidden">
+    <div className="bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-700 shadow-lg hover:shadow-xl transition-all overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-700">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-start gap-3 flex-1">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
               <ChartIcon className="w-5 h-5 text-black" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+              <h3 className="text-lg font-semibold text-white mb-1">
                 {insight.question}
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400">
                 {new Date(insight.timestamp).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
@@ -173,25 +174,25 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
 
           <button
             onClick={() => onRemove(insight.id)}
-            className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors flex-shrink-0"
+            className="w-8 h-8 rounded-lg hover:bg-red-500/20 flex items-center justify-center transition-colors flex-shrink-0"
           >
-            <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
+            <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
           </button>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="p-6 bg-gray-50">{renderChart()}</div>
+      <div className="p-6 bg-gray-900/50">{renderChart()}</div>
 
       {/* Explanation */}
-      <div className="p-6 border-t border-gray-200">
-        <p className="text-sm text-gray-700 leading-relaxed mb-4">
+      <div className="p-6 border-t border-gray-700">
+        <p className="text-sm text-gray-300 leading-relaxed mb-4">
           {insight.explanation}
         </p>
 
         <button
           onClick={() => navigate('/insights')}
-          className="inline-flex items-center gap-2 text-sm font-medium text-yellow-600 hover:text-yellow-700 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-yellow-500 hover:text-yellow-400 transition-colors"
         >
           <MessageSquare className="w-4 h-4" />
           Ask follow-up question
