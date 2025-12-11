@@ -9,6 +9,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { AuthModal } from '../components/auth/AuthModal';
 
 type SettingsTab = 'organization' | 'billing' | 'security' | 'integrations';
 
@@ -49,6 +50,7 @@ const settingsSections: SettingsSection[] = [
 export const Settings: React.FC = () => {
   const { isDemoMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>('organization');
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const renderOrganizationSettings = () => (
     <div className="space-y-6">
@@ -164,7 +166,10 @@ export const Settings: React.FC = () => {
             <p className="text-gray-400 mb-4">
               Create an account to access billing features and unlock full functionality.
             </p>
-            <button className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all">
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg"
+            >
               Upgrade to Full Account
             </button>
           </div>
@@ -436,6 +441,13 @@ export const Settings: React.FC = () => {
           {renderContent()}
         </motion.div>
       </motion.div>
+
+      {/* Auth Modal for upgrading from demo */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultMode="signup"
+      />
     </div>
   );
 };
