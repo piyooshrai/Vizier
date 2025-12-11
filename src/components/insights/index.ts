@@ -4,3 +4,6 @@ export { SuggestionChips } from './SuggestionChips';
 export { ConversationContainer } from './ConversationContainer';
 export { ChartRenderer } from './ChartRenderer';
 export { QueryInput } from './QueryInput';
+export { ConversationView } from './ConversationView';
+export { InsightMessage } from './InsightMessage';
+export { ChartTypeSelector } from './ChartTypeSelector';
