@@ -155,7 +155,7 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
       <div className="p-6 border-b border-gray-700">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-start gap-3 flex-1">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-lg">
               <ChartIcon className="w-5 h-5 text-black" />
             </div>
             <div className="flex-1 min-w-0">
@@ -192,7 +192,7 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
 
         <button
           onClick={() => navigate('/insights')}
-          className="inline-flex items-center gap-2 text-sm font-medium text-yellow-500 hover:text-yellow-400 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-white hover:text-gray-300 transition-colors"
         >
           <MessageSquare className="w-4 h-4" />
           Ask follow-up question

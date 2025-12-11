@@ -63,7 +63,7 @@ export const Sidebar: React.FC = () => {
       {/* Logo */}
       <div className="p-6 border-b border-gray-800">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-xl flex-shrink-0">
             <svg
               className="w-6 h-6 text-black"
               fill="currentColor"
@@ -73,7 +73,7 @@ export const Sidebar: React.FC = () => {
             </svg>
           </div>
           {!isCollapsed && (
-            <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent tracking-wide">
+            <span className="text-xl font-bold text-white tracking-wide">
               VIZIER
             </span>
           )}
@@ -89,7 +89,7 @@ export const Sidebar: React.FC = () => {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 isActive
-                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-semibold shadow-lg'
+                  ? 'bg-white text-black font-semibold shadow-lg'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
               }`
             }
@@ -136,7 +136,7 @@ export const Sidebar: React.FC = () => {
       {!isCollapsed && (
         <div className="p-4 border-t border-gray-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 text-black font-bold">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-black font-bold">
               {user?.first_name?.[0] || 'D'}
             </div>
             <div className="flex-1 min-w-0">
@@ -152,7 +152,7 @@ export const Sidebar: React.FC = () => {
       {/* Collapsed User Avatar */}
       {isCollapsed && (
         <div className="p-4 border-t border-gray-800 flex justify-center">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 text-black font-bold">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-black font-bold">
             {user?.first_name?.[0] || 'D'}
           </div>
         </div>

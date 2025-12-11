@@ -34,7 +34,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
             <span className="text-xs text-gray-400">now</span>
             <span className="font-semibold text-gray-100">You</span>
           </div>
-          <div className="bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-2xl rounded-tr-none p-5 shadow-lg">
+          <div className="bg-white rounded-2xl rounded-tr-none p-5 shadow-lg">
             <p className="text-black leading-relaxed">{message.content}</p>
           </div>
         </div>
@@ -45,7 +45,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
   // Vizier message
   return (
     <div className="flex gap-4 animate-slide-up">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-lg">
         <svg
           className="w-5 h-5 text-black"
           fill="currentColor"
@@ -108,7 +108,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
               <div className="p-4 border-t border-gray-200 flex gap-3">
                 <button
                   onClick={onSave}
-                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-medium rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
                 >
                   <Save className="w-4 h-4" />
                   Save to Dashboard

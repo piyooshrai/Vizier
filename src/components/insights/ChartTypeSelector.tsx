@@ -32,7 +32,7 @@ export const ChartTypeSelector: React.FC<ChartTypeSelectorProps> = ({
             onClick={() => onChange(chart.type)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               currentType === chart.type
-                ? 'bg-yellow-500 text-black'
+                ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >

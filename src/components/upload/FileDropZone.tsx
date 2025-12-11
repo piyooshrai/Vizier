@@ -61,8 +61,8 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         transition-all duration-300 cursor-pointer
         ${
           isDragging
-            ? 'border-yellow-500 bg-yellow-500/5 scale-[1.02]'
-            : 'border-gray-700 bg-gray-800/30 hover:border-yellow-500/50 hover:bg-gray-800/50'
+            ? 'border-white bg-white/5 scale-[1.02]'
+            : 'border-gray-700 bg-gray-800/30 hover:border-gray-500 hover:bg-gray-800/50'
         }
       `}
     >
@@ -75,7 +75,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
       />
 
       <div className="pointer-events-none">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-lg">
+        <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mx-auto mb-6 shadow-lg">
           <Upload className="w-10 h-10 text-black" />
         </div>
 
@@ -88,7 +88,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         </p>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 rounded-lg border border-gray-700">
-          <FileText className="w-4 h-4 text-yellow-500" />
+          <FileText className="w-4 h-4 text-white" />
           <span className="text-sm text-gray-300">
             CSV, XLSX, or XLS files
           </span>

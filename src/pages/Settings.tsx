@@ -66,7 +66,7 @@ export const Settings: React.FC = () => {
             <input
               type="text"
               defaultValue={isDemoMode ? 'Demo Healthcare System' : ''}
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
+              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
               placeholder="Your organization name"
               disabled={isDemoMode}
             />
@@ -76,7 +76,7 @@ export const Settings: React.FC = () => {
               Organization Type
             </label>
             <select
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
+              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
               defaultValue={isDemoMode ? 'hospital_system' : ''}
               disabled={isDemoMode}
             >
@@ -107,7 +107,7 @@ export const Settings: React.FC = () => {
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked disabled={isDemoMode} />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-yellow-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+              <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-white/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
             </label>
           </div>
           <div className="flex items-center justify-between py-3">
@@ -121,7 +121,7 @@ export const Settings: React.FC = () => {
               </div>
             </div>
             <select
-              className="px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
+              className="px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/50"
               defaultValue="America/New_York"
               disabled={isDemoMode}
             >
@@ -136,7 +136,7 @@ export const Settings: React.FC = () => {
 
       {!isDemoMode && (
         <div className="flex justify-end">
-          <button className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg">
+          <button className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg">
             Save Changes
           </button>
         </div>
@@ -156,7 +156,7 @@ export const Settings: React.FC = () => {
               {isDemoMode ? 'Demo Mode - No active subscription' : 'Manage your subscription'}
             </p>
           </div>
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'}`}>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-gray-500/20 text-gray-300' : 'bg-green-500/20 text-green-400'}`}>
             {isDemoMode ? 'Demo' : 'Active'}
           </span>
         </div>
@@ -168,7 +168,7 @@ export const Settings: React.FC = () => {
             </p>
             <button
               onClick={() => setShowAuthModal(true)}
-              className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg"
+              className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg"
             >
               Upgrade to Full Account
             </button>
@@ -410,18 +410,18 @@ export const Settings: React.FC = () => {
                 p-4 rounded-xl text-left transition-all
                 ${
                   activeTab === section.id
-                    ? 'bg-yellow-500/10 border-2 border-yellow-500'
-                    : 'bg-gray-800/50 border border-gray-700 hover:border-yellow-500/50'
+                    ? 'bg-white/10 border-2 border-white'
+                    : 'bg-gray-800/50 border border-gray-700 hover:border-gray-500'
                 }
               `}
             >
               <div className={`
                 w-10 h-10 rounded-lg flex items-center justify-center mb-3
-                ${activeTab === section.id ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-700/50 text-gray-400'}
+                ${activeTab === section.id ? 'bg-white/20 text-white' : 'bg-gray-700/50 text-gray-400'}
               `}>
                 {section.icon}
               </div>
-              <p className={`font-medium ${activeTab === section.id ? 'text-yellow-500' : 'text-white'}`}>
+              <p className={`font-medium ${activeTab === section.id ? 'text-white' : 'text-white'}`}>
                 {section.label}
               </p>
               <p className="text-xs text-gray-500 mt-1">

@@ -122,7 +122,7 @@ const ChatLanding: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-xl">
                 <svg
                   className="w-7 h-7 text-black"
                   fill="currentColor"
@@ -131,7 +131,7 @@ const ChatLanding: React.FC = () => {
                   <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                 </svg>
               </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent tracking-wide">
+              <span className="text-3xl font-bold text-white tracking-wide">
                 VIZIER
               </span>
             </div>
@@ -141,7 +141,7 @@ const ChatLanding: React.FC = () => {
           </div>
 
           {/* Main Chat Interface */}
-          <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-yellow-500/10">
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-300/20">
             {/* Messages Area */}
             <div className="p-8 space-y-6 min-h-[500px] max-h-[600px] overflow-y-auto">
               {messages.map((message) => (
@@ -197,13 +197,13 @@ const ChatLanding: React.FC = () => {
                     onKeyDown={handleKeyPress}
                     rows={1}
                     placeholder="Describe your challenge in your own words..."
-                    className="w-full px-5 py-3.5 bg-white border-2 border-gray-200 rounded-2xl focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/20 resize-none text-gray-900 placeholder-gray-400 transition-all"
+                    className="w-full px-5 py-3.5 bg-white border-2 border-gray-200 rounded-2xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 resize-none text-gray-900 placeholder-gray-400 transition-all"
                   />
                 </div>
                 <button
                   onClick={() => handleSendMessage()}
                   disabled={!inputValue.trim()}
-                  className="px-6 py-3.5 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-400 hover:to-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                  className="px-6 py-3.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -226,7 +226,7 @@ const ChatLanding: React.FC = () => {
                 <span className="text-gray-400">Not ready to commit?</span>
                 <button
                   onClick={handleDemo}
-                  className="text-yellow-600 hover:text-yellow-700 font-semibold flex items-center gap-1 transition-colors"
+                  className="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1 transition-colors"
                 >
                   <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />

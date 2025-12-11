@@ -19,7 +19,7 @@ export const FileList: React.FC<FileListProps> = ({ files, onRemove }) => {
       {files.map((file, index) => (
         <div
           key={index}
-          className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 flex items-center gap-4 hover:border-yellow-500/30 transition-colors"
+          className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 flex items-center gap-4 hover:border-gray-500 transition-colors"
         >
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
             <FileText className="w-5 h-5 text-white" />

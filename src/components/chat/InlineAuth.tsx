@@ -63,7 +63,7 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
         placeholder="you@hospital.com"
         className={`w-full px-4 py-3 bg-white border-2 ${
           errors.email ? 'border-red-300' : 'border-gray-200'
-        } rounded-xl focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/20 text-gray-900 placeholder-gray-400 transition-all`}
+        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('email')}
       />
       {errors.email && (
@@ -75,7 +75,7 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
         placeholder="Create a password (min 8 characters)"
         className={`w-full px-4 py-3 bg-white border-2 ${
           errors.password ? 'border-red-300' : 'border-gray-200'
-        } rounded-xl focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/20 text-gray-900 placeholder-gray-400 transition-all`}
+        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('password')}
       />
       {errors.password && (
@@ -85,7 +85,7 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 disabled:opacity-50 text-black font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+        className="w-full py-3 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
       >
         {isSubmitting ? 'Creating account...' : 'Continue'}
       </button>

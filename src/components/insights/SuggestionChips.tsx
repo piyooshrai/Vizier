@@ -38,7 +38,7 @@ export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
           <button
             key={index}
             onClick={() => onSuggestionClick(suggestion)}
-            className="text-xs px-3 py-1.5 rounded-full bg-gray-800/50 border border-gray-700 text-gray-300 hover:border-yellow-500/50 hover:text-yellow-500 transition-all duration-200"
+            className="text-xs px-3 py-1.5 rounded-full bg-gray-800/50 border border-gray-700 text-gray-300 hover:border-white/50 hover:text-white transition-all duration-200"
           >
             {suggestion}
           </button>
@@ -51,7 +51,7 @@ export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
   return (
     <div className="mt-6 animate-fade-in">
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-4 h-4 text-yellow-500" />
+        <Sparkles className="w-4 h-4 text-white" />
         <span className="text-sm font-medium text-gray-400">{title}</span>
       </div>
 
@@ -60,7 +60,7 @@ export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
           <button
             key={index}
             onClick={() => onSuggestionClick(suggestion)}
-            className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-yellow-500 text-gray-300 text-sm rounded-xl transition-all text-left"
+            className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-white text-gray-300 text-sm rounded-xl transition-all text-left"
           >
             {suggestion}
           </button>

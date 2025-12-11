@@ -64,7 +64,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
               onClick={() => navigate(action.href)}
               className="p-4 bg-gray-900/50 hover:bg-gray-700/50 rounded-xl transition-all text-center group border border-gray-700"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
                 <Icon className="w-6 h-6 text-black" />
               </div>
               <h4 className="font-medium text-white text-sm mb-1">

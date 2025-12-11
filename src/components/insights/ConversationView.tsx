@@ -29,7 +29,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
 
       {isProcessing && (
         <div className="flex gap-4 animate-slide-up">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-lg">
             <svg
               className="w-5 h-5 text-black"
               fill="currentColor"
@@ -46,15 +46,15 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
             <div className="bg-white/95 backdrop-blur-xl rounded-2xl rounded-tl-none p-5 shadow-lg border border-gray-200">
               <div className="flex gap-1">
                 <div
-                  className="w-2 h-2 bg-yellow-600 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
                   style={{ animationDelay: '0s' }}
                 />
                 <div
-                  className="w-2 h-2 bg-yellow-600 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
                   style={{ animationDelay: '0.2s' }}
                 />
                 <div
-                  className="w-2 h-2 bg-yellow-600 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
                   style={{ animationDelay: '0.4s' }}
                 />
               </div>

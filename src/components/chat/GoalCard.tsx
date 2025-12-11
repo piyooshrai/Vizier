@@ -37,7 +37,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   return (
     <button
       onClick={onClick}
-      className="group p-4 text-left bg-white hover:bg-gradient-to-br hover:from-yellow-50 hover:to-amber-50 border border-gray-200 hover:border-yellow-500 rounded-xl transition-all shadow-sm hover:shadow-md"
+      className="group p-4 text-left bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-400 rounded-xl transition-all shadow-sm hover:shadow-md"
     >
       <div
         className={`w-8 h-8 rounded-lg bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}

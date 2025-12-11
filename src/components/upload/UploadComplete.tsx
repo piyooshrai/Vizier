@@ -34,13 +34,13 @@ export const UploadComplete: React.FC = () => {
 
         <button
           onClick={() => navigate('/insights')}
-          className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-400 hover:to-yellow-500 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-2xl text-lg"
+          className="inline-flex items-center gap-3 px-8 py-4 bg-white hover:bg-gray-100 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-2xl text-lg"
         >
           Start asking questions
           <ArrowRight className="w-6 h-6" />
         </button>
 
-        <div className="mt-16 p-8 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl max-w-lg mx-auto border border-yellow-500/10">
+        <div className="mt-16 p-8 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl max-w-lg mx-auto border border-gray-300/20">
           <h3 className="font-semibold text-gray-900 mb-4 text-lg">
             Try asking me:
           </h3>
@@ -55,7 +55,7 @@ export const UploadComplete: React.FC = () => {
                 key={i}
                 className="flex items-start gap-3 text-gray-700 hover:text-gray-900 transition-colors"
               >
-                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 flex-shrink-0" />
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
                 <span>{question}</span>
               </div>
             ))}
