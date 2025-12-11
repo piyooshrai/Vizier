@@ -129,7 +129,7 @@ export const Dashboard: React.FC = () => {
           <button
             data-tour="ask-vizier"
             onClick={() => navigate('/insights')}
-            className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+            className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
           >
             <MessageSquare className="w-5 h-5" />
             Ask Vizier

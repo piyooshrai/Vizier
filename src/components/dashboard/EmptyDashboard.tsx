@@ -15,7 +15,7 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
   return (
     <div className="text-center py-16">
       {/* Icon */}
-      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-lg">
+      <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mx-auto mb-6 shadow-lg">
         <svg className="w-10 h-10 text-black" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
         </svg>
@@ -36,7 +36,7 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
         {isDemoMode ? (
           <button
             onClick={() => navigate('/insights')}
-            className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+            className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
           >
             <MessageSquare className="w-5 h-5" />
             Start asking questions
@@ -45,7 +45,7 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
           <>
             <button
               onClick={() => navigate('/upload')}
-              className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+              className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
             >
               <Upload className="w-5 h-5" />
               Upload data
@@ -73,7 +73,7 @@ export const EmptyDashboard: React.FC<EmptyDashboardProps> = ({
             'Your saved insights will appear here',
           ].map((tip, index) => (
             <div key={index} className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-xs font-bold text-black">{index + 1}</span>
               </div>
               <p className="text-sm text-gray-300">{tip}</p>

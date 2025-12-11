@@ -32,7 +32,7 @@ export const Profile: React.FC = () => {
         {/* Profile Header */}
         <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6 mb-6">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center text-black text-2xl font-bold">
+            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-black text-2xl font-bold">
               {user.first_name?.[0]}{user.last_name?.[0]}
             </div>
             <div>

@@ -195,7 +195,7 @@ const Insights: React.FC = () => {
       {/* Header */}
       <div className="border-b border-gray-800 bg-black/50 backdrop-blur-xl px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
             <svg
               className="w-5 h-5 text-black"
               fill="currentColor"

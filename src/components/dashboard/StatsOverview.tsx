@@ -19,26 +19,26 @@ export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
       label: 'Total Patients',
       value: stats.totalPatients.toLocaleString(),
       icon: Users,
-      color: 'from-yellow-600 to-yellow-500',
+      color: 'bg-white',
     },
     {
       label: 'Total Encounters',
       value: stats.totalEncounters.toLocaleString(),
       icon: Activity,
-      color: 'from-yellow-600 to-yellow-500',
+      color: 'bg-white',
     },
     {
       label: 'Readmission Rate',
       value: `${stats.readmissionRate}%`,
       subtitle: 'Below national avg',
       icon: TrendingDown,
-      color: 'from-yellow-600 to-yellow-500',
+      color: 'bg-white',
     },
     {
       label: 'Avg Encounter Cost',
       value: `$${stats.avgCost.toLocaleString()}`,
       icon: DollarSign,
-      color: 'from-yellow-600 to-yellow-500',
+      color: 'bg-white',
     },
   ];
 
@@ -51,7 +51,7 @@ export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
         >
           <div className="flex items-start justify-between mb-4">
             <div
-              className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}
+              className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center shadow-lg`}
             >
               <stat.icon className="w-6 h-6 text-black" />
             </div>

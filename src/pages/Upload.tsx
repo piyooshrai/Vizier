@@ -187,7 +187,7 @@ const Upload: React.FC = () => {
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={handleUpload}
-                  className="px-8 py-4 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-400 hover:to-yellow-500 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl text-lg"
+                  className="px-8 py-4 bg-white hover:bg-gray-100 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl text-lg"
                 >
                   Continue with {selectedFiles.length} file
                   {selectedFiles.length !== 1 ? 's' : ''}
@@ -205,7 +205,7 @@ const Upload: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-2xl">
+          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mx-auto mb-6 shadow-2xl">
             <svg
               className="w-10 h-10 text-black animate-pulse"
               fill="currentColor"
@@ -221,7 +221,7 @@ const Upload: React.FC = () => {
 
           <div className="w-full bg-gray-800 rounded-full h-3 mb-4">
             <div
-              className="bg-gradient-to-r from-yellow-600 to-yellow-500 h-3 rounded-full transition-all duration-300"
+              className="bg-white h-3 rounded-full transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
@@ -278,7 +278,7 @@ const Upload: React.FC = () => {
             setError('');
             setSelectedFiles([]);
           }}
-          className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all"
+          className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all"
         >
           Try again
         </button>
