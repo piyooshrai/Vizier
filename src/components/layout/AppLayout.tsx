@@ -23,22 +23,22 @@ export const AppLayout: React.FC = () => {
 
       {/* Demo Mode Banner */}
       {isDemoMode && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-600 to-amber-500 px-6 py-3 shadow-lg">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gray-800 border-b border-gray-700 px-6 py-3">
           <div className="flex items-center justify-center gap-3 text-sm">
             <svg
-              className="w-4 h-4 text-amber-900"
+              className="w-4 h-4 text-gray-400"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
-            <span className="text-amber-900 font-semibold">
-              Demo Mode - You're exploring with sample healthcare data (12,847
+            <span className="text-gray-400">
+              <span className="text-white font-medium">Demo Mode</span> - You're exploring with sample healthcare data (12,847
               patients, 47,293 encounters).
             </span>
             <button
               onClick={() => setShowAuthModal(true)}
-              className="text-amber-900 hover:text-black font-bold underline ml-2"
+              className="text-white hover:text-gray-300 font-semibold underline ml-2"
             >
               Create your account to upload your own data
             </button>
