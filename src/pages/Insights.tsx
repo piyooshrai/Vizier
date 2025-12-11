@@ -57,13 +57,13 @@ const InsightsContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] max-w-4xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-2rem)] max-w-4xl mx-auto px-6 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary-600" />
-          <h2 className="text-lg font-semibold text-neutral-900">
-            Healthcare Insights
+          <Sparkles className="w-5 h-5 text-yellow-500" />
+          <h2 className="text-lg font-semibold text-white">
+            Ask Vizier
           </h2>
         </div>
 
@@ -71,7 +71,7 @@ const InsightsContent: React.FC = () => {
           onClick={clearMessages}
           className="
             flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
-            text-neutral-500 hover:bg-neutral-100 transition-colors
+            text-gray-400 hover:text-white hover:bg-gray-800/50 transition-colors
           "
         >
           <RefreshCw className="w-4 h-4" />
@@ -90,7 +90,7 @@ const InsightsContent: React.FC = () => {
       </div>
 
       {/* Input area */}
-      <div className="sticky bottom-0 bg-gradient-to-t from-neutral-50 via-neutral-50 to-transparent pt-4">
+      <div className="sticky bottom-0 pt-4">
         <QueryInput onSubmit={askQuestion} isLoading={isLoading} />
 
         {/* Suggestions */}
@@ -100,7 +100,7 @@ const InsightsContent: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mt-4"
           >
-            <p className="text-xs text-neutral-500 mb-2">Suggested questions:</p>
+            <p className="text-xs text-gray-500 mb-2">Suggested questions:</p>
             <div className="flex flex-wrap gap-2">
               {suggestions.map((suggestion, index) => (
                 <motion.button
@@ -111,8 +111,8 @@ const InsightsContent: React.FC = () => {
                   onClick={() => handleSuggestionClick(suggestion)}
                   className="
                     text-sm px-4 py-2 rounded-lg
-                    bg-white border border-neutral-200
-                    text-neutral-700 hover:border-primary-300 hover:text-primary-600
+                    bg-gray-800/50 border border-gray-700
+                    text-gray-300 hover:border-yellow-500/50 hover:text-yellow-500
                     hover:shadow-sm transition-all
                   "
                 >
