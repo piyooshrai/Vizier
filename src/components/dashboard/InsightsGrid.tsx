@@ -1,10 +1,23 @@
 // src/components/dashboard/InsightsGrid.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import GridLayout, { Layout } from 'react-grid-layout';
+import GridLayout from 'react-grid-layout';
 import { GridInsightCard } from './GridInsightCard';
 import { RotateCcw } from 'lucide-react';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+
+// Define layout item interface
+interface LayoutItem {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
+  maxW?: number;
+  maxH?: number;
+}
 
 interface SavedInsight {
   id: string;
@@ -27,7 +40,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   onDeleteInsight,
   onExpandInsight,
 }) => {
-  const [layouts, setLayouts] = useState<Layout[]>([]);
+  const [layouts, setLayouts] = useState<LayoutItem[]>([]);
   const [width, setWidth] = useState(1200);
   const containerRef = useRef<HTMLDivElement>(null);
   const cols = 12;
@@ -47,7 +60,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   }, []);
 
   // Generate default layout for insights
-  const generateDefaultLayout = (insightsList: SavedInsight[]): Layout[] => {
+  const generateDefaultLayout = (insightsList: SavedInsight[]): LayoutItem[] => {
     return insightsList.map((insight, index) => ({
       i: insight.id,
       x: (index % 3) * 4, // 3 columns
@@ -66,17 +79,17 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
     const savedLayout = localStorage.getItem('dashboard_layout');
     if (savedLayout) {
       try {
-        const parsed = JSON.parse(savedLayout);
+        const parsed = JSON.parse(savedLayout) as LayoutItem[];
         // Filter out layouts for insights that no longer exist
-        const validLayouts = parsed.filter((layout: Layout) =>
+        const validLayouts = parsed.filter((layout) =>
           insights.some((insight) => insight.id === layout.i)
         );
         // Add layouts for new insights
-        const existingIds = new Set(validLayouts.map((l: Layout) => l.i));
+        const existingIds = new Set(validLayouts.map((l) => l.i));
         const newInsights = insights.filter((i) => !existingIds.has(i.id));
         const newLayouts = generateDefaultLayout(newInsights).map((layout, idx) => ({
           ...layout,
-          y: Math.max(...validLayouts.map((l: Layout) => l.y + l.h), 0) + Math.floor(idx / 3) * 3,
+          y: Math.max(...validLayouts.map((l) => l.y + l.h), 0) + Math.floor(idx / 3) * 3,
           x: (idx % 3) * 4,
         }));
         setLayouts([...validLayouts, ...newLayouts]);
@@ -89,7 +102,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   }, [insights]);
 
   // Save layout when it changes
-  const handleLayoutChange = (newLayout: Layout[]) => {
+  const handleLayoutChange = (newLayout: LayoutItem[]) => {
     setLayouts(newLayout);
     localStorage.setItem('dashboard_layout', JSON.stringify(newLayout));
   };
@@ -131,11 +144,11 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
       {/* Grid */}
       <GridLayout
         className="layout"
-        layout={layouts}
+        layout={layouts as any}
         cols={cols}
         rowHeight={rowHeight}
         width={width}
-        onLayoutChange={handleLayoutChange}
+        onLayoutChange={handleLayoutChange as any}
         draggableHandle=".drag-handle"
         compactType="vertical"
         preventCollision={false}
