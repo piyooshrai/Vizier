@@ -1,11 +1,13 @@
 // src/components/layout/AppLayout.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { useAuth } from '../../hooks/useAuth';
+import { AuthModal } from '../auth/AuthModal';
 
 export const AppLayout: React.FC = () => {
   const { isDemoMode } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -34,12 +36,12 @@ export const AppLayout: React.FC = () => {
               Demo Mode - You're exploring with sample healthcare data (12,847
               patients, 47,293 encounters).
             </span>
-            <a
-              href="/signup"
+            <button
+              onClick={() => setShowAuthModal(true)}
               className="text-amber-900 hover:text-black font-bold underline ml-2"
             >
               Create your account to upload your own data
-            </a>
+            </button>
           </div>
         </div>
       )}
@@ -53,6 +55,13 @@ export const AppLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultMode="signup"
+      />
     </div>
   );
 };
