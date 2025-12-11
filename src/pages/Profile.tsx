@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, User, Briefcase, Calendar } from 'lucide-react';
-import { Card, Avatar } from '../components/common';
 import { PasswordChangeForm } from '../components/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDate } from '../utils/formatters';
@@ -25,58 +24,60 @@ export const Profile: React.FC = () => {
   const fullName = `${user.first_name} ${user.last_name}`;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         {/* Profile Header */}
-        <Card variant="elevated" padding="lg" className="mb-6">
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6 mb-6">
           <div className="flex items-center gap-6">
-            <Avatar name={fullName} size="xl" />
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center text-black text-2xl font-bold">
+              {user.first_name?.[0]}{user.last_name?.[0]}
+            </div>
             <div>
-              <h2 className="text-2xl font-bold text-neutral-900">{fullName}</h2>
-              <p className="text-neutral-600">
+              <h2 className="text-2xl font-bold text-white">{fullName}</h2>
+              <p className="text-gray-400">
                 {roleLabels[user.role] || user.role}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Profile Details */}
-        <Card className="mb-6">
-          <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">
             Account Details
           </h3>
 
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-neutral-100 rounded-lg">
-                <User className="w-5 h-5 text-neutral-500" />
+              <div className="p-2 bg-gray-700/50 rounded-lg">
+                <User className="w-5 h-5 text-gray-400" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500">Full Name</p>
-                <p className="font-medium text-neutral-900">{fullName}</p>
+                <p className="text-sm text-gray-500">Full Name</p>
+                <p className="font-medium text-white">{fullName}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-neutral-100 rounded-lg">
-                <Mail className="w-5 h-5 text-neutral-500" />
+              <div className="p-2 bg-gray-700/50 rounded-lg">
+                <Mail className="w-5 h-5 text-gray-400" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500">Email</p>
-                <p className="font-medium text-neutral-900">{user.email}</p>
+                <p className="text-sm text-gray-500">Email</p>
+                <p className="font-medium text-white">{user.email}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-neutral-100 rounded-lg">
-                <Briefcase className="w-5 h-5 text-neutral-500" />
+              <div className="p-2 bg-gray-700/50 rounded-lg">
+                <Briefcase className="w-5 h-5 text-gray-400" />
               </div>
               <div>
-                <p className="text-sm text-neutral-500">Role</p>
-                <p className="font-medium text-neutral-900">
+                <p className="text-sm text-gray-500">Role</p>
+                <p className="font-medium text-white">
                   {roleLabels[user.role] || user.role}
                 </p>
               </div>
@@ -84,34 +85,34 @@ export const Profile: React.FC = () => {
 
             {user.created_at && (
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-neutral-100 rounded-lg">
-                  <Calendar className="w-5 h-5 text-neutral-500" />
+                <div className="p-2 bg-gray-700/50 rounded-lg">
+                  <Calendar className="w-5 h-5 text-gray-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-neutral-500">Member Since</p>
-                  <p className="font-medium text-neutral-900">
+                  <p className="text-sm text-gray-500">Member Since</p>
+                  <p className="font-medium text-white">
                     {formatDate(user.created_at)}
                   </p>
                 </div>
               </div>
             )}
           </div>
-        </Card>
+        </div>
 
         {/* Password Change */}
         <PasswordChangeForm />
 
         {/* Data & Privacy Section */}
-        <Card className="mt-6">
-          <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6 mt-6">
+          <h3 className="text-lg font-semibold text-white mb-4">
             Data & Privacy
           </h3>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-neutral-100">
+            <div className="flex items-center justify-between py-3 border-b border-gray-700">
               <div>
-                <p className="font-medium text-neutral-900">Data Retention</p>
-                <p className="text-sm text-neutral-500">
+                <p className="font-medium text-white">Data Retention</p>
+                <p className="text-sm text-gray-400">
                   Your uploaded data is securely stored and encrypted
                 </p>
               </div>
@@ -119,17 +120,17 @@ export const Profile: React.FC = () => {
 
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="font-medium text-neutral-900">Delete Account</p>
-                <p className="text-sm text-neutral-500">
+                <p className="font-medium text-white">Delete Account</p>
+                <p className="text-sm text-gray-400">
                   Permanently delete your account and all associated data
                 </p>
               </div>
-              <button className="text-sm text-error-600 hover:text-error-700 font-medium">
+              <button className="text-sm text-red-400 hover:text-red-300 font-medium">
                 Request deletion
               </button>
             </div>
           </div>
-        </Card>
+        </div>
       </motion.div>
     </div>
   );

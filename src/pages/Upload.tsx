@@ -142,36 +142,11 @@ const Upload: React.FC = () => {
   // Initial state
   if (uploadState === 'initial') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        {/* Subtle grid overlay */}
-        <div
-          className="fixed inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 175, 55, 0.1) 1px, transparent 1px)',
-            backgroundSize: '50px 50px',
-          }}
-        />
-
+      <div className="min-h-screen">
         <div className="relative min-h-screen flex items-center justify-center p-6">
           <div className="w-full max-w-4xl">
             {/* Header */}
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg">
-                  <svg
-                    className="w-7 h-7 text-black"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                  </svg>
-                </div>
-                <span className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent tracking-wide">
-                  VIZIER
-                </span>
-              </div>
-
               <h1 className="text-4xl font-bold text-white mb-4">
                 Share your data with me
               </h1>
@@ -224,7 +199,7 @@ const Upload: React.FC = () => {
   // Uploading state
   if (uploadState === 'uploading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-2xl">
             <svg
@@ -270,7 +245,7 @@ const Upload: React.FC = () => {
 
   // Error state
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="text-center max-w-md">
         <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-6">
           <svg

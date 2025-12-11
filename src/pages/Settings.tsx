@@ -8,7 +8,6 @@ import {
   Bell,
   Globe,
 } from 'lucide-react';
-import { Card, Button, Badge } from '../components/common';
 import { useAuth } from '../contexts/AuthContext';
 
 type SettingsTab = 'organization' | 'billing' | 'security' | 'integrations';
@@ -53,29 +52,29 @@ export const Settings: React.FC = () => {
 
   const renderOrganizationSettings = () => (
     <div className="space-y-6">
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Organization Details
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-1">
               Organization Name
             </label>
             <input
               type="text"
               defaultValue={isDemoMode ? 'Demo Healthcare System' : ''}
-              className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
               placeholder="Your organization name"
               disabled={isDemoMode}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-1">
               Organization Type
             </label>
             <select
-              className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500/50"
               defaultValue={isDemoMode ? 'hospital_system' : ''}
               disabled={isDemoMode}
             >
@@ -87,40 +86,40 @@ export const Settings: React.FC = () => {
             </select>
           </div>
         </div>
-      </Card>
+      </div>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Preferences
         </h3>
         <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-neutral-100">
+          <div className="flex items-center justify-between py-3 border-b border-gray-700">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-neutral-400" />
+              <Bell className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="font-medium text-neutral-900">Email Notifications</p>
-                <p className="text-sm text-neutral-500">
+                <p className="font-medium text-white">Email Notifications</p>
+                <p className="text-sm text-gray-500">
                   Receive weekly insights and alerts via email
                 </p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked disabled={isDemoMode} />
-              <div className="w-11 h-6 bg-neutral-200 peer-focus:ring-2 peer-focus:ring-primary-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-yellow-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
             </label>
           </div>
           <div className="flex items-center justify-between py-3">
             <div className="flex items-center gap-3">
-              <Globe className="w-5 h-5 text-neutral-400" />
+              <Globe className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="font-medium text-neutral-900">Timezone</p>
-                <p className="text-sm text-neutral-500">
+                <p className="font-medium text-white">Timezone</p>
+                <p className="text-sm text-gray-500">
                   Used for scheduling and report timestamps
                 </p>
               </div>
             </div>
             <select
-              className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+              className="px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
               defaultValue="America/New_York"
               disabled={isDemoMode}
             >
@@ -131,11 +130,13 @@ export const Settings: React.FC = () => {
             </select>
           </div>
         </div>
-      </Card>
+      </div>
 
       {!isDemoMode && (
         <div className="flex justify-end">
-          <Button>Save Changes</Button>
+          <button className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg">
+            Save Changes
+          </button>
         </div>
       )}
     </div>
@@ -143,158 +144,169 @@ export const Settings: React.FC = () => {
 
   const renderBillingSettings = () => (
     <div className="space-y-6">
-      <Card>
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-neutral-900">
+            <h3 className="text-lg font-semibold text-white">
               Current Plan
             </h3>
-            <p className="text-neutral-500 mt-1">
+            <p className="text-gray-400 mt-1">
               {isDemoMode ? 'Demo Mode - No active subscription' : 'Manage your subscription'}
             </p>
           </div>
-          <Badge variant={isDemoMode ? 'warning' : 'success'}>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'}`}>
             {isDemoMode ? 'Demo' : 'Active'}
-          </Badge>
+          </span>
         </div>
 
         {isDemoMode ? (
-          <div className="bg-neutral-50 rounded-lg p-6 text-center">
-            <p className="text-neutral-600 mb-4">
+          <div className="bg-gray-900/50 rounded-xl p-6 text-center">
+            <p className="text-gray-400 mb-4">
               Create an account to access billing features and unlock full functionality.
             </p>
-            <Button variant="secondary">Upgrade to Full Account</Button>
+            <button className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all">
+              Upgrade to Full Account
+            </button>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-neutral-100">
+            <div className="flex items-center justify-between py-3 border-b border-gray-700">
               <div>
-                <p className="font-medium text-neutral-900">Professional Plan</p>
-                <p className="text-sm text-neutral-500">$199/month</p>
+                <p className="font-medium text-white">Professional Plan</p>
+                <p className="text-sm text-gray-500">$199/month</p>
               </div>
-              <Button variant="secondary" size="sm">Change Plan</Button>
+              <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
+                Change Plan
+              </button>
             </div>
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="font-medium text-neutral-900">Payment Method</p>
-                <p className="text-sm text-neutral-500">**** **** **** 4242</p>
+                <p className="font-medium text-white">Payment Method</p>
+                <p className="text-sm text-gray-500">**** **** **** 4242</p>
               </div>
-              <Button variant="secondary" size="sm">Update</Button>
+              <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
+                Update
+              </button>
             </div>
           </div>
         )}
-      </Card>
+      </div>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Usage This Month
         </h3>
         <div className="grid grid-cols-3 gap-4">
-          <div className="p-4 bg-neutral-50 rounded-lg">
-            <p className="text-2xl font-bold text-neutral-900">
+          <div className="p-4 bg-gray-900/50 rounded-xl">
+            <p className="text-2xl font-bold text-white">
               {isDemoMode ? '12,847' : '0'}
             </p>
-            <p className="text-sm text-neutral-500">Patients analyzed</p>
+            <p className="text-sm text-gray-500">Patients analyzed</p>
           </div>
-          <div className="p-4 bg-neutral-50 rounded-lg">
-            <p className="text-2xl font-bold text-neutral-900">
+          <div className="p-4 bg-gray-900/50 rounded-xl">
+            <p className="text-2xl font-bold text-white">
               {isDemoMode ? '156' : '0'}
             </p>
-            <p className="text-sm text-neutral-500">Queries this month</p>
+            <p className="text-sm text-gray-500">Queries this month</p>
           </div>
-          <div className="p-4 bg-neutral-50 rounded-lg">
-            <p className="text-2xl font-bold text-neutral-900">
+          <div className="p-4 bg-gray-900/50 rounded-xl">
+            <p className="text-2xl font-bold text-white">
               {isDemoMode ? '4' : '0'}
             </p>
-            <p className="text-sm text-neutral-500">Data uploads</p>
+            <p className="text-sm text-gray-500">Data uploads</p>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 
   const renderSecuritySettings = () => (
     <div className="space-y-6">
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Authentication
         </h3>
         <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-neutral-100">
+          <div className="flex items-center justify-between py-3 border-b border-gray-700">
             <div>
-              <p className="font-medium text-neutral-900">Two-Factor Authentication</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-medium text-white">Two-Factor Authentication</p>
+              <p className="text-sm text-gray-500">
                 Add an extra layer of security to your account
               </p>
             </div>
-            <Badge variant={isDemoMode ? 'default' : 'error'}>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-gray-700 text-gray-400' : 'bg-red-500/20 text-red-400'}`}>
               {isDemoMode ? 'Demo' : 'Not Enabled'}
-            </Badge>
+            </span>
           </div>
-          <div className="flex items-center justify-between py-3 border-b border-neutral-100">
+          <div className="flex items-center justify-between py-3 border-b border-gray-700">
             <div>
-              <p className="font-medium text-neutral-900">Single Sign-On (SSO)</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-medium text-white">Single Sign-On (SSO)</p>
+              <p className="text-sm text-gray-500">
                 Enable SSO with your identity provider
               </p>
             </div>
-            <Badge variant="default">Enterprise</Badge>
+            <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-400">
+              Enterprise
+            </span>
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="font-medium text-neutral-900">Session Management</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-medium text-white">Session Management</p>
+              <p className="text-sm text-gray-500">
                 View and manage active sessions
               </p>
             </div>
-            <Button variant="secondary" size="sm" disabled={isDemoMode}>
+            <button
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isDemoMode}
+            >
               View Sessions
-            </Button>
+            </button>
           </div>
         </div>
-      </Card>
+      </div>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Data Security
         </h3>
         <div className="space-y-4">
-          <div className="flex items-start gap-3 py-3 border-b border-neutral-100">
-            <Shield className="w-5 h-5 text-success-500 mt-0.5" />
+          <div className="flex items-start gap-3 py-3 border-b border-gray-700">
+            <Shield className="w-5 h-5 text-green-500 mt-0.5" />
             <div>
-              <p className="font-medium text-neutral-900">HIPAA Compliant</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-medium text-white">HIPAA Compliant</p>
+              <p className="text-sm text-gray-500">
                 All data is encrypted and stored in compliance with HIPAA regulations
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-3 py-3 border-b border-neutral-100">
-            <Shield className="w-5 h-5 text-success-500 mt-0.5" />
+          <div className="flex items-start gap-3 py-3 border-b border-gray-700">
+            <Shield className="w-5 h-5 text-green-500 mt-0.5" />
             <div>
-              <p className="font-medium text-neutral-900">SOC 2 Type II Certified</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-medium text-white">SOC 2 Type II Certified</p>
+              <p className="text-sm text-gray-500">
                 Audited security controls and practices
               </p>
             </div>
           </div>
           <div className="flex items-start gap-3 py-3">
-            <Shield className="w-5 h-5 text-success-500 mt-0.5" />
+            <Shield className="w-5 h-5 text-green-500 mt-0.5" />
             <div>
-              <p className="font-medium text-neutral-900">256-bit Encryption</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-medium text-white">256-bit Encryption</p>
+              <p className="text-sm text-gray-500">
                 Data encrypted at rest and in transit
               </p>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 
   const renderIntegrationsSettings = () => (
     <div className="space-y-6">
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Available Integrations
         </h3>
         <div className="space-y-4">
@@ -306,42 +318,50 @@ export const Settings: React.FC = () => {
           ].map((integration) => (
             <div
               key={integration.name}
-              className="flex items-center justify-between py-4 px-4 bg-neutral-50 rounded-lg"
+              className="flex items-center justify-between py-4 px-4 bg-gray-900/50 rounded-xl"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                  <Plug className="w-5 h-5 text-neutral-400" />
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <Plug className="w-5 h-5 text-gray-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-neutral-900">{integration.name}</p>
-                  <p className="text-sm text-neutral-500">{integration.description}</p>
+                  <p className="font-medium text-white">{integration.name}</p>
+                  <p className="text-sm text-gray-500">{integration.description}</p>
                 </div>
               </div>
               {integration.status === 'available' ? (
-                <Button variant="secondary" size="sm" disabled={isDemoMode}>
+                <button
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isDemoMode}
+                >
                   Connect
-                </Button>
+                </button>
               ) : (
-                <Badge variant="default">Coming Soon</Badge>
+                <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-400">
+                  Coming Soon
+                </span>
               )}
             </div>
           ))}
         </div>
-      </Card>
+      </div>
 
-      <Card>
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">
           API Access
         </h3>
-        <div className="bg-neutral-50 rounded-lg p-6">
-          <p className="text-neutral-600 mb-4">
+        <div className="bg-gray-900/50 rounded-xl p-6">
+          <p className="text-gray-400 mb-4">
             API access is available on Enterprise plans. Contact our team to learn more.
           </p>
-          <Button variant="secondary" disabled={isDemoMode}>
+          <button
+            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isDemoMode}
+          >
             Contact Sales
-          </Button>
+          </button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 
@@ -361,7 +381,7 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto px-6 py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -369,8 +389,8 @@ export const Settings: React.FC = () => {
       >
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Settings</h1>
-          <p className="text-neutral-600 mt-1">
+          <h1 className="text-2xl font-bold text-white">Settings</h1>
+          <p className="text-gray-400 mt-1">
             Manage your account and organization settings
           </p>
         </div>
@@ -382,24 +402,24 @@ export const Settings: React.FC = () => {
               key={section.id}
               onClick={() => setActiveTab(section.id)}
               className={`
-                p-4 rounded-lg text-left transition-all
+                p-4 rounded-xl text-left transition-all
                 ${
                   activeTab === section.id
-                    ? 'bg-primary-50 border-2 border-primary-500'
-                    : 'bg-white border border-neutral-200 hover:border-primary-300'
+                    ? 'bg-yellow-500/10 border-2 border-yellow-500'
+                    : 'bg-gray-800/50 border border-gray-700 hover:border-yellow-500/50'
                 }
               `}
             >
               <div className={`
                 w-10 h-10 rounded-lg flex items-center justify-center mb-3
-                ${activeTab === section.id ? 'bg-primary-100 text-primary-600' : 'bg-neutral-100 text-neutral-500'}
+                ${activeTab === section.id ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-700/50 text-gray-400'}
               `}>
                 {section.icon}
               </div>
-              <p className={`font-medium ${activeTab === section.id ? 'text-primary-700' : 'text-neutral-900'}`}>
+              <p className={`font-medium ${activeTab === section.id ? 'text-yellow-500' : 'text-white'}`}>
                 {section.label}
               </p>
-              <p className="text-xs text-neutral-500 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 {section.description}
               </p>
             </button>

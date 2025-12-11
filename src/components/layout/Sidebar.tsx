@@ -1,164 +1,175 @@
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+// src/components/layout/Sidebar.tsx
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import {
   LayoutDashboard,
-  Upload,
   MessageSquare,
+  Upload,
   User,
   Settings,
   LogOut,
-  Menu,
-  X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onToggle: () => void;
-}
-
-interface NavItem {
-  path: string;
-  icon: React.ReactNode;
-  label: string;
-}
-
-const navItems: NavItem[] = [
-  { path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
-  { path: '/insights', icon: <MessageSquare className="w-5 h-5" />, label: 'Healthcare Insights' },
-  { path: '/upload', icon: <Upload className="w-5 h-5" />, label: 'Upload Data' },
-  { path: '/profile', icon: <User className="w-5 h-5" />, label: 'Profile' },
-  { path: '/settings', icon: <Settings className="w-5 h-5" />, label: 'Settings' },
-];
-
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
+export const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    await logout();
+    navigate('/');
   };
 
+  const navItems = [
+    {
+      name: 'Dashboard',
+      path: '/dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      name: 'Ask Vizier',
+      path: '/insights',
+      icon: MessageSquare,
+    },
+    {
+      name: 'Upload Data',
+      path: '/upload',
+      icon: Upload,
+    },
+  ];
+
+  const bottomNavItems = [
+    {
+      name: 'Profile',
+      path: '/profile',
+      icon: User,
+    },
+    {
+      name: 'Settings',
+      path: '/settings',
+      icon: Settings,
+    },
+  ];
+
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
-
-      {/* Mobile toggle button */}
-      <button
-        onClick={onToggle}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 bg-white rounded-lg shadow-card"
-        aria-label={isOpen ? 'Close menu' : 'Open menu'}
-      >
-        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-
-      {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{
-          x: isOpen ? 0 : -280,
-        }}
-        className={`
-          fixed lg:static inset-y-0 left-0 z-50
-          w-64 bg-white border-r border-neutral-200
-          flex flex-col
-          lg:translate-x-0 transition-transform lg:transition-none
-        `}
-      >
-        {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-neutral-100">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-              </svg>
-            </div>
-            <span className="text-xl font-semibold text-neutral-900">Vizier</span>
+    <div
+      className={`relative bg-black border-r border-gray-800 transition-all duration-300 ${
+        isCollapsed ? 'w-20' : 'w-64'
+      } flex flex-col min-h-screen`}
+    >
+      {/* Logo */}
+      <div className="p-6 border-b border-gray-800">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg flex-shrink-0">
+            <svg
+              className="w-6 h-6 text-black"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+            </svg>
           </div>
+          {!isCollapsed && (
+            <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent tracking-wide">
+              VIZIER
+            </span>
+          )}
         </div>
+      </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 py-6 px-3 overflow-y-auto">
-          <ul className="space-y-1">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <li key={item.path}>
-                  <NavLink
-                    to={item.path}
-                    onClick={() => {
-                      if (window.innerWidth < 1024) onToggle();
-                    }}
-                    className={`
-                      flex items-center gap-3 px-3 py-2.5 rounded-lg
-                      font-medium text-sm transition-colors
-                      ${
-                        isActive
-                          ? 'bg-primary-50 text-primary-700'
-                          : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
-                      }
-                    `}
-                  >
-                    <span className={isActive ? 'text-primary-600' : 'text-neutral-400'}>
-                      {item.icon}
-                    </span>
-                    {item.label}
-                  </NavLink>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+      {/* Navigation Items */}
+      <nav className="flex-1 p-4 space-y-2">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-semibold shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`
+            }
+            title={isCollapsed ? item.name : undefined}
+          >
+            <item.icon className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span>{item.name}</span>}
+          </NavLink>
+        ))}
+      </nav>
 
-        {/* User Info & Footer */}
-        <div className="p-4 border-t border-neutral-200">
-          {/* User Info */}
-          <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-neutral-50 mb-3">
-            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-semibold text-primary-700">
-                {user?.first_name?.[0]}{user?.last_name?.[0]}
-              </span>
+      {/* Bottom Navigation */}
+      <div className="p-4 border-t border-gray-800 space-y-2">
+        {bottomNavItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? 'bg-gray-800 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`
+            }
+            title={isCollapsed ? item.name : undefined}
+          >
+            <item.icon className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span>{item.name}</span>}
+          </NavLink>
+        ))}
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+          title={isCollapsed ? 'Logout' : undefined}
+        >
+          <LogOut className="w-5 h-5 flex-shrink-0" />
+          {!isCollapsed && <span>Logout</span>}
+        </button>
+      </div>
+
+      {/* User Info */}
+      {!isCollapsed && (
+        <div className="p-4 border-t border-gray-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 text-black font-bold">
+              {user?.first_name?.[0] || 'D'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-neutral-900 truncate">
-                {user?.first_name} {user?.last_name}
+              <p className="text-white text-sm font-semibold truncate">
+                {user?.first_name || 'Demo'} {user?.last_name || 'User'}
               </p>
-              <p className="text-xs text-neutral-500 truncate">
-                {user?.email}
-              </p>
+              <p className="text-gray-400 text-xs truncate">{user?.email}</p>
             </div>
           </div>
-
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="
-              flex items-center gap-3 w-full px-3 py-2.5 rounded-lg
-              font-medium text-sm text-neutral-600
-              hover:bg-neutral-50 hover:text-neutral-900 transition-colors
-            "
-          >
-            <LogOut className="w-5 h-5 text-neutral-400" />
-            Sign out
-          </button>
         </div>
-      </motion.aside>
-    </>
+      )}
+
+      {/* Collapsed User Avatar */}
+      {isCollapsed && (
+        <div className="p-4 border-t border-gray-800 flex justify-center">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 text-black font-bold">
+            {user?.first_name?.[0] || 'D'}
+          </div>
+        </div>
+      )}
+
+      {/* Collapse Toggle */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute -right-3 top-24 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all shadow-lg z-10"
+      >
+        {isCollapsed ? (
+          <ChevronRight className="w-4 h-4" />
+        ) : (
+          <ChevronLeft className="w-4 h-4" />
+        )}
+      </button>
+    </div>
   );
 };
 
