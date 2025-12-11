@@ -24,7 +24,9 @@ export const Profile: React.FC = () => {
   const fullName = `${user.first_name} ${user.last_name}`;
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
+    <div className="h-full overflow-y-auto">
+      <div className="p-8">
+        <div className="max-w-4xl mx-auto space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -132,6 +134,8 @@ export const Profile: React.FC = () => {
           </div>
         </div>
       </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

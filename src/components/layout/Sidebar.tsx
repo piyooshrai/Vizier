@@ -58,10 +58,10 @@ export const Sidebar: React.FC = () => {
     <div
       className={`relative bg-black border-r border-gray-800 transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-64'
-      } flex flex-col min-h-screen`}
+      } flex flex-col h-full`}
     >
-      {/* Logo */}
-      <div className="p-6 border-b border-gray-800">
+      {/* Logo section - Fixed at top */}
+      <div className="flex-shrink-0 p-6 border-b border-gray-800">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center shadow-xl flex-shrink-0">
             <svg
@@ -80,8 +80,8 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Items */}
-      <nav data-tour="sidebar-nav" className="flex-1 p-4 space-y-2">
+      {/* Navigation items - Scrollable if needed */}
+      <nav data-tour="sidebar-nav" className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -101,8 +101,8 @@ export const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-      {/* Bottom Navigation */}
-      <div className="p-4 border-t border-gray-800 space-y-2">
+      {/* Bottom section - Fixed at bottom */}
+      <div className="flex-shrink-0 p-4 border-t border-gray-800 space-y-2">
         {bottomNavItems.map((item) => (
           <NavLink
             key={item.path}

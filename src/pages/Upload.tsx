@@ -143,9 +143,9 @@ const Upload: React.FC = () => {
   // Initial state
   if (uploadState === 'initial') {
     return (
-      <div className="min-h-screen">
-        <div className="relative min-h-screen flex items-center justify-center p-6">
-          <div className="w-full max-w-4xl">
+      <div className="h-full overflow-y-auto">
+        <div className="p-8">
+          <div className="max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-white mb-4">
@@ -203,7 +203,7 @@ const Upload: React.FC = () => {
   // Uploading state
   if (uploadState === 'uploading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mx-auto mb-6 shadow-2xl">
             <svg
@@ -249,7 +249,7 @@ const Upload: React.FC = () => {
 
   // Error state
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="h-full flex items-center justify-center">
       <div className="text-center max-w-md">
         <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-6">
           <svg

@@ -113,8 +113,9 @@ export const Dashboard: React.FC = () => {
   const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true';
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="h-full overflow-y-auto">
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -169,6 +170,7 @@ export const Dashboard: React.FC = () => {
             <EmptyDashboard isDemoMode={isDemoMode} />
           </div>
         )}
+        </div>
       </div>
 
       {/* Onboarding Components */}

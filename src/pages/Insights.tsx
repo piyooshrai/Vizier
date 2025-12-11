@@ -191,9 +191,9 @@ const Insights: React.FC = () => {
   const showSuggestions = messages.length === 1 && !isProcessing;
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* Header */}
-      <div className="border-b border-gray-800 bg-black/50 backdrop-blur-xl px-6 py-4">
+    <div className="h-full flex flex-col bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      {/* Header - fixed */}
+      <div className="flex-shrink-0 border-b border-gray-800 bg-black/50 backdrop-blur-xl px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
             <svg
@@ -234,8 +234,8 @@ const Insights: React.FC = () => {
         </div>
       </div>
 
-      {/* Input Area */}
-      <div className="border-t border-gray-800 bg-black/50 backdrop-blur-xl">
+      {/* Input - fixed */}
+      <div className="flex-shrink-0 border-t border-gray-800 bg-black/50 backdrop-blur-xl">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <QueryInput
             value={inputValue}
