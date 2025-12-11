@@ -1,104 +1,71 @@
+// src/components/insights/SuggestionChips.tsx
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
 interface SuggestionChipsProps {
-  suggestions: string[];
   onSuggestionClick: (suggestion: string) => void;
+  suggestions?: string[];
   title?: string;
   variant?: 'default' | 'compact';
 }
 
+const defaultSuggestions = [
+  'What are my top 10 diagnoses?',
+  'Show me patient age distribution',
+  'What is my readmission rate trend?',
+  'Which patients have the highest costs?',
+  'How many total encounters do I have?',
+  'Show me encounter volume by month',
+];
+
 export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
-  suggestions,
   onSuggestionClick,
-  title,
+  suggestions,
+  title = 'Try asking:',
   variant = 'default',
 }) => {
-  if (suggestions.length === 0) {
+  const displaySuggestions = suggestions || defaultSuggestions;
+
+  if (displaySuggestions.length === 0) {
     return null;
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const chipVariants = {
-    hidden: { opacity: 0, y: 10, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1 },
-  };
-
+  // Compact variant for follow-up suggestions
   if (variant === 'compact') {
     return (
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="flex flex-wrap gap-2"
-      >
-        {suggestions.map((suggestion, index) => (
-          <motion.button
+      <div className="flex flex-wrap gap-2">
+        {displaySuggestions.map((suggestion, index) => (
+          <button
             key={index}
-            variants={chipVariants}
             onClick={() => onSuggestionClick(suggestion)}
-            className="
-              text-xs px-3 py-1.5 rounded-full
-              bg-white border border-neutral-200
-              text-neutral-700 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50
-              transition-all duration-200
-            "
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className="text-xs px-3 py-1.5 rounded-full bg-gray-800/50 border border-gray-700 text-gray-300 hover:border-yellow-500/50 hover:text-yellow-500 transition-all duration-200"
           >
             {suggestion}
-          </motion.button>
+          </button>
         ))}
-      </motion.div>
+      </div>
     );
   }
 
+  // Default variant with grid layout
   return (
-    <div className="space-y-3">
-      {title && (
-        <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-          <Sparkles className="w-4 h-4 text-primary-500" />
-          <span>{title}</span>
-        </div>
-      )}
+    <div className="mt-6 animate-fade-in">
+      <div className="flex items-center gap-2 mb-4">
+        <Sparkles className="w-4 h-4 text-yellow-500" />
+        <span className="text-sm font-medium text-gray-400">{title}</span>
+      </div>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="flex flex-wrap gap-2"
-      >
-        {suggestions.map((suggestion, index) => (
-          <motion.button
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {displaySuggestions.map((suggestion, index) => (
+          <button
             key={index}
-            variants={chipVariants}
             onClick={() => onSuggestionClick(suggestion)}
-            className="
-              px-4 py-2.5 rounded-xl
-              bg-white border border-neutral-200
-              text-sm text-neutral-700
-              hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50
-              hover:shadow-sm
-              transition-all duration-200
-              text-left
-            "
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-yellow-500 text-gray-300 text-sm rounded-xl transition-all text-left"
           >
             {suggestion}
-          </motion.button>
+          </button>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 };
