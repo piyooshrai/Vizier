@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Save, Download } from 'lucide-react';
 import { ChartTypeSelector } from './ChartTypeSelector';
+import { ChartRenderer } from './ChartRenderer';
 import { Message } from '../../pages/Insights';
 import { ChartType } from '../../utils/chartRecommendation';
 
@@ -88,15 +89,10 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
 
               {/* Chart Display Area */}
               <div className="bg-gray-50 p-6 border-t border-gray-200">
-                <div className="text-center text-gray-500 py-8">
-                  {/* Placeholder - chart will render here in Phase 3 */}
-                  <p className="text-sm">
-                    [{activeChartType} chart will render here in Phase 3]
-                  </p>
-                  <p className="text-xs mt-2 text-gray-400">
-                    {message.chartData?.length || 0} data points
-                  </p>
-                </div>
+                <ChartRenderer
+                  type={activeChartType as ChartType}
+                  data={message.chartData as Record<string, unknown>[]}
+                />
               </div>
 
               {/* Explanation */}

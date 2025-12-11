@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom';
 import { QueryInput } from '../components/insights/QueryInput';
 import { SuggestionChips } from '../components/insights/SuggestionChips';
 import { ConversationView } from '../components/insights/ConversationView';
+import { vannaService } from '../services/vanna.service';
+import { recommendChartType } from '../utils/chartRecommendation';
 
 export interface Message {
   id: string;
@@ -63,18 +65,47 @@ const Insights: React.FC = () => {
     setInputValue('');
     setIsProcessing(true);
 
-    // Placeholder - will be implemented in Phase 3
-    setTimeout(() => {
+    // Call Vanna service for response
+    try {
+      const response = await vannaService.ask(text);
+
+      // Use chart recommendation engine if results exist
+      let chartType = response.chart_type;
+      let chartReason = '';
+
+      if (response.results && response.results.length > 0) {
+        const recommendation = recommendChartType(response.results, text);
+        // Use service chart type if specified, otherwise use recommendation
+        if (!chartType || chartType === 'table') {
+          chartType = recommendation.type;
+        }
+        chartReason = recommendation.reason;
+      }
+
       const vizierMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'vizier',
-        content:
-          "I'll answer that question in Phase 3 when we add the chart rendering and demo data.",
+        content: response.summary || "Here's what I found:",
         timestamp: new Date(),
+        chartType: chartType,
+        chartData: response.results,
+        explanation: response.follow_up_questions?.length
+          ? `You might also want to explore: ${response.follow_up_questions.slice(0, 2).join(', ')}`
+          : undefined,
+        chartReason: chartReason,
       };
       setMessages((prev) => [...prev, vizierMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'vizier',
+        content: "I'm sorry, I encountered an error while processing your question. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsProcessing(false);
-    }, 1500);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
