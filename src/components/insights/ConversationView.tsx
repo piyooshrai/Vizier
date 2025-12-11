@@ -29,9 +29,9 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
 
       {isProcessing && (
         <div className="flex gap-4 animate-slide-up">
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-lg">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-600 flex items-center justify-center flex-shrink-0 shadow-lg">
             <svg
-              className="w-5 h-5 text-black"
+              className="w-5 h-5 text-white"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
