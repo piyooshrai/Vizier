@@ -3,6 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { QueryInput } from '../components/insights/QueryInput';
 import { SuggestionChips } from '../components/insights/SuggestionChips';
+import { ConversationView } from '../components/insights/ConversationView';
+import { vannaService } from '../services/vanna.service';
+import { recommendChartType } from '../utils/chartRecommendation';
 
 export interface Message {
   id: string;
@@ -62,22 +65,112 @@ const Insights: React.FC = () => {
     setInputValue('');
     setIsProcessing(true);
 
-    // Placeholder - will be implemented in Phase 3
-    setTimeout(() => {
+    // Call Vanna service for response
+    try {
+      const response = await vannaService.ask(text);
+
+      // Use chart recommendation engine if results exist
+      let chartType = response.chart_type;
+      let chartReason = '';
+
+      if (response.results && response.results.length > 0) {
+        const recommendation = recommendChartType(response.results, text);
+        // Use service chart type if specified, otherwise use recommendation
+        if (!chartType || chartType === 'table') {
+          chartType = recommendation.type;
+        }
+        chartReason = recommendation.reason;
+      }
+
       const vizierMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'vizier',
-        content:
-          "I'll answer that question in Phase 3 when we add the chart rendering and demo data.",
+        content: response.summary || "Here's what I found:",
         timestamp: new Date(),
+        chartType: chartType,
+        chartData: response.results,
+        explanation: response.follow_up_questions?.length
+          ? `You might also want to explore: ${response.follow_up_questions.slice(0, 2).join(', ')}`
+          : undefined,
+        chartReason: chartReason,
       };
       setMessages((prev) => [...prev, vizierMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'vizier',
+        content: "I'm sorry, I encountered an error while processing your question. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsProcessing(false);
-    }, 1500);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
     handleSendMessage(suggestion);
+  };
+
+  // Handler for saving insight to dashboard
+  const handleSaveInsight = (message: Message) => {
+    // Find the question that preceded this answer
+    const messageIndex = messages.findIndex((m) => m.id === message.id);
+    const questionMessage = messageIndex > 0 ? messages[messageIndex - 1] : null;
+
+    // Save to localStorage for dashboard
+    const savedInsights = JSON.parse(
+      localStorage.getItem('saved_insights') || '[]'
+    );
+
+    const newInsight = {
+      id: message.id,
+      question: questionMessage?.content || 'Unknown question',
+      answer: message.content,
+      chartType: message.chartType,
+      chartData: message.chartData,
+      timestamp: message.timestamp,
+      explanation: message.explanation,
+    };
+
+    savedInsights.push(newInsight);
+    localStorage.setItem('saved_insights', JSON.stringify(savedInsights));
+
+    alert('Insight saved to dashboard!');
+  };
+
+  // Handler for exporting data to CSV
+  const handleExport = (message: Message) => {
+    if (!message.chartData) return;
+
+    // Convert to CSV
+    const csv = convertToCSV(message.chartData);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `vizier-export-${Date.now()}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Convert data array to CSV string
+  const convertToCSV = (data: any[]): string => {
+    if (!data || data.length === 0) return '';
+
+    const headers = Object.keys(data[0]);
+    const rows = data.map((row) =>
+      headers.map((header) => {
+        const value = row[header];
+        // Escape commas and quotes in values
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      }).join(',')
+    );
+
+    return [headers.join(','), ...rows].join('\n');
   };
 
   const showSuggestions = messages.length === 1 && !isProcessing;
@@ -108,80 +201,12 @@ const Insights: React.FC = () => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto px-6 py-8">
-          {/* Messages */}
-          <div className="space-y-6">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-4 ${
-                  message.role === 'user' ? 'justify-end' : ''
-                } animate-slide-up`}
-              >
-                {message.role === 'vizier' && (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <svg
-                      className="w-5 h-5 text-black"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                    </svg>
-                  </div>
-                )}
-                <div
-                  className={message.role === 'user' ? 'max-w-[70%]' : 'flex-1'}
-                >
-                  <div
-                    className={`rounded-2xl p-5 shadow-lg ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-tr-none'
-                        : 'bg-white/95 backdrop-blur-xl rounded-tl-none border border-gray-200'
-                    }`}
-                  >
-                    <p
-                      className={`leading-relaxed ${
-                        message.role === 'user' ? 'text-black' : 'text-gray-800'
-                      }`}
-                    >
-                      {message.content}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {isProcessing && (
-              <div className="flex gap-4 animate-slide-up">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <svg
-                    className="w-5 h-5 text-black"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl rounded-tl-none p-5 shadow-lg border border-gray-200">
-                    <div className="flex gap-1">
-                      <div
-                        className="w-2 h-2 bg-yellow-600 rounded-full animate-bounce"
-                        style={{ animationDelay: '0s' }}
-                      />
-                      <div
-                        className="w-2 h-2 bg-yellow-600 rounded-full animate-bounce"
-                        style={{ animationDelay: '0.2s' }}
-                      />
-                      <div
-                        className="w-2 h-2 bg-yellow-600 rounded-full animate-bounce"
-                        style={{ animationDelay: '0.4s' }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <ConversationView
+            messages={messages}
+            isProcessing={isProcessing}
+            onSaveInsight={handleSaveInsight}
+            onExport={handleExport}
+          />
 
           {showSuggestions && (
             <SuggestionChips onSuggestionClick={handleSuggestionClick} />
