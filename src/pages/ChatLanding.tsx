@@ -122,14 +122,12 @@ const ChatLanding: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-xl">
-                <svg
-                  className="w-7 h-7 text-black"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                </svg>
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-xl">
+                <img
+                  src="/vizier-avatar.svg"
+                  alt="Vizier"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="text-3xl font-bold text-white tracking-wide">
                 VIZIER
