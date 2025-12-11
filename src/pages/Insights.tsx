@@ -6,6 +6,8 @@ import { SuggestionChips } from '../components/insights/SuggestionChips';
 import { ConversationView } from '../components/insights/ConversationView';
 import { vannaService } from '../services/vanna.service';
 import { recommendChartType } from '../utils/chartRecommendation';
+import { FirstInsightPrompt } from '../components/onboarding/FirstInsightPrompt';
+import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
 
 export interface Message {
   id: string;
@@ -112,6 +114,15 @@ const Insights: React.FC = () => {
     handleSendMessage(suggestion);
   };
 
+  // Handler for first question from onboarding
+  const handleFirstQuestion = (question: string) => {
+    handleSendMessage(question);
+
+    // Track interaction for upgrade prompt
+    const interactions = parseInt(sessionStorage.getItem('demo_interactions') || '0');
+    sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
+  };
+
   // Handler for saving insight to dashboard
   const handleSaveInsight = (message: Message) => {
     // Find the question that preceded this answer
@@ -135,6 +146,10 @@ const Insights: React.FC = () => {
 
     savedInsights.push(newInsight);
     localStorage.setItem('saved_insights', JSON.stringify(savedInsights));
+
+    // Track interaction for upgrade prompt
+    const interactions = parseInt(sessionStorage.getItem('demo_interactions') || '0');
+    sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
 
     alert('Insight saved to dashboard!');
   };
@@ -201,6 +216,9 @@ const Insights: React.FC = () => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto px-6 py-8">
+          {/* First Question Prompt */}
+          <FirstInsightPrompt onAskQuestion={handleFirstQuestion} />
+
           <ConversationView
             messages={messages}
             isProcessing={isProcessing}
@@ -227,6 +245,9 @@ const Insights: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* Upgrade Prompt */}
+      <UpgradePrompt />
     </div>
   );
 };
