@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsOverview } from '../components/dashboard/StatsOverview';
-import { SavedInsightCard } from '../components/dashboard/SavedInsightCard';
+import { InsightsGrid } from '../components/dashboard/InsightsGrid';
 import { EmptyDashboard } from '../components/dashboard/EmptyDashboard';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { DemoWelcomeModal } from '../components/onboarding/DemoWelcomeModal';
@@ -41,7 +41,7 @@ export const Dashboard: React.FC = () => {
       id: '1',
       question: 'What are my top diagnoses by patient volume?',
       answer: 'Hypertension leads with 3,247 patients',
-      chartType: 'bar',
+      chartType: 'bar_chart',
       chartData: [
         { name: 'Hypertension', value: 3247 },
         { name: 'Type 2 Diabetes', value: 2891 },
@@ -57,7 +57,7 @@ export const Dashboard: React.FC = () => {
       id: '2',
       question: 'Show me patient age distribution',
       answer: '45-64 is the largest age group',
-      chartType: 'pie',
+      chartType: 'pie_chart',
       chartData: [
         { name: '0-17', value: 1285 },
         { name: '18-44', value: 3456 },
@@ -72,7 +72,7 @@ export const Dashboard: React.FC = () => {
       id: '3',
       question: 'What is my readmission trend over time?',
       answer: 'Readmissions decreased 12% this year',
-      chartType: 'line',
+      chartType: 'line_chart',
       chartData: [
         { month: 'Jan', rate: 9.8 },
         { month: 'Feb', rate: 9.5 },
@@ -99,14 +99,33 @@ export const Dashboard: React.FC = () => {
     }
   }, [isDemoMode]);
 
-  const handleRemoveInsight = (id: string) => {
-    setSavedInsights((prev) => {
-      const updated = prev.filter((i) => i.id !== id);
-      if (!isDemoMode) {
-        localStorage.setItem('vizier_saved_insights', JSON.stringify(updated));
-      }
-      return updated;
-    });
+  const handleDeleteInsight = (id: string) => {
+    const confirmed = window.confirm('Delete this insight?');
+    if (confirmed) {
+      setSavedInsights((prev) => {
+        const updated = prev.filter((i) => i.id !== id);
+        if (!isDemoMode) {
+          localStorage.setItem('vizier_saved_insights', JSON.stringify(updated));
+        }
+        // Also update the layout in localStorage
+        const savedLayout = localStorage.getItem('dashboard_layout');
+        if (savedLayout) {
+          const layouts = JSON.parse(savedLayout).filter(
+            (l: { i: string }) => l.i !== id
+          );
+          localStorage.setItem('dashboard_layout', JSON.stringify(layouts));
+        }
+        return updated;
+      });
+    }
+  };
+
+  const handleExpandInsight = (id: string) => {
+    // Navigate to insights page with this question pre-filled
+    const insight = savedInsights.find((i) => i.id === id);
+    if (insight) {
+      navigate('/insights', { state: { initialQuestion: insight.question } });
+    }
   };
 
   // Check if user has data
@@ -147,18 +166,20 @@ export const Dashboard: React.FC = () => {
             {/* Saved Insights */}
             {savedInsights.length > 0 && (
               <div data-tour="saved-insights">
-                <h2 className="text-xl font-semibold text-white mb-4">
-                  Saved Insights
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {savedInsights.map((insight) => (
-                    <SavedInsightCard
-                      key={insight.id}
-                      insight={insight}
-                      onRemove={handleRemoveInsight}
-                    />
-                  ))}
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-white">Saved Insights</h2>
+                  <button
+                    onClick={() => navigate('/insights')}
+                    className="px-4 py-2 bg-white hover:bg-gray-100 text-black text-sm font-semibold rounded-lg transition-colors"
+                  >
+                    Ask New Question
+                  </button>
                 </div>
+                <InsightsGrid
+                  insights={savedInsights}
+                  onDeleteInsight={handleDeleteInsight}
+                  onExpandInsight={handleExpandInsight}
+                />
               </div>
             )}
 

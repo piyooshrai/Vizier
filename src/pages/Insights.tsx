@@ -195,14 +195,12 @@ const Insights: React.FC = () => {
       {/* Header - fixed */}
       <div className="flex-shrink-0 border-b border-gray-800 bg-black/50 backdrop-blur-xl px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
-            <svg
-              className="w-5 h-5 text-black"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-            </svg>
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-lg">
+            <img
+              src="/vizier-avatar.svg"
+              alt="Vizier"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h1 className="text-xl font-bold text-white">Ask Vizier</h1>
