@@ -5,6 +5,7 @@ import { FileDropZone } from '../components/upload/FileDropZone';
 import { FileList } from '../components/upload/FileList';
 import { ProcessingAnimation } from '../components/upload/ProcessingAnimation';
 import { UploadComplete } from '../components/upload/UploadComplete';
+import { UploadGuidanceCard } from '../components/onboarding/UploadGuidanceCard';
 import { useAuth } from '../hooks/useAuth';
 import { pipelineService } from '../services/pipeline.service';
 
@@ -154,6 +155,9 @@ const Upload: React.FC = () => {
                 I can work with CSV exports from Epic, Cerner, Allscripts, or most EHR systems
               </p>
             </div>
+
+            {/* Upload Guidance Card */}
+            <UploadGuidanceCard />
 
             {/* File Drop Zone */}
             <FileDropZone

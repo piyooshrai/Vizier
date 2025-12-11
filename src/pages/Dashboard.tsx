@@ -7,6 +7,9 @@ import { StatsOverview } from '../components/dashboard/StatsOverview';
 import { SavedInsightCard } from '../components/dashboard/SavedInsightCard';
 import { EmptyDashboard } from '../components/dashboard/EmptyDashboard';
 import { QuickActions } from '../components/dashboard/QuickActions';
+import { DemoWelcomeModal } from '../components/onboarding/DemoWelcomeModal';
+import { ProductTour } from '../components/onboarding/ProductTour';
+import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
 
 interface SavedInsight {
   id: string;
@@ -22,6 +25,7 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isDemoMode } = useAuth();
   const [savedInsights, setSavedInsights] = useState<SavedInsight[]>([]);
+  const [showTour, setShowTour] = useState(false);
 
   // Demo stats
   const demoStats = {
@@ -123,6 +127,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           <button
+            data-tour="ask-vizier"
             onClick={() => navigate('/insights')}
             className="px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
           >
@@ -134,11 +139,13 @@ export const Dashboard: React.FC = () => {
         {hasData ? (
           <div className="space-y-8">
             {/* Stats Overview */}
-            <StatsOverview stats={demoStats} />
+            <div data-tour="stats">
+              <StatsOverview stats={demoStats} />
+            </div>
 
             {/* Saved Insights */}
             {savedInsights.length > 0 && (
-              <div>
+              <div data-tour="saved-insights">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   Saved Insights
                 </h2>
@@ -163,6 +170,20 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Onboarding Components */}
+      <DemoWelcomeModal
+        onStartTour={() => setShowTour(true)}
+        onClose={() => {}}
+      />
+
+      <ProductTour
+        isActive={showTour}
+        onComplete={() => setShowTour(false)}
+        onSkip={() => setShowTour(false)}
+      />
+
+      <UpgradePrompt />
     </div>
   );
 };

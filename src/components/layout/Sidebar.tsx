@@ -81,7 +81,7 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav data-tour="sidebar-nav" className="flex-1 p-4 space-y-2">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
