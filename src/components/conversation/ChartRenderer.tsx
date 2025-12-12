@@ -21,6 +21,7 @@ interface ChartRendererProps {
   type: ChartType;
   data: Record<string, unknown>[];
   title?: string;
+  height?: number;
 }
 
 // Healthcare-appropriate color palette
@@ -79,6 +80,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
   type,
   data,
   title,
+  height = 300,
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -95,7 +97,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
     switch (type) {
       case 'bar_chart':
         return (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={height}>
             <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
@@ -114,7 +116,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
       case 'horizontal_bar_chart':
         return (
-          <ResponsiveContainer width="100%" height={Math.max(300, data.length * 40)}>
+          <ResponsiveContainer width="100%" height={Math.max(height, data.length * 40)}>
             <BarChart
               data={data}
               layout="vertical"
@@ -136,7 +138,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
       case 'line_chart':
         return (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={height}>
             <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
@@ -163,7 +165,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
       case 'pie_chart':
       case 'donut_chart':
         return (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={height}>
             <PieChart>
               <Pie
                 data={data}

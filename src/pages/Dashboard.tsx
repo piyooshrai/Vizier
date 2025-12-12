@@ -175,11 +175,14 @@ export const Dashboard: React.FC = () => {
                     Ask New Question
                   </button>
                 </div>
-                <InsightsGrid
-                  insights={savedInsights}
-                  onDeleteInsight={handleDeleteInsight}
-                  onExpandInsight={handleExpandInsight}
-                />
+                {/* Grid container with proper constraints */}
+                <div className="w-full min-h-[600px]">
+                  <InsightsGrid
+                    insights={savedInsights}
+                    onDeleteInsight={handleDeleteInsight}
+                    onExpandInsight={handleExpandInsight}
+                  />
+                </div>
               </div>
             )}
 
