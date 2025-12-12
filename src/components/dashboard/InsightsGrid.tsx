@@ -1,26 +1,5 @@
-// src/components/dashboard/InsightsGrid.tsx
-import React, { useState, useEffect, useRef } from 'react';
-import { GridLayout as RGLGridLayout } from 'react-grid-layout';
-import { GridInsightCard } from './GridInsightCard';
-import { RotateCcw } from 'lucide-react';
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
-
-// Cast GridLayout to any to avoid TypeScript type mismatches with the library
-const GridLayout = RGLGridLayout as any;
-
-// Define our own Layout interface to avoid type conflicts
-interface LayoutItem {
-  i: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  minW?: number;
-  minH?: number;
-  maxW?: number;
-  maxH?: number;
-}
+import React, { useState } from 'react';
+import { InsightCard } from './InsightCard';
 
 interface InsightsGridProps {
   insights: any[];
@@ -33,96 +12,17 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   onDeleteInsight,
   onExpandInsight,
 }) => {
-  const [layouts, setLayouts] = useState<LayoutItem[]>([]);
-  const [containerWidth, setContainerWidth] = useState(1200);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const cols = 12;
-  const rowHeight = 100;
-
-  // Measure container width for responsive grid
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
-    };
-
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
-
-  // Generate default layout
-  const generateDefaultLayout = (): LayoutItem[] => {
-    return insights.map((insight, index) => ({
-      i: insight.id,
-      x: (index % 3) * 4,
-      y: Math.floor(index / 3) * 4,
-      w: 4,
-      h: 4,
-      minW: 3,
-      minH: 3,
-      maxW: 12,
-      maxH: 6,
-    }));
-  };
-
-  // Load saved layout from localStorage
-  useEffect(() => {
-    const savedLayout = localStorage.getItem('dashboard_layout');
-    if (savedLayout) {
-      try {
-        const parsed = JSON.parse(savedLayout) as LayoutItem[];
-        // Filter out layouts for insights that no longer exist
-        const validLayouts = parsed.filter((layout) =>
-          insights.some((insight) => insight.id === layout.i)
-        );
-        // Add layouts for new insights
-        const existingIds = new Set(validLayouts.map((l) => l.i));
-        const newInsights = insights.filter((i) => !existingIds.has(i.id));
-        if (newInsights.length > 0) {
-          const newLayouts = newInsights.map((insight, idx) => ({
-            i: insight.id,
-            x: (idx % 3) * 4,
-            y: Math.max(...validLayouts.map((l) => l.y + l.h), 0) + Math.floor(idx / 3) * 4,
-            w: 4,
-            h: 4,
-            minW: 3,
-            minH: 3,
-            maxW: 12,
-            maxH: 6,
-          }));
-          setLayouts([...validLayouts, ...newLayouts]);
-        } else {
-          setLayouts(validLayouts.length > 0 ? validLayouts : generateDefaultLayout());
-        }
-      } catch (e) {
-        console.error('Failed to parse saved layout:', e);
-        setLayouts(generateDefaultLayout());
-      }
-    } else {
-      setLayouts(generateDefaultLayout());
-    }
-  }, [insights]);
-
-  // Save layout when it changes
-  const handleLayoutChange = (newLayout: LayoutItem[]) => {
-    setLayouts(newLayout);
-    localStorage.setItem('dashboard_layout', JSON.stringify(newLayout));
-  };
-
-  // Reset to default layout
-  const handleResetLayout = () => {
-    const defaultLayout = generateDefaultLayout();
-    setLayouts(defaultLayout);
-    localStorage.removeItem('dashboard_layout');
-  };
+  const [gridColumns, setGridColumns] = useState<'1' | '2' | '3'>('3');
 
   if (insights.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-400 mb-4">No saved insights yet</p>
+      <div className="text-center py-16">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+          <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        <p className="text-gray-400 text-lg mb-2">No saved insights yet</p>
         <p className="text-gray-500 text-sm">
           Ask Vizier a question and save insights to see them here
         </p>
@@ -130,47 +30,69 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
     );
   }
 
+  const gridClasses = {
+    '1': 'grid-cols-1',
+    '2': 'grid-cols-1 md:grid-cols-2',
+    '3': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  };
+
   return (
-    <div ref={containerRef} className="w-full">
+    <div>
       {/* Controls */}
       <div className="flex items-center justify-between mb-6">
-        <div className="text-sm text-gray-400">
-          <p>Drag to reorder • Drag corners to resize</p>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-gray-400">
+            {insights.length} saved {insights.length === 1 ? 'insight' : 'insights'}
+          </p>
+
+          {/* Grid size controls */}
+          <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setGridColumns('1')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                gridColumns === '1'
+                  ? 'bg-white text-black'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              1 col
+            </button>
+            <button
+              onClick={() => setGridColumns('2')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                gridColumns === '2'
+                  ? 'bg-white text-black'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              2 cols
+            </button>
+            <button
+              onClick={() => setGridColumns('3')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                gridColumns === '3'
+                  ? 'bg-white text-black'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              3 cols
+            </button>
+          </div>
         </div>
-        <button
-          onClick={handleResetLayout}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors"
-        >
-          <RotateCcw className="w-4 h-4" />
-          Reset Layout
-        </button>
       </div>
 
       {/* Grid */}
-      <GridLayout
-        className="layout"
-        layout={layouts}
-        cols={cols}
-        rowHeight={rowHeight}
-        width={containerWidth}
-        onLayoutChange={handleLayoutChange}
-        draggableHandle=".drag-handle"
-        compactType="vertical"
-        preventCollision={false}
-        isDraggable={true}
-        isResizable={true}
-        margin={[16, 16]}
-      >
+      <div className={`grid ${gridClasses[gridColumns]} gap-6`}>
         {insights.map((insight) => (
-          <div key={insight.id} className="h-full">
-            <GridInsightCard
+          <div key={insight.id} className="min-h-[500px]">
+            <InsightCard
               insight={insight}
               onDelete={onDeleteInsight}
               onExpand={onExpandInsight}
             />
           </div>
         ))}
-      </GridLayout>
+      </div>
     </div>
   );
 };

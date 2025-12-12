@@ -1,112 +1,85 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { X, Download, ArrowRight } from 'lucide-react';
-import { ChartRenderer } from '../conversation/ChartRenderer';
-import { ChartType } from '../../types';
-import { formatTimestamp } from '../../utils/formatters';
+import { Trash2, Maximize2 } from 'lucide-react';
+import { ChartRenderer } from '../insights/ChartRenderer';
 
 interface InsightCardProps {
-  id: string;
-  question: string;
-  answer?: string;
-  data: Record<string, unknown>[];
-  chartType: ChartType;
-  chartTitle?: string;
-  savedAt: string;
-  onRemove?: (id: string) => void;
-  onExport?: (data: Record<string, unknown>[], filename: string) => void;
-  isDemoMode?: boolean;
+  insight: {
+    id: string;
+    question: string;
+    answer: string;
+    chartType: string;
+    chartData: any;
+    explanation: string;
+    timestamp: Date;
+  };
+  onDelete: (id: string) => void;
+  onExpand: (id: string) => void;
 }
 
 export const InsightCard: React.FC<InsightCardProps> = ({
-  id,
-  question,
-  answer,
-  data,
-  chartType,
-  chartTitle,
-  savedAt,
-  onRemove,
-  onExport,
-  isDemoMode = false,
+  insight,
+  onDelete,
+  onExpand,
 }) => {
-  const handleExport = () => {
-    if (onExport && data.length > 0) {
-      onExport(data, question);
-    }
-  };
-
-  const handleRemove = () => {
-    if (onRemove) {
-      onRemove(id);
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   return (
-    <motion.div
-      variants={cardVariants}
-      className="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-shadow"
-    >
+    <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden h-full flex flex-col">
+
       {/* Header */}
-      <div className="p-6 border-b border-neutral-100">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-neutral-900 mb-1 truncate">
-              {question}
-            </h3>
-            <p className="text-sm text-neutral-500">
-              {isDemoMode ? 'Sample data' : `Saved ${formatTimestamp(new Date(savedAt))}`}
-            </p>
-          </div>
-          {!isDemoMode && onRemove && (
-            <button
-              onClick={handleRemove}
-              className="p-1.5 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
-              title="Remove from dashboard"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+      <div className="p-4 border-b border-gray-700 flex items-start justify-between flex-shrink-0">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-white font-semibold text-base mb-1 line-clamp-2">
+            {insight.question}
+          </h3>
+          <p className="text-xs text-gray-400">
+            {new Date(insight.timestamp).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </p>
         </div>
 
-        {answer && (
-          <p className="text-sm text-neutral-600 mt-2 line-clamp-2">{answer}</p>
-        )}
-      </div>
-
-      {/* Chart */}
-      <div className="p-4 bg-neutral-50">
-        <ChartRenderer type={chartType} data={data} title={chartTitle} />
-      </div>
-
-      {/* Actions */}
-      <div className="px-6 py-4 flex items-center justify-between border-t border-neutral-100">
-        <Link
-          to="/insights"
-          state={{ initialQuestion: question }}
-          className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"
-        >
-          Ask follow-up
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-
-        {onExport && (
+        <div className="flex items-center gap-2 ml-3">
           <button
-            onClick={handleExport}
-            className="flex items-center gap-1.5 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
+            onClick={() => onExpand(insight.id)}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+            title="View in Ask Vizier"
           >
-            <Download className="w-4 h-4" />
-            Export
+            <Maximize2 className="w-4 h-4 text-gray-400 hover:text-white" />
           </button>
+          <button
+            onClick={() => onDelete(insight.id)}
+            className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
+            title="Remove from dashboard"
+          >
+            <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+          </button>
+        </div>
+      </div>
+
+      {/* Chart - MUST use same ChartRenderer as Insights page */}
+      <div className="flex-1 p-6 min-h-0 bg-white">
+        {insight.chartData && insight.chartType ? (
+          <ChartRenderer
+            type={insight.chartType as any}
+            data={insight.chartData}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">No visualization available</p>
+          </div>
         )}
       </div>
-    </motion.div>
+
+      {/* Explanation */}
+      {insight.explanation && (
+        <div className="p-4 border-t border-gray-700 bg-gray-900/50 flex-shrink-0">
+          <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed">
+            {insight.explanation}
+          </p>
+        </div>
+      )}
+    </div>
   );
 };
 

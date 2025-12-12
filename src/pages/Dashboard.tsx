@@ -100,23 +100,12 @@ export const Dashboard: React.FC = () => {
   }, [isDemoMode]);
 
   const handleDeleteInsight = (id: string) => {
-    const confirmed = window.confirm('Delete this insight?');
-    if (confirmed) {
-      setSavedInsights((prev) => {
-        const updated = prev.filter((i) => i.id !== id);
-        if (!isDemoMode) {
-          localStorage.setItem('vizier_saved_insights', JSON.stringify(updated));
-        }
-        // Also update the layout in localStorage
-        const savedLayout = localStorage.getItem('dashboard_layout');
-        if (savedLayout) {
-          const layouts = JSON.parse(savedLayout).filter(
-            (l: { i: string }) => l.i !== id
-          );
-          localStorage.setItem('dashboard_layout', JSON.stringify(layouts));
-        }
-        return updated;
-      });
+    if (window.confirm('Remove this insight from your dashboard?')) {
+      const updated = savedInsights.filter((i) => i.id !== id);
+      setSavedInsights(updated);
+      if (!isDemoMode) {
+        localStorage.setItem('vizier_saved_insights', JSON.stringify(updated));
+      }
     }
   };
 
@@ -175,14 +164,11 @@ export const Dashboard: React.FC = () => {
                     Ask New Question
                   </button>
                 </div>
-                {/* Grid container with proper constraints */}
-                <div className="w-full min-h-[600px]">
-                  <InsightsGrid
-                    insights={savedInsights}
-                    onDeleteInsight={handleDeleteInsight}
-                    onExpandInsight={handleExpandInsight}
-                  />
-                </div>
+                <InsightsGrid
+                  insights={savedInsights}
+                  onDeleteInsight={handleDeleteInsight}
+                  onExpandInsight={handleExpandInsight}
+                />
               </div>
             )}
 
