@@ -1,14 +1,13 @@
 // src/components/dashboard/InsightsGrid.tsx
-import React, { useState, useEffect } from 'react';
-import RGL from 'react-grid-layout';
+import React, { useState, useEffect, useRef } from 'react';
+import { GridLayout as RGLGridLayout } from 'react-grid-layout';
 import { GridInsightCard } from './GridInsightCard';
 import { RotateCcw } from 'lucide-react';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-// Wrap ReactGridLayout with WidthProvider for automatic width detection
-const WidthProvider = (RGL as any).WidthProvider;
-const ReactGridLayout = WidthProvider(RGL);
+// Cast GridLayout to any to avoid TypeScript type mismatches with the library
+const GridLayout = RGLGridLayout as any;
 
 // Define layout item interface for type safety
 interface LayoutItem {
@@ -45,8 +44,23 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   onExpandInsight,
 }) => {
   const [layouts, setLayouts] = useState<LayoutItem[]>([]);
+  const [width, setWidth] = useState(1200);
+  const containerRef = useRef<HTMLDivElement>(null);
   const cols = 12;
   const rowHeight = 100;
+
+  // Measure container width
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   // Generate default layout for insights
   const generateDefaultLayout = (insightsList: SavedInsight[]): LayoutItem[] => {
@@ -115,7 +129,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   }
 
   return (
-    <div>
+    <div ref={containerRef}>
       {/* Controls */}
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm text-gray-400">
@@ -131,12 +145,13 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
       </div>
 
       {/* Grid */}
-      <ReactGridLayout
+      <GridLayout
         className="layout"
         layout={layouts}
         cols={cols}
         rowHeight={rowHeight}
-        onLayoutChange={handleLayoutChange as any}
+        width={width}
+        onLayoutChange={handleLayoutChange}
         draggableHandle=".drag-handle"
         compactType="vertical"
         preventCollision={false}
@@ -151,7 +166,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
             />
           </div>
         ))}
-      </ReactGridLayout>
+      </GridLayout>
     </div>
   );
 };
