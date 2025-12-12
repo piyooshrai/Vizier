@@ -2,7 +2,6 @@ export { StatCard } from './StatCard';
 export { DashboardLayout } from './DashboardLayout';
 export { DashboardGrid } from './DashboardGrid';
 export { InsightCard } from './InsightCard';
-export { GridInsightCard } from './GridInsightCard';
 export { InsightsGrid } from './InsightsGrid';
 export { EmptyDashboard } from './EmptyDashboard';
 export { QuickActions } from './QuickActions';
