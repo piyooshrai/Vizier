@@ -58,19 +58,32 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {actions.map((action) => {
           const Icon = action.icon;
+          const isAskAction = action.id === 'ask';
           return (
             <button
               key={action.id}
               onClick={() => navigate(action.href)}
               className="p-4 bg-gray-900/50 hover:bg-gray-700/50 rounded-xl transition-all text-center group border border-gray-700"
             >
-              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
-                <Icon className="w-6 h-6 text-black" />
-              </div>
+              {isAskAction ? (
+                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
+                  <img
+                    src="/vizier-avatar.svg"
+                    alt="Ask Vizier"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
+                  <Icon className="w-6 h-6 text-black" />
+                </div>
+              )}
               <h4 className="font-medium text-white text-sm mb-1">
-                {action.label}
+                {isAskAction ? 'Ask Vizier' : action.label}
               </h4>
-              <p className="text-xs text-gray-400">{action.description}</p>
+              <p className="text-xs text-gray-400">
+                {isAskAction ? 'Get instant insights from your data' : action.description}
+              </p>
             </button>
           );
         })}

@@ -91,17 +91,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       className="flex gap-4"
     >
       {/* Avatar */}
-      <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-md">
-        <svg
-          viewBox="0 0 24 24"
-          className="w-5 h-5 text-white"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-        >
-          <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-        </svg>
+      <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-lg">
+        <img
+          src="/vizier-avatar.svg"
+          alt="Vizier"
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* Content */}
