@@ -197,7 +197,7 @@ const Insights: React.FC = () => {
         <div className="max-w-5xl mx-auto flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-lg">
             <img
-              src="/vizier-avatar.svg"
+              src="/images/vizier-avatar.png"
               alt="Vizier"
               className="w-full h-full object-cover"
             />

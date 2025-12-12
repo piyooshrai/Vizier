@@ -68,7 +68,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
               {isAskAction ? (
                 <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
                   <img
-                    src="/vizier-avatar.svg"
+                    src="/images/vizier-avatar.png"
                     alt="Ask Vizier"
                     className="w-full h-full object-cover"
                   />
