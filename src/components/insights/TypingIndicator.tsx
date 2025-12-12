@@ -18,7 +18,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
       {/* Avatar */}
       <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-lg">
         <img
-          src="/vizier-avatar.svg"
+          src="/images/vizier-avatar.png"
           alt="Vizier"
           className="w-full h-full object-cover"
         />

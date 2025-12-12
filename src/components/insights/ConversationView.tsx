@@ -31,7 +31,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
         <div className="flex gap-4 animate-slide-up">
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-lg flex-shrink-0">
             <img
-              src="/vizier-avatar.svg"
+              src="/images/vizier-avatar.png"
               alt="Vizier"
               className="w-full h-full object-cover"
             />
