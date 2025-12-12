@@ -9,7 +9,7 @@ import 'react-resizable/css/styles.css';
 // Cast GridLayout to any to avoid TypeScript type mismatches with the library
 const GridLayout = RGLGridLayout as any;
 
-// Define layout item interface for type safety
+// Define our own Layout interface to avoid type conflicts
 interface LayoutItem {
   i: string;
   x: number;
@@ -22,18 +22,8 @@ interface LayoutItem {
   maxH?: number;
 }
 
-interface SavedInsight {
-  id: string;
-  question: string;
-  answer: string;
-  chartType: string;
-  chartData: any;
-  explanation: string;
-  timestamp: Date;
-}
-
 interface InsightsGridProps {
-  insights: SavedInsight[];
+  insights: any[];
   onDeleteInsight: (id: string) => void;
   onExpandInsight: (id: string) => void;
 }
@@ -44,16 +34,17 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   onExpandInsight,
 }) => {
   const [layouts, setLayouts] = useState<LayoutItem[]>([]);
-  const [width, setWidth] = useState(1200);
+  const [containerWidth, setContainerWidth] = useState(1200);
   const containerRef = useRef<HTMLDivElement>(null);
+
   const cols = 12;
   const rowHeight = 100;
 
-  // Measure container width
+  // Measure container width for responsive grid
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
-        setWidth(containerRef.current.offsetWidth);
+        setContainerWidth(containerRef.current.offsetWidth);
       }
     };
 
@@ -62,22 +53,22 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
-  // Generate default layout for insights
-  const generateDefaultLayout = (insightsList: SavedInsight[]): LayoutItem[] => {
-    return insightsList.map((insight, index) => ({
+  // Generate default layout
+  const generateDefaultLayout = (): LayoutItem[] => {
+    return insights.map((insight, index) => ({
       i: insight.id,
-      x: (index % 3) * 4, // 3 columns
-      y: Math.floor(index / 3) * 3, // 3 rows tall
-      w: 4, // Width: 4 grid units (1/3 of 12)
-      h: 3, // Height: 3 row units
+      x: (index % 3) * 4,
+      y: Math.floor(index / 3) * 4,
+      w: 4,
+      h: 4,
       minW: 3,
-      minH: 2,
+      minH: 3,
       maxW: 12,
       maxH: 6,
     }));
   };
 
-  // Load saved layout from localStorage or generate default
+  // Load saved layout from localStorage
   useEffect(() => {
     const savedLayout = localStorage.getItem('dashboard_layout');
     if (savedLayout) {
@@ -90,17 +81,28 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
         // Add layouts for new insights
         const existingIds = new Set(validLayouts.map((l) => l.i));
         const newInsights = insights.filter((i) => !existingIds.has(i.id));
-        const newLayouts = generateDefaultLayout(newInsights).map((layout, idx) => ({
-          ...layout,
-          y: Math.max(...validLayouts.map((l) => l.y + l.h), 0) + Math.floor(idx / 3) * 3,
-          x: (idx % 3) * 4,
-        }));
-        setLayouts([...validLayouts, ...newLayouts]);
-      } catch {
-        setLayouts(generateDefaultLayout(insights));
+        if (newInsights.length > 0) {
+          const newLayouts = newInsights.map((insight, idx) => ({
+            i: insight.id,
+            x: (idx % 3) * 4,
+            y: Math.max(...validLayouts.map((l) => l.y + l.h), 0) + Math.floor(idx / 3) * 4,
+            w: 4,
+            h: 4,
+            minW: 3,
+            minH: 3,
+            maxW: 12,
+            maxH: 6,
+          }));
+          setLayouts([...validLayouts, ...newLayouts]);
+        } else {
+          setLayouts(validLayouts.length > 0 ? validLayouts : generateDefaultLayout());
+        }
+      } catch (e) {
+        console.error('Failed to parse saved layout:', e);
+        setLayouts(generateDefaultLayout());
       }
     } else {
-      setLayouts(generateDefaultLayout(insights));
+      setLayouts(generateDefaultLayout());
     }
   }, [insights]);
 
@@ -112,9 +114,9 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
 
   // Reset to default layout
   const handleResetLayout = () => {
-    const defaultLayout = generateDefaultLayout(insights);
+    const defaultLayout = generateDefaultLayout();
     setLayouts(defaultLayout);
-    localStorage.setItem('dashboard_layout', JSON.stringify(defaultLayout));
+    localStorage.removeItem('dashboard_layout');
   };
 
   if (insights.length === 0) {
@@ -129,11 +131,11 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
   }
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="w-full">
       {/* Controls */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <div className="text-sm text-gray-400">
-          <p>Drag to reorder &bull; Drag corners to resize</p>
+          <p>Drag to reorder • Drag corners to resize</p>
         </div>
         <button
           onClick={handleResetLayout}
@@ -150,15 +152,17 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
         layout={layouts}
         cols={cols}
         rowHeight={rowHeight}
-        width={width}
+        width={containerWidth}
         onLayoutChange={handleLayoutChange}
         draggableHandle=".drag-handle"
         compactType="vertical"
         preventCollision={false}
+        isDraggable={true}
+        isResizable={true}
         margin={[16, 16]}
       >
         {insights.map((insight) => (
-          <div key={insight.id}>
+          <div key={insight.id} className="h-full">
             <GridInsightCard
               insight={insight}
               onDelete={onDeleteInsight}
