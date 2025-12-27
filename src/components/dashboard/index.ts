@@ -10,3 +10,4 @@ export { SavedInsightCard } from './SavedInsightCard';
 export { AlertModal } from './AlertModal';
 export { AdviseModal } from './AdviseModal';
 export { DashboardCard } from './DashboardCard';
+export { DrillDownModal } from './DrillDownModal';
