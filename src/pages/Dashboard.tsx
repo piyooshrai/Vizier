@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsOverview } from '../components/dashboard/StatsOverview';
-import { InsightsGrid } from '../components/dashboard/InsightsGrid';
+import { InsightCard } from '../components/dashboard/InsightCard';
 import { EmptyDashboard } from '../components/dashboard/EmptyDashboard';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { DemoWelcomeModal } from '../components/onboarding/DemoWelcomeModal';
@@ -35,7 +35,7 @@ export const Dashboard: React.FC = () => {
     avgCost: 4250,
   };
 
-  // Demo saved insights - all gold themed
+  // Demo saved insights - comprehensive set for 12-column layout
   const demoInsights: SavedInsight[] = [
     {
       id: '1',
@@ -85,6 +85,38 @@ export const Dashboard: React.FC = () => {
       explanation:
         'Your readmission rate has steadily declined, now sitting below the national average of 9.1%. Care coordination efforts appear to be working.',
     },
+    {
+      id: '4',
+      question: 'Show monthly encounter volume',
+      answer: 'Peak volume in March with 4,521 encounters',
+      chartType: 'bar_chart',
+      chartData: [
+        { name: 'Jan', value: 3845 },
+        { name: 'Feb', value: 3967 },
+        { name: 'Mar', value: 4521 },
+        { name: 'Apr', value: 4123 },
+        { name: 'May', value: 3892 },
+        { name: 'Jun', value: 4056 },
+      ],
+      timestamp: new Date('2024-01-12'),
+      explanation:
+        'Encounter volumes show seasonal variation with a peak in March. This may correlate with flu season and annual wellness visits.',
+    },
+    {
+      id: '5',
+      question: 'What is the payer mix breakdown?',
+      answer: 'Commercial insurance dominates at 45%',
+      chartType: 'pie_chart',
+      chartData: [
+        { name: 'Commercial', value: 5781 },
+        { name: 'Medicare', value: 3855 },
+        { name: 'Medicaid', value: 2313 },
+        { name: 'Self-Pay', value: 898 },
+      ],
+      timestamp: new Date('2024-01-11'),
+      explanation:
+        'Your payer mix is well-balanced with strong commercial coverage. The 18% Medicaid population may qualify for additional care management programs.',
+    },
   ];
 
   useEffect(() => {
@@ -120,66 +152,148 @@ export const Dashboard: React.FC = () => {
   // Check if user has data
   const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true';
 
+  // Current user for annotations
+  const currentUser = {
+    id: user?.id || 'default',
+    name: user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : 'User',
+  };
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-8">
-        <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white">
-              Welcome back{user?.first_name ? `, ${user.first_name}` : ''}
-            </h1>
-            <p className="text-gray-400 mt-1">
-              Here's an overview of your healthcare analytics
-            </p>
-          </div>
-
-          <button
-            data-tour="ask-vizier"
-            onClick={() => navigate('/insights')}
-            className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
-          >
-            <MessageSquare className="w-5 h-5" />
-            Ask Vizier
-          </button>
-        </div>
-
-        {hasData ? (
-          <div className="space-y-8">
-            {/* Stats Overview */}
-            <div data-tour="stats">
-              <StatsOverview stats={demoStats} />
+        <div className="max-w-[1600px] mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                Welcome back{user?.first_name ? `, ${user.first_name}` : ''}
+              </h1>
+              <p className="text-gray-400 mt-1">
+                Here's an overview of your healthcare analytics
+              </p>
             </div>
 
-            {/* Saved Insights */}
-            {savedInsights.length > 0 && (
-              <div data-tour="saved-insights">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white">Saved Insights</h2>
-                  <button
-                    onClick={() => navigate('/insights')}
-                    className="px-4 py-2 bg-white hover:bg-gray-100 text-black text-sm font-semibold rounded-lg transition-colors"
-                  >
-                    Ask New Question
-                  </button>
-                </div>
-                <InsightsGrid
-                  insights={savedInsights}
-                  onDeleteInsight={handleDeleteInsight}
-                  onExpandInsight={handleExpandInsight}
-                />
-              </div>
-            )}
+            <button
+              data-tour="ask-vizier"
+              onClick={() => navigate('/insights')}
+              className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+            >
+              <MessageSquare className="w-5 h-5" />
+              Ask Vizier
+            </button>
+          </div>
 
-            {/* Quick Actions */}
-            <QuickActions />
-          </div>
-        ) : (
-          <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 shadow-lg">
-            <EmptyDashboard isDemoMode={isDemoMode} />
-          </div>
-        )}
+          {hasData ? (
+            <div className="space-y-8">
+              {/* Stats Overview */}
+              <div data-tour="stats">
+                <StatsOverview stats={demoStats} />
+              </div>
+
+              {/* Saved Insights - 12-Column Flexible Grid */}
+              {savedInsights.length > 0 && (
+                <div data-tour="saved-insights">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-white">Saved Insights</h2>
+                    <button
+                      onClick={() => navigate('/insights')}
+                      className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-colors shadow-lg"
+                    >
+                      Ask New Question
+                    </button>
+                  </div>
+
+                  {/* 12-Column Flexible Grid Layout */}
+                  <div className="grid grid-cols-12 gap-6">
+                    {/* First insight - LARGE (8 columns) - Hero position */}
+                    {savedInsights[0] && (
+                      <div className="col-span-12 lg:col-span-8">
+                        <InsightCard
+                          insight={savedInsights[0]}
+                          size="large"
+                          onDelete={handleDeleteInsight}
+                          onExpand={handleExpandInsight}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    )}
+
+                    {/* Second insight - SMALL (4 columns) */}
+                    {savedInsights[1] && (
+                      <div className="col-span-12 lg:col-span-4">
+                        <InsightCard
+                          insight={savedInsights[1]}
+                          size="small"
+                          onDelete={handleDeleteInsight}
+                          onExpand={handleExpandInsight}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    )}
+
+                    {/* Third insight - MEDIUM (4 columns) */}
+                    {savedInsights[2] && (
+                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                        <InsightCard
+                          insight={savedInsights[2]}
+                          size="medium"
+                          onDelete={handleDeleteInsight}
+                          onExpand={handleExpandInsight}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    )}
+
+                    {/* Fourth insight - MEDIUM (4 columns) */}
+                    {savedInsights[3] && (
+                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                        <InsightCard
+                          insight={savedInsights[3]}
+                          size="medium"
+                          onDelete={handleDeleteInsight}
+                          onExpand={handleExpandInsight}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    )}
+
+                    {/* Fifth insight - MEDIUM (4 columns) */}
+                    {savedInsights[4] && (
+                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                        <InsightCard
+                          insight={savedInsights[4]}
+                          size="medium"
+                          onDelete={handleDeleteInsight}
+                          onExpand={handleExpandInsight}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    )}
+
+                    {/* Sixth+ insights - MEDIUM (4 columns each) */}
+                    {savedInsights.slice(5).map((insight) => (
+                      <div key={insight.id} className="col-span-12 md:col-span-6 lg:col-span-4">
+                        <InsightCard
+                          insight={insight}
+                          size="medium"
+                          onDelete={handleDeleteInsight}
+                          onExpand={handleExpandInsight}
+                          currentUser={currentUser}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quick Actions */}
+              <QuickActions />
+            </div>
+          ) : (
+            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 shadow-lg">
+              <EmptyDashboard isDemoMode={isDemoMode} />
+            </div>
+          )}
         </div>
       </div>
 

@@ -7,3 +7,5 @@ export { EmptyDashboard } from './EmptyDashboard';
 export { QuickActions } from './QuickActions';
 export { StatsOverview } from './StatsOverview';
 export { SavedInsightCard } from './SavedInsightCard';
+export { AlertModal } from './AlertModal';
+export { AdviseModal } from './AdviseModal';
