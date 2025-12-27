@@ -127,14 +127,18 @@ export const Dashboard: React.FC = () => {
   const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true' || pinnedCharts.length > 0;
 
   // Get column span based on chart size
+  // Progressive columns: more columns at wider screens instead of stretching cards
   const getColSpan = (size: string) => {
     if (layout === 'list') return 'col-span-12';
 
     switch (size) {
-      case 'small': return 'col-span-12 md:col-span-6 lg:col-span-4';
-      case 'medium': return 'col-span-12 md:col-span-6 lg:col-span-6';
-      case 'large': return 'col-span-12 lg:col-span-8';
-      default: return 'col-span-12 md:col-span-6 lg:col-span-6';
+      // Small: 1 col → 2 cols → 3 cols → 4 cols → 6 cols
+      case 'small': return 'col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 2xl:col-span-2';
+      // Medium: 1 col → 2 cols → 2 cols → 3 cols → 4 cols
+      case 'medium': return 'col-span-12 md:col-span-6 lg:col-span-6 xl:col-span-4 2xl:col-span-3';
+      // Large: 1 col → 1 col → 2/3 → 1/2 → 1/3
+      case 'large': return 'col-span-12 lg:col-span-8 xl:col-span-6 2xl:col-span-4';
+      default: return 'col-span-12 md:col-span-6 lg:col-span-6 xl:col-span-4 2xl:col-span-3';
     }
   };
 
