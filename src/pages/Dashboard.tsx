@@ -1,7 +1,7 @@
 // src/pages/Dashboard.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, Plus, RefreshCw, Grid3X3, List, BarChart3 } from 'lucide-react';
+import { MessageSquare, Plus, RefreshCw, Grid3X3, List, BarChart3, Layers, LayoutGrid, TableProperties } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsOverview } from '../components/dashboard/StatsOverview';
 import { DashboardCard } from '../components/dashboard/DashboardCard';
@@ -15,6 +15,8 @@ interface ChartWithSize extends PinnedChart {
   size: 'small' | 'medium' | 'large';
 }
 
+type DensityMode = 'comfortable' | 'compact' | 'dense';
+
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isDemoMode } = useAuth();
@@ -22,6 +24,21 @@ export const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showTour, setShowTour] = useState(false);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+  const [density, setDensity] = useState<DensityMode>('compact');
+
+  // Load density preference from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('dashboard_density');
+    if (saved && ['comfortable', 'compact', 'dense'].includes(saved)) {
+      setDensity(saved as DensityMode);
+    }
+  }, []);
+
+  // Save density preference
+  const handleDensityChange = (newDensity: DensityMode) => {
+    setDensity(newDensity);
+    localStorage.setItem('dashboard_density', newDensity);
+  };
 
   // Demo stats
   const demoStats = {
@@ -106,6 +123,18 @@ export const Dashboard: React.FC = () => {
     }
   };
 
+  // Density-based grid gap
+  const getGridGap = () => {
+    const gaps = { comfortable: 'gap-4', compact: 'gap-3', dense: 'gap-2' };
+    return gaps[density];
+  };
+
+  // Density-based padding
+  const getGridPadding = () => {
+    const padding = { comfortable: 'px-4', compact: 'px-3', dense: 'px-2' };
+    return padding[density];
+  };
+
   // Empty state when no charts are pinned
   const EmptyPinnedState = () => (
     <div className="text-center py-16 bg-gray-800/30 rounded-2xl border border-gray-700">
@@ -131,13 +160,13 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="h-full overflow-y-auto bg-black">
       {/* Header - moderate padding */}
-      <div className="px-6 py-6 border-b border-gray-800">
+      <div className="px-6 py-5 border-b border-gray-800">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-white">
               {pinnedCharts.length > 0 ? 'My Dashboard' : `Welcome back${user?.first_name ? `, ${user.first_name}` : ''}`}
             </h1>
-            <p className="text-gray-400 mt-1">
+            <p className="text-gray-400 text-sm mt-0.5">
               {pinnedCharts.length > 0
                 ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
                 : "Here's an overview of your healthcare analytics"
@@ -145,31 +174,70 @@ export const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Density toggle - only show when charts exist */}
+            {pinnedCharts.length > 0 && (
+              <div className="flex items-center bg-gray-800 rounded-lg p-0.5">
+                <button
+                  onClick={() => handleDensityChange('comfortable')}
+                  className={`px-2.5 py-1.5 rounded text-xs transition-colors ${
+                    density === 'comfortable'
+                      ? 'bg-white text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Comfortable - Best for presentations"
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => handleDensityChange('compact')}
+                  className={`px-2.5 py-1.5 rounded text-xs transition-colors ${
+                    density === 'compact'
+                      ? 'bg-white text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Compact - Balanced view (default)"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => handleDensityChange('dense')}
+                  className={`px-2.5 py-1.5 rounded text-xs transition-colors ${
+                    density === 'dense'
+                      ? 'bg-white text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Dense - Maximum information"
+                >
+                  <TableProperties className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* Layout toggle - only show when charts exist */}
             {pinnedCharts.length > 0 && (
-              <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+              <div className="flex items-center bg-gray-800 rounded-lg p-0.5">
                 <button
                   onClick={() => setLayout('grid')}
-                  className={`px-3 py-2 rounded text-sm transition-colors ${
+                  className={`px-2.5 py-1.5 rounded text-xs transition-colors ${
                     layout === 'grid'
                       ? 'bg-white text-black'
                       : 'text-gray-400 hover:text-white'
                   }`}
                   title="Grid view"
                 >
-                  <Grid3X3 className="w-4 h-4" />
+                  <Grid3X3 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setLayout('list')}
-                  className={`px-3 py-2 rounded text-sm transition-colors ${
+                  className={`px-2.5 py-1.5 rounded text-xs transition-colors ${
                     layout === 'list'
                       ? 'bg-white text-black'
                       : 'text-gray-400 hover:text-white'
                   }`}
                   title="List view"
                 >
-                  <List className="w-4 h-4" />
+                  <List className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
@@ -179,10 +247,10 @@ export const Dashboard: React.FC = () => {
               <button
                 onClick={loadCharts}
                 disabled={isLoading}
-                className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
                 title="Refresh all"
               >
-                <RefreshCw className={`w-5 h-5 text-white ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 text-white ${isLoading ? 'animate-spin' : ''}`} />
               </button>
             )}
 
@@ -190,16 +258,16 @@ export const Dashboard: React.FC = () => {
             <button
               data-tour="ask-vizier"
               onClick={() => navigate('/insights')}
-              className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+              className="px-4 py-2 bg-white hover:bg-gray-100 text-black text-sm font-semibold rounded-lg transition-all shadow-lg inline-flex items-center gap-1.5"
             >
               {pinnedCharts.length > 0 ? (
                 <>
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-4 h-4" />
                   Add Chart
                 </>
               ) : (
                 <>
-                  <MessageSquare className="w-5 h-5" />
+                  <MessageSquare className="w-4 h-4" />
                   Ask Vizier
                 </>
               )}
@@ -210,8 +278,8 @@ export const Dashboard: React.FC = () => {
 
       {hasData ? (
         <>
-          {/* Stats Overview - moderate padding */}
-          <div className="px-6 py-6" data-tour="stats">
+          {/* Stats Overview - compact padding */}
+          <div className="px-4 py-4" data-tour="stats">
             <StatsOverview stats={demoStats} />
           </div>
 
@@ -224,13 +292,13 @@ export const Dashboard: React.FC = () => {
             ) : pinnedCharts.length > 0 ? (
               <>
                 {/* Section Header */}
-                <div className="px-6 py-4">
-                  <h2 className="text-xl font-bold text-white">Pinned Insights</h2>
+                <div className="px-4 py-3">
+                  <h2 className="text-lg font-bold text-white">Pinned Insights</h2>
                 </div>
 
-                {/* Charts Grid - MINIMAL PADDING for maximum width */}
-                <div className="px-4 pb-6">
-                  <div className="grid grid-cols-12 gap-4">
+                {/* Charts Grid - DENSITY-AWARE PADDING AND GAP */}
+                <div className={`${getGridPadding()} pb-4`}>
+                  <div className={`grid grid-cols-12 ${getGridGap()}`}>
                     {pinnedCharts.map((chart) => (
                       <div key={chart.id} className={getColSpan(chart.size)}>
                         <DashboardCard
@@ -243,6 +311,7 @@ export const Dashboard: React.FC = () => {
                             id: user?.id?.toString() || 'demo-user',
                             name: user?.first_name || 'Demo User'
                           }}
+                          density={density}
                         />
                       </div>
                     ))}
@@ -250,19 +319,19 @@ export const Dashboard: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="px-6">
+              <div className="px-4">
                 <EmptyPinnedState />
               </div>
             )}
           </div>
 
-          {/* Quick Actions - moderate padding */}
-          <div className="px-6 pb-8">
+          {/* Quick Actions - compact padding */}
+          <div className="px-4 pb-6">
             <QuickActions />
           </div>
         </>
       ) : (
-        <div className="px-6 py-8">
+        <div className="px-4 py-6">
           <EmptyPinnedState />
         </div>
       )}
