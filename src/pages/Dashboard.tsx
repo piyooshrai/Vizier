@@ -278,8 +278,8 @@ export const Dashboard: React.FC = () => {
 
       {hasData ? (
         <>
-          {/* Stats Overview - compact padding */}
-          <div className="px-4 py-4" data-tour="stats">
+          {/* Stats Overview - minimal padding for space efficiency */}
+          <div className="px-3 py-3" data-tour="stats">
             <StatsOverview stats={demoStats} />
           </div>
 
