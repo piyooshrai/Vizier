@@ -1,29 +1,74 @@
 // src/components/insights/InsightMessage.tsx
-import React, { useState } from 'react';
-import { Save, Download } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Pin, Download, Check, Search } from 'lucide-react';
 import { ChartTypeSelector } from './ChartTypeSelector';
 import { ChartRenderer } from './ChartRenderer';
 import { Message } from '../../pages/Insights';
 import { ChartType } from '../../utils/chartRecommendation';
+import { chartsService } from '../../services/charts.service';
 
 interface InsightMessageProps {
   message: Message;
   onSave: () => void;
   onExport: () => void;
+  onDrillDown?: (question: string) => void;
 }
 
 export const InsightMessage: React.FC<InsightMessageProps> = ({
   message,
-  onSave,
   onExport,
+  onDrillDown,
 }) => {
-  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
-    null
-  );
+  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(null);
+  const [isPinned, setIsPinned] = useState(false);
+  const [isPinning, setIsPinning] = useState(false);
 
   const isVizier = message.role === 'vizier';
   const hasChart = message.chartData && message.chartType;
   const activeChartType = selectedChartType || message.chartType;
+
+  // Check if already pinned on mount
+  useEffect(() => {
+    const checkPinned = async () => {
+      if (hasChart && message.content) {
+        try {
+          const charts = await chartsService.getCharts();
+          const alreadyPinned = charts.some(c => c.id === message.id || c.query_text === message.content);
+          setIsPinned(alreadyPinned);
+        } catch (error) {
+          console.error('Error checking pinned status:', error);
+        }
+      }
+    };
+    checkPinned();
+  }, [message.id, message.content, hasChart]);
+
+  const handlePin = async () => {
+    if (isPinned || isPinning) return;
+
+    setIsPinning(true);
+    try {
+      await chartsService.saveChart({
+        query_text: message.content,
+        chart_type: activeChartType || 'bar_chart',
+        chart_data: message.chartData,
+        explanation: message.explanation,
+        title: message.content.substring(0, 100),
+      });
+      setIsPinned(true);
+    } catch (error) {
+      console.error('Failed to pin chart:', error);
+      alert('Failed to pin chart to dashboard');
+    } finally {
+      setIsPinning(false);
+    }
+  };
+
+  const handleDrillDown = () => {
+    if (onDrillDown && message.explanation) {
+      onDrillDown(`Tell me more about: ${message.content}`);
+    }
+  };
 
   if (!isVizier) {
     // User message
@@ -90,12 +135,13 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
                 <ChartRenderer
                   type={activeChartType as ChartType}
                   data={message.chartData as Record<string, unknown>[]}
+                  height={350}
                 />
               </div>
 
               {/* Explanation */}
               {message.explanation && (
-                <div className="p-6 border-t border-gray-200 bg-blue-50">
+                <div className="p-6 border-t border-gray-200 bg-amber-50">
                   <p className="text-sm text-gray-700 leading-relaxed">
                     {message.explanation}
                   </p>
@@ -103,21 +149,56 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
               )}
 
               {/* Actions */}
-              <div className="p-4 border-t border-gray-200 flex gap-3">
+              <div className="p-4 border-t border-gray-200 flex flex-wrap gap-3">
+                {/* Pin to Dashboard - Primary Action */}
                 <button
-                  onClick={onSave}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
+                  onClick={handlePin}
+                  disabled={isPinned || isPinning}
+                  className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-lg transition-all ${
+                    isPinned
+                      ? 'bg-green-500/10 text-green-600 cursor-default border border-green-200'
+                      : isPinning
+                      ? 'bg-gray-100 text-gray-400 cursor-wait'
+                      : 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-lg'
+                  }`}
                 >
-                  <Save className="w-4 h-4" />
-                  Save to Dashboard
+                  {isPinned ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Pinned to Dashboard
+                    </>
+                  ) : isPinning ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                      Pinning...
+                    </>
+                  ) : (
+                    <>
+                      <Pin className="w-4 h-4" />
+                      Pin to Dashboard
+                    </>
+                  )}
                 </button>
+
+                {/* Export CSV */}
                 <button
                   onClick={onExport}
-                  className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
                 >
                   <Download className="w-4 h-4" />
                   Export CSV
                 </button>
+
+                {/* Drill Down / Ask Follow-up */}
+                {onDrillDown && (
+                  <button
+                    onClick={handleDrillDown}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
+                  >
+                    <Search className="w-4 h-4" />
+                    Ask Follow-Up
+                  </button>
+                )}
               </div>
             </>
           )}
