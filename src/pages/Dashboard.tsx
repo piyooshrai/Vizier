@@ -237,6 +237,10 @@ export const Dashboard: React.FC = () => {
                             onResize={handleResize}
                             onExpand={handleExpand}
                             onRefresh={handleRefresh}
+                            currentUser={{
+                              id: user?.id?.toString() || 'demo-user',
+                              name: user?.first_name || 'Demo User'
+                            }}
                           />
                         </div>
                       ))}
