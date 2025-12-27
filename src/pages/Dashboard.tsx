@@ -1,31 +1,27 @@
 // src/pages/Dashboard.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Plus, RefreshCw, Grid3X3, List, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsOverview } from '../components/dashboard/StatsOverview';
-import { InsightCard } from '../components/dashboard/InsightCard';
-import { EmptyDashboard } from '../components/dashboard/EmptyDashboard';
+import { DashboardCard } from '../components/dashboard/DashboardCard';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { DemoWelcomeModal } from '../components/onboarding/DemoWelcomeModal';
 import { ProductTour } from '../components/onboarding/ProductTour';
 import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
+import { chartsService, PinnedChart } from '../services/charts.service';
 
-interface SavedInsight {
-  id: string;
-  question: string;
-  answer: string;
-  chartType: string;
-  chartData: any;
-  timestamp: Date;
-  explanation: string;
+interface ChartWithSize extends PinnedChart {
+  size: 'small' | 'medium' | 'large';
 }
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isDemoMode } = useAuth();
-  const [savedInsights, setSavedInsights] = useState<SavedInsight[]>([]);
+  const [pinnedCharts, setPinnedCharts] = useState<ChartWithSize[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showTour, setShowTour] = useState(false);
+  const [layout, setLayout] = useState<'grid' | 'list'>('grid');
 
   // Demo stats
   const demoStats = {
@@ -35,264 +31,227 @@ export const Dashboard: React.FC = () => {
     avgCost: 4250,
   };
 
-  // Demo saved insights - comprehensive set for 12-column layout
-  const demoInsights: SavedInsight[] = [
-    {
-      id: '1',
-      question: 'What are my top diagnoses by patient volume?',
-      answer: 'Hypertension leads with 3,247 patients',
-      chartType: 'bar_chart',
-      chartData: [
-        { name: 'Hypertension', value: 3247 },
-        { name: 'Type 2 Diabetes', value: 2891 },
-        { name: 'Hyperlipidemia', value: 2456 },
-        { name: 'Obesity', value: 1987 },
-        { name: 'Anxiety', value: 1654 },
-      ],
-      timestamp: new Date('2024-01-15'),
-      explanation:
-        'Hypertension is your most common diagnosis, affecting 25% of your patient population. This is consistent with national averages for primary care.',
-    },
-    {
-      id: '2',
-      question: 'Show me patient age distribution',
-      answer: '45-64 is the largest age group',
-      chartType: 'pie_chart',
-      chartData: [
-        { name: '0-17', value: 1285 },
-        { name: '18-44', value: 3456 },
-        { name: '45-64', value: 4567 },
-        { name: '65+', value: 3539 },
-      ],
-      timestamp: new Date('2024-01-14'),
-      explanation:
-        'Your patient population skews older, with 63% of patients over 45. Consider focusing preventive care resources on this demographic.',
-    },
-    {
-      id: '3',
-      question: 'What is my readmission trend over time?',
-      answer: 'Readmissions decreased 12% this year',
-      chartType: 'line_chart',
-      chartData: [
-        { month: 'Jan', rate: 9.8 },
-        { month: 'Feb', rate: 9.5 },
-        { month: 'Mar', rate: 9.2 },
-        { month: 'Apr', rate: 8.9 },
-        { month: 'May', rate: 8.7 },
-        { month: 'Jun', rate: 8.2 },
-      ],
-      timestamp: new Date('2024-01-13'),
-      explanation:
-        'Your readmission rate has steadily declined, now sitting below the national average of 9.1%. Care coordination efforts appear to be working.',
-    },
-    {
-      id: '4',
-      question: 'Show monthly encounter volume',
-      answer: 'Peak volume in March with 4,521 encounters',
-      chartType: 'bar_chart',
-      chartData: [
-        { name: 'Jan', value: 3845 },
-        { name: 'Feb', value: 3967 },
-        { name: 'Mar', value: 4521 },
-        { name: 'Apr', value: 4123 },
-        { name: 'May', value: 3892 },
-        { name: 'Jun', value: 4056 },
-      ],
-      timestamp: new Date('2024-01-12'),
-      explanation:
-        'Encounter volumes show seasonal variation with a peak in March. This may correlate with flu season and annual wellness visits.',
-    },
-    {
-      id: '5',
-      question: 'What is the payer mix breakdown?',
-      answer: 'Commercial insurance dominates at 45%',
-      chartType: 'pie_chart',
-      chartData: [
-        { name: 'Commercial', value: 5781 },
-        { name: 'Medicare', value: 3855 },
-        { name: 'Medicaid', value: 2313 },
-        { name: 'Self-Pay', value: 898 },
-      ],
-      timestamp: new Date('2024-01-11'),
-      explanation:
-        'Your payer mix is well-balanced with strong commercial coverage. The 18% Medicaid population may qualify for additional care management programs.',
-    },
-  ];
+  // Load pinned charts
+  const loadCharts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const charts = await chartsService.getCharts();
+
+      // Transform and add default sizes
+      const chartsWithSize: ChartWithSize[] = charts.map((chart, index) => ({
+        ...chart,
+        size: chart.size || (index === 0 ? 'large' : index === 1 ? 'small' : 'medium'),
+      }));
+
+      setPinnedCharts(chartsWithSize);
+    } catch (error) {
+      console.error('Failed to load charts:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (isDemoMode) {
-      setSavedInsights(demoInsights);
-    } else {
-      // Load from localStorage for real users
-      const saved = localStorage.getItem('vizier_saved_insights');
-      if (saved) {
-        setSavedInsights(JSON.parse(saved));
-      }
-    }
-  }, [isDemoMode]);
+    loadCharts();
+  }, [loadCharts]);
 
-  const handleDeleteInsight = (id: string) => {
-    if (window.confirm('Remove this insight from your dashboard?')) {
-      const updated = savedInsights.filter((i) => i.id !== id);
-      setSavedInsights(updated);
-      if (!isDemoMode) {
-        localStorage.setItem('vizier_saved_insights', JSON.stringify(updated));
-      }
+  const handleUnpin = async (chartId: string) => {
+    const confirmed = window.confirm('Remove this chart from your dashboard?');
+    if (!confirmed) return;
+
+    try {
+      await chartsService.deleteChart(chartId);
+      setPinnedCharts(prev => prev.filter(c => c.id !== chartId));
+    } catch (error) {
+      console.error('Failed to delete chart:', error);
+      alert('Failed to remove chart');
     }
   };
 
-  const handleExpandInsight = (id: string) => {
-    // Navigate to insights page with this question pre-filled
-    const insight = savedInsights.find((i) => i.id === id);
-    if (insight) {
-      navigate('/insights', { state: { initialQuestion: insight.question } });
+  const handleResize = async (chartId: string, newSize: 'small' | 'medium' | 'large') => {
+    setPinnedCharts(prev =>
+      prev.map(chart =>
+        chart.id === chartId ? { ...chart, size: newSize } : chart
+      )
+    );
+
+    // Persist size change
+    await chartsService.updateChartSize(chartId, newSize);
+  };
+
+  const handleExpand = (chartId: string) => {
+    const chart = pinnedCharts.find(c => c.id === chartId);
+    if (chart) {
+      navigate('/insights', { state: { initialQuestion: chart.query_text } });
     }
+  };
+
+  const handleRefresh = async (chartId: string) => {
+    // In production, this would re-run the SQL query
+    console.log('Refreshing chart:', chartId);
   };
 
   // Check if user has data
-  const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true';
+  const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true' || pinnedCharts.length > 0;
 
-  // Current user for annotations
-  const currentUser = {
-    id: user?.id || 'default',
-    name: user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : 'User',
+  // Get column span based on chart size
+  const getColSpan = (size: string) => {
+    if (layout === 'list') return 'col-span-12';
+
+    switch (size) {
+      case 'small': return 'col-span-12 md:col-span-6 lg:col-span-4';
+      case 'medium': return 'col-span-12 md:col-span-6 lg:col-span-6';
+      case 'large': return 'col-span-12 lg:col-span-8';
+      default: return 'col-span-12 md:col-span-6 lg:col-span-6';
+    }
   };
+
+  // Empty state when no charts are pinned
+  const EmptyPinnedState = () => (
+    <div className="text-center py-16 bg-gray-800/30 rounded-2xl border border-gray-700">
+      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
+        <BarChart3 className="w-10 h-10 text-gray-600" />
+      </div>
+      <h3 className="text-xl font-bold text-white mb-3">
+        Your Dashboard is Empty
+      </h3>
+      <p className="text-gray-400 mb-6 max-w-md mx-auto">
+        Start by asking Vizier questions about your data. Pin your favorite insights to build your personalized dashboard.
+      </p>
+      <button
+        onClick={() => navigate('/insights')}
+        className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2 shadow-lg"
+      >
+        <MessageSquare className="w-5 h-5" />
+        Ask Vizier
+      </button>
+    </div>
+  );
 
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-8">
-        <div className="max-w-[1600px] mx-auto">
+        <div className="max-w-[1800px] mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-white">
-                Welcome back{user?.first_name ? `, ${user.first_name}` : ''}
+                {pinnedCharts.length > 0 ? 'My Dashboard' : `Welcome back${user?.first_name ? `, ${user.first_name}` : ''}`}
               </h1>
               <p className="text-gray-400 mt-1">
-                Here's an overview of your healthcare analytics
+                {pinnedCharts.length > 0
+                  ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
+                  : "Here's an overview of your healthcare analytics"
+                }
               </p>
             </div>
 
-            <button
-              data-tour="ask-vizier"
-              onClick={() => navigate('/insights')}
-              className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
-            >
-              <MessageSquare className="w-5 h-5" />
-              Ask Vizier
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Layout toggle - only show when charts exist */}
+              {pinnedCharts.length > 0 && (
+                <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+                  <button
+                    onClick={() => setLayout('grid')}
+                    className={`px-3 py-2 rounded text-sm transition-colors ${
+                      layout === 'grid'
+                        ? 'bg-white text-black'
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                    title="Grid view"
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setLayout('list')}
+                    className={`px-3 py-2 rounded text-sm transition-colors ${
+                      layout === 'list'
+                        ? 'bg-white text-black'
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                    title="List view"
+                  >
+                    <List className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Refresh button - only show when charts exist */}
+              {pinnedCharts.length > 0 && (
+                <button
+                  onClick={loadCharts}
+                  disabled={isLoading}
+                  className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                  title="Refresh all"
+                >
+                  <RefreshCw className={`w-5 h-5 text-white ${isLoading ? 'animate-spin' : ''}`} />
+                </button>
+              )}
+
+              {/* Add Chart / Ask Vizier button */}
+              <button
+                data-tour="ask-vizier"
+                onClick={() => navigate('/insights')}
+                className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+              >
+                {pinnedCharts.length > 0 ? (
+                  <>
+                    <Plus className="w-5 h-5" />
+                    Add Chart
+                  </>
+                ) : (
+                  <>
+                    <MessageSquare className="w-5 h-5" />
+                    Ask Vizier
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {hasData ? (
             <div className="space-y-8">
-              {/* Stats Overview */}
+              {/* Stats Overview - Always show when user has data */}
               <div data-tour="stats">
                 <StatsOverview stats={demoStats} />
               </div>
 
-              {/* Saved Insights - 12-Column Flexible Grid */}
-              {savedInsights.length > 0 && (
-                <div data-tour="saved-insights">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-white">Saved Insights</h2>
-                    <button
-                      onClick={() => navigate('/insights')}
-                      className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-colors shadow-lg"
-                    >
-                      Ask New Question
-                    </button>
+              {/* Pinned Charts Section */}
+              <div data-tour="saved-insights">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
                   </div>
+                ) : pinnedCharts.length > 0 ? (
+                  <>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-2xl font-bold text-white">Pinned Insights</h2>
+                    </div>
 
-                  {/* 12-Column Flexible Grid Layout */}
-                  <div className="grid grid-cols-12 gap-6">
-                    {/* First insight - LARGE (8 columns) - Hero position */}
-                    {savedInsights[0] && (
-                      <div className="col-span-12 lg:col-span-8">
-                        <InsightCard
-                          insight={savedInsights[0]}
-                          size="large"
-                          onDelete={handleDeleteInsight}
-                          onExpand={handleExpandInsight}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    )}
-
-                    {/* Second insight - SMALL (4 columns) */}
-                    {savedInsights[1] && (
-                      <div className="col-span-12 lg:col-span-4">
-                        <InsightCard
-                          insight={savedInsights[1]}
-                          size="small"
-                          onDelete={handleDeleteInsight}
-                          onExpand={handleExpandInsight}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    )}
-
-                    {/* Third insight - MEDIUM (4 columns) */}
-                    {savedInsights[2] && (
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <InsightCard
-                          insight={savedInsights[2]}
-                          size="medium"
-                          onDelete={handleDeleteInsight}
-                          onExpand={handleExpandInsight}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    )}
-
-                    {/* Fourth insight - MEDIUM (4 columns) */}
-                    {savedInsights[3] && (
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <InsightCard
-                          insight={savedInsights[3]}
-                          size="medium"
-                          onDelete={handleDeleteInsight}
-                          onExpand={handleExpandInsight}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    )}
-
-                    {/* Fifth insight - MEDIUM (4 columns) */}
-                    {savedInsights[4] && (
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <InsightCard
-                          insight={savedInsights[4]}
-                          size="medium"
-                          onDelete={handleDeleteInsight}
-                          onExpand={handleExpandInsight}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    )}
-
-                    {/* Sixth+ insights - MEDIUM (4 columns each) */}
-                    {savedInsights.slice(5).map((insight) => (
-                      <div key={insight.id} className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <InsightCard
-                          insight={insight}
-                          size="medium"
-                          onDelete={handleDeleteInsight}
-                          onExpand={handleExpandInsight}
-                          currentUser={currentUser}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    {/* Dynamic Grid Layout */}
+                    <div className="grid grid-cols-12 gap-6">
+                      {pinnedCharts.map((chart) => (
+                        <div key={chart.id} className={getColSpan(chart.size)}>
+                          <DashboardCard
+                            chart={chart}
+                            onUnpin={handleUnpin}
+                            onResize={handleResize}
+                            onExpand={handleExpand}
+                            onRefresh={handleRefresh}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <EmptyPinnedState />
+                )}
+              </div>
 
               {/* Quick Actions */}
               <QuickActions />
             </div>
           ) : (
-            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 shadow-lg">
-              <EmptyDashboard isDemoMode={isDemoMode} />
-            </div>
+            <EmptyPinnedState />
           )}
         </div>
       </div>

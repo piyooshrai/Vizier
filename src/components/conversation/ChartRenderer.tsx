@@ -24,16 +24,16 @@ interface ChartRendererProps {
   height?: number;
 }
 
-// Healthcare-appropriate color palette
-const COLORS = [
-  '#2563eb', // Primary blue
-  '#10b981', // Success green
-  '#f59e0b', // Warning amber
-  '#8b5cf6', // Purple
-  '#ec4899', // Pink
-  '#06b6d4', // Cyan
-  '#6366f1', // Indigo
-  '#84cc16', // Lime
+// Gold-based color palette for brand consistency
+const GOLD_COLORS = [
+  '#F59E0B', // Primary gold
+  '#FB923C', // Orange
+  '#FBBF24', // Amber
+  '#FDE047', // Yellow
+  '#A855F7', // Purple (accent)
+  '#3B82F6', // Blue (accent)
+  '#10B981', // Green (accent)
+  '#EF4444', // Red (accent)
 ];
 
 // Get the key for the value (numeric) column
@@ -76,6 +76,30 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+// Custom label for pie charts - simpler, no cutoff
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: any) => {
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius * 1.2;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  // Only show labels for segments > 5%
+  if (percent < 0.05) return null;
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#374151"
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline="central"
+      fontSize={12}
+    >
+      {`${name}: ${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
 export const ChartRenderer: React.FC<ChartRendererProps> = ({
   type,
   data,
@@ -109,7 +133,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               />
               <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey={valueKey} fill={COLORS[0]} radius={[4, 4, 0, 0]} />
+              <Bar dataKey={valueKey} fill="#F59E0B" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -131,7 +155,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                 width={90}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey={valueKey} fill={COLORS[0]} radius={[0, 4, 4, 0]} />
+              <Bar dataKey={valueKey} fill="#F59E0B" radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -153,10 +177,10 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               <Line
                 type="monotone"
                 dataKey={valueKey}
-                stroke={COLORS[0]}
-                strokeWidth={2}
-                dot={{ fill: COLORS[0], strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
+                stroke="#F59E0B"
+                strokeWidth={3}
+                dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, fill: '#F59E0B' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -164,32 +188,40 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
       case 'pie_chart':
       case 'donut_chart':
+        // Calculate proper dimensions to prevent cutoff
+        const pieHeight = Math.max(height, 350);
+        const outerRadius = Math.min(pieHeight * 0.28, 120);
+        const innerRadius = type === 'donut_chart' ? outerRadius * 0.5 : 0;
+
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <PieChart>
+          <ResponsiveContainer width="100%" height={pieHeight}>
+            <PieChart margin={{ top: 20, right: 80, left: 80, bottom: 20 }}>
               <Pie
                 data={data}
                 cx="50%"
-                cy="50%"
-                innerRadius={type === 'donut_chart' ? 60 : 0}
-                outerRadius={100}
+                cy="45%"
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
                 paddingAngle={2}
                 dataKey={valueKey}
                 nameKey={labelKey}
-                label={({ name, percent }) =>
-                  `${name} (${(percent * 100).toFixed(0)}%)`
-                }
-                labelLine={{ stroke: '#6b7280' }}
+                label={renderCustomizedLabel}
+                labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
               >
                 {data.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    fill={GOLD_COLORS[index % GOLD_COLORS.length]}
                   />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
+              <Legend
+                verticalAlign="bottom"
+                align="center"
+                iconType="circle"
+                wrapperStyle={{ paddingTop: '20px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         );
@@ -199,7 +231,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
         const bigNumLabel = data[0]?.[labelKey];
         return (
           <div className="flex flex-col items-center justify-center py-8">
-            <p className="text-5xl font-bold text-primary-600">
+            <p className="text-5xl font-bold text-amber-500">
               {typeof bigNumValue === 'number' ? formatNumber(bigNumValue) : String(bigNumValue)}
             </p>
             {bigNumLabel !== undefined && bigNumLabel !== null && (
