@@ -129,136 +129,143 @@ export const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="p-8">
-        <div className="max-w-[1800px] mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white">
-                {pinnedCharts.length > 0 ? 'My Dashboard' : `Welcome back${user?.first_name ? `, ${user.first_name}` : ''}`}
-              </h1>
-              <p className="text-gray-400 mt-1">
-                {pinnedCharts.length > 0
-                  ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
-                  : "Here's an overview of your healthcare analytics"
-                }
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Layout toggle - only show when charts exist */}
-              {pinnedCharts.length > 0 && (
-                <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
-                  <button
-                    onClick={() => setLayout('grid')}
-                    className={`px-3 py-2 rounded text-sm transition-colors ${
-                      layout === 'grid'
-                        ? 'bg-white text-black'
-                        : 'text-gray-400 hover:text-white'
-                    }`}
-                    title="Grid view"
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setLayout('list')}
-                    className={`px-3 py-2 rounded text-sm transition-colors ${
-                      layout === 'list'
-                        ? 'bg-white text-black'
-                        : 'text-gray-400 hover:text-white'
-                    }`}
-                    title="List view"
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Refresh button - only show when charts exist */}
-              {pinnedCharts.length > 0 && (
-                <button
-                  onClick={loadCharts}
-                  disabled={isLoading}
-                  className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
-                  title="Refresh all"
-                >
-                  <RefreshCw className={`w-5 h-5 text-white ${isLoading ? 'animate-spin' : ''}`} />
-                </button>
-              )}
-
-              {/* Add Chart / Ask Vizier button */}
-              <button
-                data-tour="ask-vizier"
-                onClick={() => navigate('/insights')}
-                className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
-              >
-                {pinnedCharts.length > 0 ? (
-                  <>
-                    <Plus className="w-5 h-5" />
-                    Add Chart
-                  </>
-                ) : (
-                  <>
-                    <MessageSquare className="w-5 h-5" />
-                    Ask Vizier
-                  </>
-                )}
-              </button>
-            </div>
+    <div className="h-full overflow-y-auto bg-black">
+      {/* Header - moderate padding */}
+      <div className="px-6 py-6 border-b border-gray-800">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">
+              {pinnedCharts.length > 0 ? 'My Dashboard' : `Welcome back${user?.first_name ? `, ${user.first_name}` : ''}`}
+            </h1>
+            <p className="text-gray-400 mt-1">
+              {pinnedCharts.length > 0
+                ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
+                : "Here's an overview of your healthcare analytics"
+              }
+            </p>
           </div>
 
-          {hasData ? (
-            <div className="space-y-8">
-              {/* Stats Overview - Always show when user has data */}
-              <div data-tour="stats">
-                <StatsOverview stats={demoStats} />
+          <div className="flex items-center gap-3">
+            {/* Layout toggle - only show when charts exist */}
+            {pinnedCharts.length > 0 && (
+              <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+                <button
+                  onClick={() => setLayout('grid')}
+                  className={`px-3 py-2 rounded text-sm transition-colors ${
+                    layout === 'grid'
+                      ? 'bg-white text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Grid view"
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setLayout('list')}
+                  className={`px-3 py-2 rounded text-sm transition-colors ${
+                    layout === 'list'
+                      ? 'bg-white text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="List view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
               </div>
+            )}
 
-              {/* Pinned Charts Section */}
-              <div data-tour="saved-insights">
-                {isLoading ? (
-                  <div className="flex items-center justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-                  </div>
-                ) : pinnedCharts.length > 0 ? (
-                  <>
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-2xl font-bold text-white">Pinned Insights</h2>
-                    </div>
+            {/* Refresh button - only show when charts exist */}
+            {pinnedCharts.length > 0 && (
+              <button
+                onClick={loadCharts}
+                disabled={isLoading}
+                className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                title="Refresh all"
+              >
+                <RefreshCw className={`w-5 h-5 text-white ${isLoading ? 'animate-spin' : ''}`} />
+              </button>
+            )}
 
-                    {/* Dynamic Grid Layout */}
-                    <div className="grid grid-cols-12 gap-6">
-                      {pinnedCharts.map((chart) => (
-                        <div key={chart.id} className={getColSpan(chart.size)}>
-                          <DashboardCard
-                            chart={chart}
-                            onUnpin={handleUnpin}
-                            onResize={handleResize}
-                            onExpand={handleExpand}
-                            onRefresh={handleRefresh}
-                            currentUser={{
-                              id: user?.id?.toString() || 'demo-user',
-                              name: user?.first_name || 'Demo User'
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <EmptyPinnedState />
-                )}
-              </div>
-
-              {/* Quick Actions */}
-              <QuickActions />
-            </div>
-          ) : (
-            <EmptyPinnedState />
-          )}
+            {/* Add Chart / Ask Vizier button */}
+            <button
+              data-tour="ask-vizier"
+              onClick={() => navigate('/insights')}
+              className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
+            >
+              {pinnedCharts.length > 0 ? (
+                <>
+                  <Plus className="w-5 h-5" />
+                  Add Chart
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-5 h-5" />
+                  Ask Vizier
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
+
+      {hasData ? (
+        <>
+          {/* Stats Overview - moderate padding */}
+          <div className="px-6 py-6" data-tour="stats">
+            <StatsOverview stats={demoStats} />
+          </div>
+
+          {/* Pinned Charts Section */}
+          <div data-tour="saved-insights">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              </div>
+            ) : pinnedCharts.length > 0 ? (
+              <>
+                {/* Section Header */}
+                <div className="px-6 py-4">
+                  <h2 className="text-xl font-bold text-white">Pinned Insights</h2>
+                </div>
+
+                {/* Charts Grid - MINIMAL PADDING for maximum width */}
+                <div className="px-4 pb-6">
+                  <div className="grid grid-cols-12 gap-4">
+                    {pinnedCharts.map((chart) => (
+                      <div key={chart.id} className={getColSpan(chart.size)}>
+                        <DashboardCard
+                          chart={chart}
+                          onUnpin={handleUnpin}
+                          onResize={handleResize}
+                          onExpand={handleExpand}
+                          onRefresh={handleRefresh}
+                          currentUser={{
+                            id: user?.id?.toString() || 'demo-user',
+                            name: user?.first_name || 'Demo User'
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="px-6">
+                <EmptyPinnedState />
+              </div>
+            )}
+          </div>
+
+          {/* Quick Actions - moderate padding */}
+          <div className="px-6 pb-8">
+            <QuickActions />
+          </div>
+        </>
+      ) : (
+        <div className="px-6 py-8">
+          <EmptyPinnedState />
+        </div>
+      )}
 
       {/* Onboarding Components */}
       <DemoWelcomeModal
