@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { StatsOverview } from '../components/dashboard/StatsOverview';
 import { DashboardCard } from '../components/dashboard/DashboardCard';
 import { QuickActions } from '../components/dashboard/QuickActions';
+import { DrillDownModal } from '../components/dashboard/DrillDownModal';
 import { DemoWelcomeModal } from '../components/onboarding/DemoWelcomeModal';
 import { ProductTour } from '../components/onboarding/ProductTour';
 import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
@@ -25,6 +26,8 @@ export const Dashboard: React.FC = () => {
   const [showTour, setShowTour] = useState(false);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [density, setDensity] = useState<DensityMode>('compact');
+  const [drillDownData, setDrillDownData] = useState<any>(null);
+  const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
 
   // Load density preference from localStorage
   useEffect(() => {
@@ -106,6 +109,18 @@ export const Dashboard: React.FC = () => {
   const handleRefresh = async (chartId: string) => {
     // In production, this would re-run the SQL query
     console.log('Refreshing chart:', chartId);
+  };
+
+  // Handle drill-down click
+  const handleDrillDown = (chart: PinnedChart) => {
+    const data = generateDrillDownData(chart);
+    setDrillDownData(data);
+    setIsDrillDownOpen(true);
+  };
+
+  const handleCloseDrillDown = () => {
+    setIsDrillDownOpen(false);
+    setDrillDownData(null);
   };
 
   // Check if user has data
@@ -307,6 +322,7 @@ export const Dashboard: React.FC = () => {
                           onResize={handleResize}
                           onExpand={handleExpand}
                           onRefresh={handleRefresh}
+                          onDrillDown={handleDrillDown}
                           currentUser={{
                             id: user?.id?.toString() || 'demo-user',
                             name: user?.first_name || 'Demo User'
@@ -349,8 +365,185 @@ export const Dashboard: React.FC = () => {
       />
 
       <UpgradePrompt />
+
+      {/* Drill-Down Modal */}
+      {drillDownData && (
+        <DrillDownModal
+          isOpen={isDrillDownOpen}
+          onClose={handleCloseDrillDown}
+          data={drillDownData}
+          isDemoMode={isDemoMode}
+        />
+      )}
     </div>
   );
 };
+
+// Generate drill-down data based on chart type
+function generateDrillDownData(chart: PinnedChart) {
+  const question = (chart.query_text || chart.title || '').toLowerCase();
+
+  // Synthetic patient data
+  const FIRST_NAMES = ['John', 'Mary', 'Robert', 'Patricia', 'Michael', 'Jennifer', 'William', 'Linda', 'David', 'Elizabeth', 'Richard', 'Barbara', 'Joseph', 'Susan', 'Thomas', 'Jessica', 'Charles', 'Sarah', 'Christopher', 'Karen'];
+  const LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
+
+  const generatePatients = (count: number) => {
+    return Array.from({ length: count }, (_, i) => ({
+      id: `patient-${i + 1}`,
+      name: `${FIRST_NAMES[i % 20]} ${LAST_NAMES[i % 20]}`,
+      mrn: `MRN-${String(12847 + i).padStart(5, '0')}`,
+      age: 45 + Math.floor(Math.random() * 40),
+      lastVisit: `12/${20 - (i % 20)}/2024`,
+      primaryMetric: `${155 + Math.floor(Math.random() * 30)}/${85 + Math.floor(Math.random() * 20)}`,
+      riskScore: (i < 5 ? 'High' : i < 12 ? 'Medium' : 'Low') as 'High' | 'Medium' | 'Low',
+    }));
+  };
+
+  // Diagnosis drill-down
+  if (question.includes('diagnosis') || question.includes('diagnoses')) {
+    return {
+      title: 'Essential Hypertension',
+      subtitle: 'Detailed analysis of patients with primary diagnosis',
+      totalCount: 3247,
+      demographics: {
+        avgAge: 58,
+        femalePercent: 62,
+        malePercent: 38,
+        ageDistribution: [
+          { range: '0-17', count: 45 },
+          { range: '18-34', count: 234 },
+          { range: '35-49', count: 567 },
+          { range: '50-64', count: 1243 },
+          { range: '65+', count: 1158 },
+        ],
+        genderSplit: [
+          { name: 'Female', value: 62 },
+          { name: 'Male', value: 38 },
+        ],
+      },
+      metrics: {
+        readmissionRate: '8.2%',
+        avgCost: '$4,850',
+        avgEncounters: '3.2/year',
+      },
+      comorbidities: [
+        { name: 'Diabetes Mellitus Type 2', count: 1461, percent: 45 },
+        { name: 'Hyperlipidemia', count: 1234, percent: 38 },
+        { name: 'Chronic Kidney Disease', count: 389, percent: 12 },
+        { name: 'Coronary Artery Disease', count: 325, percent: 10 },
+      ],
+      highRiskPatients: generatePatients(20),
+    };
+  }
+
+  // Age distribution drill-down
+  if (question.includes('age') || question.includes('demographic')) {
+    return {
+      title: 'Age Group: 65+ Years',
+      subtitle: 'Geriatric patient population analysis',
+      totalCount: 3589,
+      demographics: {
+        avgAge: 73,
+        femalePercent: 58,
+        malePercent: 42,
+        ageDistribution: [
+          { range: '65-69', count: 1234 },
+          { range: '70-74', count: 987 },
+          { range: '75-79', count: 765 },
+          { range: '80-84', count: 432 },
+          { range: '85+', count: 171 },
+        ],
+        genderSplit: [
+          { name: 'Female', value: 58 },
+          { name: 'Male', value: 42 },
+        ],
+      },
+      metrics: {
+        readmissionRate: '14.5%',
+        avgCost: '$6,250',
+        avgEncounters: '5.8/year',
+      },
+      comorbidities: [
+        { name: 'Hypertension', count: 2872, percent: 80 },
+        { name: 'Diabetes', count: 1436, percent: 40 },
+        { name: 'COPD', count: 718, percent: 20 },
+        { name: 'Dementia', count: 359, percent: 10 },
+      ],
+      highRiskPatients: generatePatients(20),
+    };
+  }
+
+  // Readmission drill-down
+  if (question.includes('readmission')) {
+    return {
+      title: 'Readmission Analysis',
+      subtitle: '30-day readmission rate breakdown',
+      totalCount: 1582,
+      demographics: {
+        avgAge: 67,
+        femalePercent: 48,
+        malePercent: 52,
+        ageDistribution: [
+          { range: '18-34', count: 89 },
+          { range: '35-49', count: 213 },
+          { range: '50-64', count: 456 },
+          { range: '65-74', count: 512 },
+          { range: '75+', count: 312 },
+        ],
+        genderSplit: [
+          { name: 'Female', value: 48 },
+          { name: 'Male', value: 52 },
+        ],
+      },
+      metrics: {
+        readmissionRate: '12.3%',
+        avgCost: '$8,450',
+        avgEncounters: '6.2/year',
+      },
+      comorbidities: [
+        { name: 'Heart Failure', count: 632, percent: 40 },
+        { name: 'COPD', count: 474, percent: 30 },
+        { name: 'Pneumonia', count: 316, percent: 20 },
+        { name: 'Sepsis', count: 158, percent: 10 },
+      ],
+      highRiskPatients: generatePatients(20),
+    };
+  }
+
+  // Default drill-down
+  return {
+    title: chart.query_text || chart.title || 'Data Analysis',
+    subtitle: 'Detailed cohort analysis',
+    totalCount: 12847,
+    demographics: {
+      avgAge: 52,
+      femalePercent: 54,
+      malePercent: 46,
+      ageDistribution: [
+        { range: '0-17', count: 1285 },
+        { range: '18-34', count: 2569 },
+        { range: '35-49', count: 3211 },
+        { range: '50-64', count: 3204 },
+        { range: '65+', count: 2578 },
+      ],
+      genderSplit: [
+        { name: 'Female', value: 54 },
+        { name: 'Male', value: 46 },
+      ],
+    },
+    metrics: {
+      readmissionRate: '12.3%',
+      avgCost: '$4,250',
+      avgEncounters: '3.7/year',
+    },
+    comorbidities: [
+      { name: 'Hypertension', count: 3212, percent: 25 },
+      { name: 'Diabetes', count: 2569, percent: 20 },
+      { name: 'Asthma', count: 1927, percent: 15 },
+      { name: 'Obesity', count: 1542, percent: 12 },
+    ],
+    highRiskPatients: generatePatients(20),
+  };
+}
 
 export default Dashboard;

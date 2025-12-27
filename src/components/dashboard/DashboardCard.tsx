@@ -23,6 +23,7 @@ interface DashboardCardProps {
   onResize: (id: string, size: 'small' | 'medium' | 'large') => void;
   onExpand: (id: string) => void;
   onRefresh?: (id: string) => void;
+  onDrillDown?: (chart: PinnedChart) => void;
   currentUser: CurrentUser;
   density?: 'comfortable' | 'compact' | 'dense';
 }
@@ -152,6 +153,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   onResize,
   onExpand,
   onRefresh,
+  onDrillDown,
   currentUser,
   density = 'compact',
 }) => {
@@ -377,8 +379,12 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
         </div>
       )}
 
-      {/* Chart */}
-      <div className={`flex-1 ${padding.chart} min-h-0 bg-white`}>
+      {/* Chart - Clickable for drill-down */}
+      <div
+        className={`flex-1 ${padding.chart} min-h-0 bg-white cursor-pointer hover:bg-gray-50 transition-colors`}
+        onClick={() => onDrillDown?.(chart)}
+        title="Click for detailed drill-down report"
+      >
         <div style={{ height: chartHeight }}>
           {chart.chart_data && chart.chart_type ? (
             <ChartRenderer
