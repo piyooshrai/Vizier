@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Maximize2, RefreshCw, ExternalLink, MessageSquare, Globe, Lock } from 'lucide-react';
+import { X, Maximize2, RefreshCw, ExternalLink, MessageSquare, Globe, Lock, Edit2, Trash2 } from 'lucide-react';
 import { ChartRenderer } from '../insights/ChartRenderer';
 import { PinnedChart } from '../../services/charts.service';
 
@@ -10,6 +10,7 @@ interface Annotation {
   text: string;
   isPublic: boolean;
   timestamp: string;
+  edited?: boolean;
 }
 
 interface CurrentUser {
@@ -163,6 +164,8 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   const [isAddingAnnotation, setIsAddingAnnotation] = useState(false);
   const [annotationText, setAnnotationText] = useState('');
   const [annotationPublic, setAnnotationPublic] = useState(true);
+  const [editingAnnotationId, setEditingAnnotationId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
 
   // Load annotations from localStorage
   useEffect(() => {
@@ -199,6 +202,51 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     localStorage.setItem(`annotations_${chart.id}`, JSON.stringify(updated));
     setAnnotationText('');
     setIsAddingAnnotation(false);
+  };
+
+  // Edit annotation handler
+  const handleEditAnnotation = (annotation: Annotation) => {
+    setEditingAnnotationId(annotation.id);
+    setEditText(annotation.text);
+    setIsAddingAnnotation(false); // Close add form if open
+  };
+
+  // Save edit handler
+  const handleSaveEdit = () => {
+    if (!editText.trim()) return;
+
+    const updated = annotations.map(ann =>
+      ann.id === editingAnnotationId
+        ? {
+            ...ann,
+            text: editText.trim(),
+            timestamp: new Date().toISOString(),
+            edited: true
+          }
+        : ann
+    );
+
+    setAnnotations(updated);
+    localStorage.setItem(`annotations_${chart.id}`, JSON.stringify(updated));
+
+    setEditingAnnotationId(null);
+    setEditText('');
+  };
+
+  // Cancel edit handler
+  const handleCancelEdit = () => {
+    setEditingAnnotationId(null);
+    setEditText('');
+  };
+
+  // Delete annotation handler
+  const handleDeleteAnnotation = (annotationId: string) => {
+    const confirmed = window.confirm('Delete this note? This cannot be undone.');
+    if (!confirmed) return;
+
+    const updated = annotations.filter(ann => ann.id !== annotationId);
+    setAnnotations(updated);
+    localStorage.setItem(`annotations_${chart.id}`, JSON.stringify(updated));
   };
 
   const visibleAnnotations = annotations.filter(
@@ -358,22 +406,103 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
       {/* Annotations Display */}
       {visibleAnnotations.length > 0 && (
-        <div className={`${padding.annotation} bg-gray-900/30 border-b border-gray-700 space-y-1 max-h-20 overflow-y-auto`}>
+        <div className={`${padding.annotation} bg-gray-900/30 border-b border-gray-700 space-y-1.5 max-h-28 overflow-y-auto`}>
           {visibleAnnotations.map(annotation => (
-            <div key={annotation.id} className="flex items-start gap-1.5">
-              <div className="flex-shrink-0 mt-0.5">
-                {annotation.isPublic ? (
-                  <Globe className="w-2.5 h-2.5 text-gray-500" />
-                ) : (
-                  <Lock className="w-2.5 h-2.5 text-amber-500" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className={`${text.label} text-gray-300 leading-tight`}>
-                  <span className="font-semibold text-white">{annotation.userName}:</span>{' '}
-                  {annotation.text}
-                </p>
-              </div>
+            <div key={annotation.id} className="group">
+              {editingAnnotationId === annotation.id ? (
+                // EDIT MODE
+                <div className="flex items-start gap-1.5">
+                  <div className="flex-shrink-0 mt-2">
+                    {annotation.isPublic ? (
+                      <Globe className="w-2.5 h-2.5 text-gray-500" />
+                    ) : (
+                      <Lock className="w-2.5 h-2.5 text-amber-500" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <textarea
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                          handleCancelEdit();
+                        }
+                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                          handleSaveEdit();
+                        }
+                      }}
+                      className={`w-full px-2 py-1.5 bg-gray-800 border border-gray-600 rounded-lg text-white ${text.label} resize-none focus:outline-none focus:border-white`}
+                      rows={2}
+                      autoFocus
+                    />
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <button
+                        onClick={handleSaveEdit}
+                        disabled={!editText.trim()}
+                        className={`px-2.5 py-1 bg-white hover:bg-gray-100 disabled:bg-gray-600 disabled:text-gray-400 text-black ${text.label} font-medium rounded-lg transition-colors`}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className={`px-2 py-1 ${text.label} text-gray-400 hover:text-white transition-colors`}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // DISPLAY MODE
+                <div className="flex items-start gap-1.5">
+                  <div className="flex-shrink-0 mt-0.5">
+                    {annotation.isPublic ? (
+                      <Globe className="w-2.5 h-2.5 text-gray-500" />
+                    ) : (
+                      <Lock className="w-2.5 h-2.5 text-amber-500" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`${text.label} text-gray-300 leading-tight`}>
+                      <span className="font-semibold text-white">{annotation.userName}:</span>{' '}
+                      {annotation.text}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={`${text.label} text-gray-500`}>
+                        {new Date(annotation.timestamp).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                      {annotation.edited && (
+                        <span className={`${text.label} text-gray-500 italic`}>(edited)</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Edit/Delete buttons - only for current user's annotations */}
+                  {annotation.userId === currentUser.id && (
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                      <button
+                        onClick={() => handleEditAnnotation(annotation)}
+                        className="p-1 hover:bg-gray-700 rounded transition-colors"
+                        title="Edit note"
+                      >
+                        <Edit2 className="w-3 h-3 text-gray-400 hover:text-white" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteAnnotation(annotation.id)}
+                        className="p-1 hover:bg-red-500/10 rounded transition-colors"
+                        title="Delete note"
+                      >
+                        <Trash2 className="w-3 h-3 text-gray-400 hover:text-red-400" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
