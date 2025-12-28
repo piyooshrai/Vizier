@@ -311,26 +311,28 @@ export const Dashboard: React.FC = () => {
                   <h2 className="text-lg font-bold text-white">Pinned Insights</h2>
                 </div>
 
-                {/* Charts Grid - DENSITY-AWARE PADDING AND GAP */}
+                {/* Charts Grid - max-width for presentation quality */}
                 <div className={`${getGridPadding()} pb-4`}>
-                  <div className={`grid grid-cols-12 ${getGridGap()}`}>
-                    {pinnedCharts.map((chart) => (
-                      <div key={chart.id} className={getColSpan(chart.size)}>
-                        <DashboardCard
-                          chart={chart}
-                          onUnpin={handleUnpin}
-                          onResize={handleResize}
-                          onExpand={handleExpand}
-                          onRefresh={handleRefresh}
-                          onDrillDown={handleDrillDown}
-                          currentUser={{
-                            id: user?.id?.toString() || 'demo-user',
-                            name: user?.first_name || 'Demo User'
-                          }}
-                          density={density}
-                        />
-                      </div>
-                    ))}
+                  <div className="max-w-[2000px] mx-auto">
+                    <div className={`grid grid-cols-12 ${getGridGap()}`}>
+                      {pinnedCharts.map((chart) => (
+                        <div key={chart.id} className={getColSpan(chart.size)}>
+                          <DashboardCard
+                            chart={chart}
+                            onUnpin={handleUnpin}
+                            onResize={handleResize}
+                            onExpand={handleExpand}
+                            onRefresh={handleRefresh}
+                            onDrillDown={handleDrillDown}
+                            currentUser={{
+                              id: user?.id?.toString() || 'demo-user',
+                              name: user?.first_name || 'Demo User'
+                            }}
+                            density={density}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </>
