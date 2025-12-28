@@ -21,7 +21,7 @@ interface ChartRendererProps {
   type: ChartType;
   data: Record<string, unknown>[];
   title?: string;
-  height?: number;
+  height?: number | string;
 }
 
 // Gold-based color palette for brand consistency
@@ -104,7 +104,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
   type,
   data,
   title,
-  height = 300,
+  height = '100%',
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -116,6 +116,9 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
   const valueKey = getValueKey(data);
   const labelKey = getLabelKey(data);
+
+  // For calculations that need a number, use 300 as default
+  const numericHeight = typeof height === 'number' ? height : 300;
 
   const renderChart = () => {
     switch (type) {
@@ -140,7 +143,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
       case 'horizontal_bar_chart':
         return (
-          <ResponsiveContainer width="100%" height={Math.max(height, data.length * 40)}>
+          <ResponsiveContainer width="100%" height={Math.max(numericHeight, data.length * 40)}>
             <BarChart
               data={data}
               layout="vertical"
@@ -189,7 +192,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
       case 'pie_chart':
       case 'donut_chart':
         // Calculate proper dimensions to prevent cutoff
-        const pieHeight = Math.max(height, 350);
+        const pieHeight = Math.max(numericHeight, 350);
         const outerRadius = Math.min(pieHeight * 0.28, 120);
         const innerRadius = type === 'donut_chart' ? outerRadius * 0.5 : 0;
 
