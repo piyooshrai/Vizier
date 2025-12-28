@@ -28,15 +28,32 @@ interface DashboardCardProps {
   density?: 'comfortable' | 'compact' | 'dense';
 }
 
-// Density-based chart heights
-function getChartHeight(size: string | undefined, density: string): number {
-  const heights = {
-    comfortable: { small: 320, medium: 420, large: 550 },
-    compact: { small: 240, medium: 320, large: 420 },
-    dense: { small: 180, medium: 260, large: 340 },
+// Density-based chart heights with viewport scaling
+// Uses CSS clamp() for responsive height that scales with viewport
+function getChartHeightClamp(size: string | undefined, density: string): string {
+  // Configuration: min height, viewport scale, max height
+  const config = {
+    comfortable: {
+      small: { min: 280, vw: 20, max: 450 },
+      medium: { min: 360, vw: 24, max: 580 },
+      large: { min: 480, vw: 30, max: 750 },
+    },
+    compact: {
+      small: { min: 200, vw: 16, max: 360 },
+      medium: { min: 280, vw: 20, max: 480 },
+      large: { min: 360, vw: 24, max: 620 },
+    },
+    dense: {
+      small: { min: 150, vw: 12, max: 280 },
+      medium: { min: 220, vw: 16, max: 380 },
+      large: { min: 280, vw: 20, max: 500 },
+    },
   };
-  const densityHeights = heights[density as keyof typeof heights] || heights.compact;
-  return densityHeights[size as keyof typeof densityHeights] || densityHeights.medium;
+
+  const densityConfig = config[density as keyof typeof config] || config.compact;
+  const sizeConfig = densityConfig[size as keyof typeof densityConfig] || densityConfig.medium;
+
+  return `clamp(${sizeConfig.min}px, ${sizeConfig.vw}vw, ${sizeConfig.max}px)`;
 }
 
 // Density-based padding classes
@@ -205,7 +222,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     ann => ann.isPublic || ann.userId === currentUser.id
   );
 
-  const chartHeight = getChartHeight(chart.size, density);
+  const chartHeightClamp = getChartHeightClamp(chart.size, density);
   const padding = getPaddingClasses(density);
   const text = getTextClasses(density);
   const iconSize = getIconSize(density);
@@ -385,12 +402,11 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
         onClick={() => onDrillDown?.(chart)}
         title="Click for detailed drill-down report"
       >
-        <div style={{ height: chartHeight }}>
+        <div style={{ height: chartHeightClamp }}>
           {chart.chart_data && chart.chart_type ? (
             <ChartRenderer
               type={chart.chart_type as any}
               data={chart.chart_data}
-              height={chartHeight}
             />
           ) : (
             <div className="flex items-center justify-center h-full">
