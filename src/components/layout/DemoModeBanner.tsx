@@ -13,7 +13,9 @@ export const DemoModeBanner: React.FC = () => {
           <p className="text-sm text-amber-900">
             <span className="font-semibold">Demo Mode</span> - You're exploring
             with sample healthcare data (12,847 patients, 47,293 encounters).
+            {' '}
             <button
+              type="button"
               onClick={() => navigate('/signup')}
               className="ml-2 underline hover:text-amber-950 font-medium"
             >
