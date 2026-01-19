@@ -193,7 +193,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                   onChange={(e) =>
                     setNewAlert({ ...newAlert, email: e.target.checked })
                   }
-                  className="rounded bg-gray-700 border-gray-600"
+                  className="rounded border-gray-600 bg-gray-700"
                 />
                 Email notification
               </label>
@@ -204,13 +204,14 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                   onChange={(e) =>
                     setNewAlert({ ...newAlert, sms: e.target.checked })
                   }
-                  className="rounded bg-gray-700 border-gray-600"
+                  className="rounded border-gray-600 bg-gray-700"
                 />
                 SMS notification
               </label>
             </div>
 
             <button
+              type="button"
               onClick={handleAddAlert}
               disabled={!newAlert.value || (!newAlert.email && !newAlert.sms)}
               className="w-full px-4 py-2.5 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -250,6 +251,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                       </p>
                     </div>
                     <button
+                      type="button"
                       onClick={() => handleDeleteAlert(alert.id)}
                       className="p-2 hover:bg-red-500/10 rounded-lg transition-colors ml-4"
                     >
@@ -273,6 +275,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
         {/* Footer */}
         <div className="p-6 border-t border-gray-800 flex-shrink-0">
           <button
+            type="button"
             onClick={onClose}
             className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
           >

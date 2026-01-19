@@ -24,6 +24,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to new messages
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messages.length is necessary for scrolling to new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length]);
@@ -109,7 +110,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     <div className="flex flex-wrap gap-2">
                       {message.data.follow_up_questions
                         .slice(0, 3)
-                        .map((question, i) => (
+                        .map((question) => (
                           <button
                             type="button"
                             key={question}
