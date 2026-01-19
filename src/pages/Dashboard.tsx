@@ -24,36 +24,87 @@ import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
 import { useAuth } from '../contexts/AuthContext';
 import { chartsService, type PinnedChart } from '../services/charts.service';
 
+type ChartSize = 'small' | 'medium' | 'large';
+
 interface ChartWithSize extends PinnedChart {
-  size: 'small' | 'medium' | 'large';
+  size: ChartSize;
 }
 
-type DensityMode = 'comfortable' | 'compact' | 'dense';
-
-// Empty state when no charts are pinned
-const EmptyPinnedState = () => {
+// Sub-component for Pinned Charts Section
+const PinnedChartsSection = ({
+  isLoading,
+  pinnedCharts,
+  density,
+  onUnpin,
+  onResize,
+  onExpand,
+  onRefresh,
+  onDrillDown,
+  user,
+  getColSpan,
+  getGridPadding,
+  getGridGap,
+}: {
+  isLoading: boolean;
+  pinnedCharts: ChartWithSize[];
+  density: DensityMode;
+  onUnpin: (id: string) => void;
+  onResize: (id: string, size: ChartSize) => void;
+  onExpand: (id: string) => void;
+  onRefresh: (id: string) => void;
+  onDrillDown: (chart: PinnedChart) => void;
+  user: any; // Using any here to simplify prop drilling for now, or use AuthUser type if available
+  getColSpan: (size: string) => string;
+  getGridPadding: () => string;
+  getGridGap: () => string;
+}) => {
   const navigate = useNavigate();
-  return (
-    <div className="text-center py-16 bg-gray-800/30 rounded-2xl border border-gray-700">
-      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
-        <BarChart3 className="w-10 h-10 text-gray-600" />
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white" />
       </div>
-      <h3 className="text-xl font-bold text-white mb-3">
-        Your Dashboard is Empty
-      </h3>
-      <p className="text-gray-400 mb-6 max-w-md mx-auto">
-        Start by asking Vizier questions about your data. Pin your favorite
-        insights to build your personalized dashboard.
-      </p>
-      <button
-        type="button"
-        onClick={() => navigate('/insights')}
-        className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2 shadow-lg"
-      >
-        <MessageSquare className="w-5 h-5" />
-        Ask Vizier
-      </button>
-    </div>
+    );
+  }
+
+  if (pinnedCharts.length === 0) {
+    return (
+      <div className="px-4">
+        <EmptyPinnedState />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="px-4 py-3">
+        <h2 className="text-lg font-bold text-white">Pinned Insights</h2>
+      </div>
+      <div className={`${getGridPadding()} pb-4`}>
+        <div className="max-w-[2000px] mx-auto">
+          <div className={`grid grid-cols-12 ${getGridGap()}`}>
+            {pinnedCharts.map((chart) => (
+              <div key={chart.id} className={getColSpan(chart.size)}>
+                <DashboardCard
+                  chart={chart}
+                  onUnpin={onUnpin}
+                  onResize={onResize}
+                  onExpand={onExpand}
+                  onRefresh={onRefresh}
+                  onDrillDown={onDrillDown}
+                  currentUser={{
+                    id: user?.id?.toString() || 'demo-user',
+                    name: user?.first_name || 'Demo User',
+                  }}
+                  density={density}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -65,18 +116,13 @@ export const Dashboard: React.FC = () => {
   const [showTour, setShowTour] = useState(false);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [density, setDensity] = useState<DensityMode>('compact');
+  // ... state ...
   const [drillDownData, setDrillDownData] = useState<ReturnType<
     typeof generateDrillDownData
   > | null>(null);
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
 
-  // Load density preference from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('dashboard_density');
-    if (saved && ['comfortable', 'compact', 'dense'].includes(saved)) {
-      setDensity(saved as DensityMode);
-    }
-  }, []);
+  // ... effects ...
 
   // Save density preference
   const handleDensityChange = (newDensity: DensityMode) => {
@@ -92,29 +138,32 @@ export const Dashboard: React.FC = () => {
     avgCost: 4250,
   };
 
-  // Load pinned charts
   const loadCharts = useCallback(async () => {
     setIsLoading(true);
     try {
       const charts = await chartsService.getCharts();
-
-      // Transform and add default sizes
       const chartsWithSize: ChartWithSize[] = charts.map((chart, index) => {
-        let defaultSize: 'small' | 'medium' | 'large' = 'medium';
+        let defaultSize: ChartSize = 'medium';
         if (index === 0) defaultSize = 'large';
         else if (index === 1) defaultSize = 'small';
         
         return {
           ...chart,
-          size: chart.size || defaultSize,
+          size: (chart.size as ChartSize) || defaultSize,
         };
       });
-
       setPinnedCharts(chartsWithSize);
     } catch (error) {
       console.error('Failed to load charts:', error);
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('dashboard_density');
+    if (saved && ['comfortable', 'compact', 'dense'].includes(saved)) {
+      setDensity(saved as DensityMode);
     }
   }, []);
 
@@ -135,17 +184,12 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  const handleResize = async (
-    chartId: string,
-    newSize: 'small' | 'medium' | 'large',
-  ) => {
+  const handleResize = async (chartId: string, newSize: ChartSize) => {
     setPinnedCharts((prev) =>
       prev.map((chart) =>
         chart.id === chartId ? { ...chart, size: newSize } : chart,
       ),
     );
-
-    // Persist size change
     await chartsService.updateChartSize(chartId, newSize);
   };
 
@@ -157,11 +201,9 @@ export const Dashboard: React.FC = () => {
   };
 
   const handleRefresh = async (chartId: string) => {
-    // In production, this would re-run the SQL query
     console.log('Refreshing chart:', chartId);
   };
 
-  // Handle drill-down click
   const handleDrillDown = (chart: PinnedChart) => {
     const data = generateDrillDownData(chart);
     setDrillDownData(data);
@@ -173,16 +215,13 @@ export const Dashboard: React.FC = () => {
     setDrillDownData(null);
   };
 
-  // Check if user has data
   const hasData =
     isDemoMode ||
     localStorage.getItem('vizier_has_data') === 'true' ||
     pinnedCharts.length > 0;
 
-  // Get column span based on chart size
   const getColSpan = (size: string) => {
     if (layout === 'list') return 'col-span-12';
-
     switch (size) {
       case 'small':
         return 'col-span-12 md:col-span-6 lg:col-span-4';
@@ -195,37 +234,36 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  // Density-based grid gap
   const getGridGap = () => {
     const gaps = { comfortable: 'gap-4', compact: 'gap-3', dense: 'gap-2' };
     return gaps[density];
   };
 
-  // Density-based padding
   const getGridPadding = () => {
     const padding = { comfortable: 'px-4', compact: 'px-3', dense: 'px-2' };
     return padding[density];
   };
 
+  const headerTitle = pinnedCharts.length > 0 ? 'My Dashboard' : 'Welcome back';
+  const headerSubtitle = pinnedCharts.length > 0
+    ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
+    : "Here's an overview of your healthcare analytics";
+
   return (
     <div className="h-full overflow-y-auto bg-black">
-      {/* Header - moderate padding */}
       <div className="px-6 py-5 border-b border-gray-800">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">
-              {pinnedCharts.length > 0 ? 'My Dashboard' : 'Welcome back'}
+              {headerTitle}
               {pinnedCharts.length === 0 && user?.first_name ? `, ${user.first_name}` : ''}
             </h1>
             <p className="text-gray-400 text-sm mt-0.5">
-              {pinnedCharts.length > 0
-                ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
-                : "Here's an overview of your healthcare analytics"}
+              {headerSubtitle}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Density toggle - only show when charts exist */}
             {pinnedCharts.length > 0 && (
               <div className="flex items-center bg-gray-800 rounded-lg p-0.5">
                 <button
@@ -267,7 +305,6 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
 
-            {/* Layout toggle - only show when charts exist */}
             {pinnedCharts.length > 0 && (
               <div className="flex items-center bg-gray-800 rounded-lg p-0.5">
                 <button
@@ -297,7 +334,6 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
 
-            {/* Refresh button - only show when charts exist */}
             {pinnedCharts.length > 0 && (
               <button
                 type="button"
@@ -312,7 +348,6 @@ export const Dashboard: React.FC = () => {
               </button>
             )}
 
-            {/* Add Chart / Ask Vizier button */}
             <button
               type="button"
               data-tour="ask-vizier"
@@ -337,59 +372,27 @@ export const Dashboard: React.FC = () => {
 
       {hasData ? (
         <>
-          {/* Stats Overview - minimal padding for space efficiency */}
           <div className="px-3 py-3" data-tour="stats">
             <StatsOverview stats={demoStats} />
           </div>
 
-          {/* Pinned Charts Section */}
           <div data-tour="saved-insights">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-              </div>
-            ) : pinnedCharts.length > 0 ? (
-              <>
-                {/* Section Header */}
-                <div className="px-4 py-3">
-                  <h2 className="text-lg font-bold text-white">
-                    Pinned Insights
-                  </h2>
-                </div>
-
-                {/* Charts Grid - max-width for presentation quality */}
-                <div className={`${getGridPadding()} pb-4`}>
-                  <div className="max-w-[2000px] mx-auto">
-                    <div className={`grid grid-cols-12 ${getGridGap()}`}>
-                      {pinnedCharts.map((chart) => (
-                        <div key={chart.id} className={getColSpan(chart.size)}>
-                          <DashboardCard
-                            chart={chart}
-                            onUnpin={handleUnpin}
-                            onResize={handleResize}
-                            onExpand={handleExpand}
-                            onRefresh={handleRefresh}
-                            onDrillDown={handleDrillDown}
-                            currentUser={{
-                              id: user?.id?.toString() || 'demo-user',
-                              name: user?.first_name || 'Demo User',
-                            }}
-                            density={density}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="px-4">
-                <EmptyPinnedState />
-              </div>
-            )}
+            <PinnedChartsSection
+              isLoading={isLoading}
+              pinnedCharts={pinnedCharts}
+              density={density}
+              onUnpin={handleUnpin}
+              onResize={handleResize}
+              onExpand={handleExpand}
+              onRefresh={handleRefresh}
+              onDrillDown={handleDrillDown}
+              user={user}
+              getColSpan={getColSpan}
+              getGridPadding={getGridPadding}
+              getGridGap={getGridGap}
+            />
           </div>
 
-          {/* Quick Actions - compact padding */}
           <div className="px-4 pb-6">
             <QuickActions />
           </div>
