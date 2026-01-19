@@ -17,6 +17,22 @@ import {
 import type { ChartType } from '../../types';
 import { formatNumber } from '../../utils/formatters';
 
+const coerceToString = (value: unknown) => {
+  if (value === undefined || value === null) {
+    return '';
+  }
+
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return Object.prototype.toString.call(value);
+    }
+  }
+
+  return String(value);
+};
+
 interface ChartRendererProps {
   type: ChartType;
   data: Record<string, unknown>[];
@@ -246,16 +262,18 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                 label={renderCustomizedLabel}
                 labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
               >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={
-                      typeof entry[labelKey] === 'string'
-                        ? entry[labelKey]
-                        : `cell-${index}`
-                    }
-                    fill={GOLD_COLORS[index % GOLD_COLORS.length]}
-                  />
-                ))}
+                {data.map((entry, index) => {
+                  const cellKey =
+                    typeof entry[labelKey] === 'string'
+                      ? entry[labelKey]
+                      : `cell-${index}-${entry[valueKey]}`;
+                  return (
+                    <Cell
+                      key={cellKey}
+                      fill={GOLD_COLORS[index % GOLD_COLORS.length]}
+                    />
+                  );
+                })}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
               <Legend
@@ -272,21 +290,16 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
       case 'big_number': {
         const bigNumValue = data[0]?.[valueKey];
         const bigNumLabel = data[0]?.[labelKey];
+        const bigNumLabelText = coerceToString(bigNumLabel);
         return (
           <div className="flex flex-col items-center justify-center py-8">
             <p className="text-5xl font-bold text-amber-500">
               {typeof bigNumValue === 'number'
                 ? formatNumber(bigNumValue)
-                : String(bigNumValue)}
+                : coerceToString(bigNumValue)}
             </p>
             {bigNumLabel !== undefined && bigNumLabel !== null && (
-              <p className="text-lg text-neutral-600 mt-2">
-                {typeof bigNumLabel === 'object'
-                  ? JSON.stringify(bigNumLabel)
-                  : typeof bigNumLabel === 'string'
-                    ? bigNumLabel
-                    : String(bigNumLabel ?? '')}
-              </p>
+              <p className="text-lg text-neutral-600 mt-2">{bigNumLabelText}</p>
             )}
           </div>
         );
@@ -294,6 +307,38 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
       case 'table': {
         const columns = Object.keys(data[0] || {});
+        const formatColumnLabel = (column: string) => {
+          const sanitized = column.replaceAll('_', ' ');
+          return sanitized
+            .split(' ')
+            .map((word) =>
+              word ? `${word[0].toUpperCase()}${word.slice(1)}` : '',
+            )
+            .filter(Boolean)
+            .join(' ');
+        };
+
+        const formatCellValue = (value: unknown) =>
+          typeof value === 'number'
+            ? formatNumber(value)
+            : coerceToString(value);
+
+        const deriveRowKey = (row: Record<string, unknown>) => {
+          const labelValue = coerceToString(row[labelKey]);
+          const numericValue = coerceToString(row[valueKey]);
+          if (labelValue || numericValue) {
+            return `${labelValue || 'label'}-${numericValue || 'value'}`;
+          }
+
+          const fallback =
+            columns.length > 0
+              ? columns
+                  .map((col) => `${col}:${coerceToString(row[col])}`)
+                  .join('|')
+              : coerceToString(row);
+          return fallback || 'row';
+        };
+
         return (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -304,39 +349,31 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                       key={col}
                       className="px-4 py-3 text-left font-medium text-neutral-700 bg-neutral-50"
                     >
-                      {col
-                        .replaceAll('_', ' ')
-                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                      {formatColumnLabel(col) || col}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {data.slice(0, 20).map((row, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available for arbitrary rows
-                  <tr
-                    // sonarlint-disable-next-line typescript:S6479
-                    key={i}
-                    className="border-b border-neutral-100 hover:bg-neutral-50"
-                  >
-                    {columns.map((col) => {
-                      const value = row[col];
-                      let displayValue = '';
-                      if (typeof value === 'number') {
-                        displayValue = formatNumber(value);
-                      } else if (typeof value === 'object' && value !== null) {
-                        displayValue = JSON.stringify(value);
-                      } else {
-                        displayValue = String(value ?? '');
-                      }
-                      return (
-                        <td key={col} className="px-4 py-3 text-neutral-900">
-                          {displayValue}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                {data.slice(0, 20).map((row) => {
+                  const rowKey = deriveRowKey(row);
+                  return (
+                    <tr
+                      key={rowKey}
+                      className="border-b border-neutral-100 hover:bg-neutral-50"
+                    >
+                      {columns.map((col) => {
+                        const value = row[col];
+                        const displayValue = formatCellValue(value);
+                        return (
+                          <td key={col} className="px-4 py-3 text-neutral-900">
+                            {displayValue}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
             {data.length > 20 && (

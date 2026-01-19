@@ -34,7 +34,9 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-labelledby="svg-title"
           >
+            <title id="svg-title">No insights illustration</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -70,6 +72,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
           {/* Grid size controls */}
           <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
             <button
+              type="button"
               onClick={() => setGridColumns('1')}
               className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 gridColumns === '1'
@@ -80,6 +83,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
               1 col
             </button>
             <button
+              type="button"
               onClick={() => setGridColumns('2')}
               className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 gridColumns === '2'
@@ -90,6 +94,7 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
               2 cols
             </button>
             <button
+              type="button"
               onClick={() => setGridColumns('3')}
               className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 gridColumns === '3'

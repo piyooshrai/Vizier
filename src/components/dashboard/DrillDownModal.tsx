@@ -73,7 +73,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
 }) => {
   const [showPatientList, setShowPatientList] = useState(false);
 
-  const getRiskClass = (riskScore: string) => {
+  const getRiskScoreClass = (riskScore: string) => {
     switch (riskScore) {
       case 'High':
         return 'bg-red-500/20 text-red-400 border border-red-500/30';
@@ -266,7 +266,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
           </h3>
           <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
             <div className="space-y-3">
-              {data.comorbidities.map((condition, index) => (
+              {data.comorbidities.map((condition) => (
                 <div key={condition.name}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs text-gray-300">
@@ -363,13 +363,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
                         </td>
                         <td className="px-3 py-2">
                           <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                              patient.riskScore === 'High'
-                                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                : patient.riskScore === 'Medium'
-                                  ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                                  : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            }`}
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${getRiskScoreClass(patient.riskScore)}`}
                           >
                             {patient.riskScore}
                           </span>
