@@ -46,7 +46,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (mode === 'signup') {
         // Validation
         if (!formData.email || !formData.password || !formData.firstName ||
-            !formData.lastName || !formData.organizationName) {
+          !formData.lastName || !formData.organizationName) {
           setError('All fields are required');
           setIsLoading(false);
           return;
@@ -79,8 +79,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Authentication failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +101,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-lg">
                 <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                 </svg>
               </div>
               <div>
@@ -133,12 +137,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                    <label
+                      htmlFor="firstName"
+                      className="block text-sm font-medium text-gray-400 mb-2"
+                    >
                       First Name
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                       <input
+                        id="firstName"
                         type="text"
                         name="firstName"
                         value={formData.firstName}
@@ -149,12 +157,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                    <label
+                      htmlFor="lastName"
+                      className="block text-sm font-medium text-gray-400 mb-2"
+                    >
                       Last Name
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                       <input
+                        id="lastName"
                         type="text"
                         name="lastName"
                         value={formData.lastName}
@@ -167,12 +179,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                  <label
+                    htmlFor="organizationName"
+                    className="block text-sm font-medium text-gray-400 mb-2"
+                  >
                     Organization Name
                   </label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                     <input
+                      id="organizationName"
                       type="text"
                       name="organizationName"
                       value={formData.organizationName}
@@ -186,12 +202,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-400 mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
+                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -203,12 +223,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-400 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
+                  id="password"
                   type="password"
                   name="password"
                   value={formData.password}
@@ -226,9 +250,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             className="w-full mt-6 px-6 py-4 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
           >
             {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
-            {isLoading
-              ? (mode === 'signup' ? 'Creating Account...' : 'Signing In...')
-              : (mode === 'signup' ? 'Create Account' : 'Sign In')}
+            {(() => {
+              if (isLoading) {
+                return mode === 'signup' ? 'Creating Account...' : 'Signing In...';
+              }
+              return mode === 'signup' ? 'Create Account' : 'Sign In';
+            })()}
           </button>
 
           <div className="mt-6 text-center">
