@@ -1,6 +1,6 @@
+import { demoSuggestions, findMockResponse } from '../data/mockData';
+import type { VannaResponse } from '../types';
 import api from './api';
-import { VannaResponse } from '../types';
-import { findMockResponse, demoSuggestions } from '../data/mockData';
 
 // Check if user is in demo mode
 const isDemoMode = (): boolean => {
@@ -12,7 +12,9 @@ export const vannaService = {
     // Check if in demo mode - return mock data
     if (isDemoMode()) {
       // Simulate API delay for realistic UX
-      await new Promise((resolve) => setTimeout(resolve, 1200 + Math.random() * 800));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1200 + Math.random() * 800),
+      );
 
       // Return mock response
       return findMockResponse(question);
@@ -31,7 +33,9 @@ export const vannaService = {
     }
 
     try {
-      const response = await api.get<{ suggestions: string[] }>('/vanna/suggestions');
+      const response = await api.get<{ suggestions: string[] }>(
+        '/vanna/suggestions',
+      );
       return response.data.suggestions;
     } catch {
       // Return default suggestions if endpoint not available
@@ -72,7 +76,7 @@ export function createVizierMessage(
   content: string,
   data?: VannaResponse,
   isLoading = false,
-  isError = false
+  isError = false,
 ): Message {
   return {
     id: `vizier-${Date.now()}`,

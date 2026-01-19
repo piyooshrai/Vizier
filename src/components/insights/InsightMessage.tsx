@@ -1,11 +1,13 @@
 // src/components/insights/InsightMessage.tsx
-import React, { useState, useEffect } from 'react';
-import { Pin, Download, Check, Search } from 'lucide-react';
-import { ChartTypeSelector } from './ChartTypeSelector';
-import { ChartRenderer } from './ChartRenderer';
-import { Message } from '../../pages/Insights';
-import { ChartType } from '../../utils/chartRecommendation';
+
+import { Check, Download, Pin, Search } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import type { Message } from '../../pages/Insights';
 import { chartsService } from '../../services/charts.service';
+import type { ChartType } from '../../utils/chartRecommendation';
+import { ChartRenderer } from './ChartRenderer';
+import { ChartTypeSelector } from './ChartTypeSelector';
 
 interface InsightMessageProps {
   message: Message;
@@ -18,7 +20,9 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
   onExport,
   onDrillDown,
 }) => {
-  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(null);
+  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
+    null,
+  );
   const [isPinned, setIsPinned] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
 
@@ -32,7 +36,9 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
       if (hasChart && message.content) {
         try {
           const charts = await chartsService.getCharts();
-          const alreadyPinned = charts.some(c => c.id === message.id || c.query_text === message.content);
+          const alreadyPinned = charts.some(
+            (c) => c.id === message.id || c.query_text === message.content,
+          );
           setIsPinned(alreadyPinned);
         } catch (error) {
           console.error('Error checking pinned status:', error);
@@ -88,7 +94,8 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
 
   // Vizier message
   const pinButtonClass = (() => {
-    if (isPinned) return 'bg-green-500/10 text-green-600 cursor-default border border-green-200';
+    if (isPinned)
+      return 'bg-green-500/10 text-green-600 cursor-default border border-green-200';
     if (isPinning) return 'bg-gray-100 text-gray-400 cursor-wait';
     return 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-lg';
   })();
@@ -157,6 +164,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
               <div className="p-4 border-t border-gray-200 flex flex-wrap gap-3">
                 {/* Pin to Dashboard - Primary Action */}
                 <button
+                  type="button"
                   onClick={handlePin}
                   disabled={isPinned || isPinning}
                   className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-lg transition-all ${pinButtonClass}`}
@@ -189,6 +197,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
 
                 {/* Export CSV */}
                 <button
+                  type="button"
                   onClick={onExport}
                   className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
                 >
@@ -199,6 +208,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
                 {/* Drill Down / Ask Follow-up */}
                 {onDrillDown && (
                   <button
+                    type="button"
                     onClick={handleDrillDown}
                     className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
                   >

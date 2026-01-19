@@ -1,5 +1,5 @@
-import React from 'react';
 import { User } from 'lucide-react';
+import React from 'react';
 
 interface AvatarProps {
   src?: string;

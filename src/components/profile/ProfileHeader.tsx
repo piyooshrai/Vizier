@@ -1,7 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import type React from 'react';
+import type { User } from '../../types';
 import { Avatar, Badge } from '../common';
-import { User } from '../../types';
 
 interface ProfileHeaderProps {
   user: User;
@@ -43,9 +43,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">
             <h2 className="text-2xl font-bold text-neutral-900">{fullName}</h2>
-            {isDemoMode && (
-              <Badge variant="warning">Demo</Badge>
-            )}
+            {isDemoMode && <Badge variant="warning">Demo</Badge>}
           </div>
           <p className="text-neutral-600">{roleLabel}</p>
           <p className="text-sm text-neutral-500 mt-1">{user.email}</p>

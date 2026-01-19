@@ -1,15 +1,21 @@
 // src/pages/Upload.tsx
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UploadGuidanceCard } from '../components/onboarding/UploadGuidanceCard';
 import { FileDropZone } from '../components/upload/FileDropZone';
 import { FileList } from '../components/upload/FileList';
 import { ProcessingAnimation } from '../components/upload/ProcessingAnimation';
 import { UploadComplete } from '../components/upload/UploadComplete';
-import { UploadGuidanceCard } from '../components/onboarding/UploadGuidanceCard';
 import { useAuth } from '../hooks/useAuth';
 import { pipelineService } from '../services/pipeline.service';
 
-type UploadState = 'initial' | 'uploading' | 'processing' | 'complete' | 'error';
+type UploadState =
+  | 'initial'
+  | 'uploading'
+  | 'processing'
+  | 'complete'
+  | 'error';
 
 interface ProcessingStep {
   name: string;
@@ -50,13 +56,14 @@ const Upload: React.FC = () => {
 
       const response = await pipelineService.uploadAndTrigger(
         selectedFiles,
-        (progress) => setUploadProgress(progress)
+        (progress) => setUploadProgress(progress),
       );
 
       setUploadState('processing');
       await pollPipelineStatus(response.upload_run_id);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Upload failed. Please try again.';
+      const message =
+        err instanceof Error ? err.message : 'Upload failed. Please try again.';
       const axiosError = err as { response?: { data?: { detail?: string } } };
       setError(axiosError.response?.data?.detail || message);
       setUploadState('error');
@@ -91,8 +98,8 @@ const Upload: React.FC = () => {
 
       setProcessingSteps((prev) =>
         prev.map((step, idx) =>
-          idx === i ? { ...step, completed: true } : step
-        )
+          idx === i ? { ...step, completed: true } : step,
+        ),
       );
 
       setProcessingProgress(((i + 1) / steps.length) * 100);
@@ -154,7 +161,8 @@ const Upload: React.FC = () => {
                 Share your data with me
               </h1>
               <p className="text-xl text-gray-400">
-                I can work with CSV exports from Epic, Cerner, Allscripts, or most EHR systems
+                I can work with CSV exports from Epic, Cerner, Allscripts, or
+                most EHR systems
               </p>
             </div>
 
@@ -170,10 +178,7 @@ const Upload: React.FC = () => {
             {/* Selected Files */}
             {selectedFiles.length > 0 && (
               <div className="mt-8">
-                <FileList
-                  files={selectedFiles}
-                  onRemove={handleRemoveFile}
-                />
+                <FileList files={selectedFiles} onRemove={handleRemoveFile} />
               </div>
             )}
 

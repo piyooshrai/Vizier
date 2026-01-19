@@ -1,8 +1,8 @@
-import React from 'react';
+import type React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { AuthLayout } from '../components/auth/AuthLayout';
-import { SignupForm } from '../components/auth/SignupForm';
 import { DemoCard } from '../components/auth/DemoCard';
+import { SignupForm } from '../components/auth/SignupForm';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Signup: React.FC = () => {

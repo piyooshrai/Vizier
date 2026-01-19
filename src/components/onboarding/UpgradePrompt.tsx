@@ -1,6 +1,8 @@
 // src/components/onboarding/UpgradePrompt.tsx
-import React, { useState, useEffect } from 'react';
+
 import { ArrowRight, X } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
 export const UpgradePrompt: React.FC = () => {
@@ -12,7 +14,7 @@ export const UpgradePrompt: React.FC = () => {
 
     // Track interactions
     const interactions = parseInt(
-      sessionStorage.getItem('demo_interactions') || '0'
+      sessionStorage.getItem('demo_interactions') || '0',
     );
 
     // Show after 3 interactions (questions asked, insights saved, etc.)

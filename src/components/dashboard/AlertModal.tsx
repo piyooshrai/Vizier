@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Bell } from 'lucide-react';
+import { Bell, Plus, Trash2, X } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 interface Alert {
   id: string;
@@ -76,27 +77,26 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handleDeleteAlert = (id: string) => {
-    const updated = alerts.filter(a => a.id !== id);
+    const updated = alerts.filter((a) => a.id !== id);
     setAlerts(updated);
     localStorage.setItem('vizier_alerts', JSON.stringify(updated));
   };
 
   const getMetricLabel = (value: string) => {
-    return metricOptions.find(m => m.value === value)?.label || value;
+    return metricOptions.find((m) => m.value === value)?.label || value;
   };
 
   const getConditionLabel = (value: string) => {
-    return conditionOptions.find(c => c.value === value)?.label || value;
+    return conditionOptions.find((c) => c.value === value)?.label || value;
   };
 
   const getMetricUnit = (value: string) => {
-    return metricOptions.find(m => m.value === value)?.unit || '';
+    return metricOptions.find((m) => m.value === value)?.unit || '';
   };
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
       <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-3xl max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
-
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800 flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -105,7 +105,9 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-white">Alert Me When</h2>
-              <p className="text-sm text-gray-400">Set up conditional notifications</p>
+              <p className="text-sm text-gray-400">
+                Set up conditional notifications
+              </p>
             </div>
           </div>
           <button
@@ -118,35 +120,23 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
 
         {/* Content */}
         <div className="p-6 overflow-y-auto flex-1">
-
           {/* New Alert Form */}
           <div className="bg-gray-800 rounded-xl p-4 mb-6">
             <h3 className="text-white font-semibold mb-4">Create New Alert</h3>
 
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Metric</label>
+                <label className="block text-xs text-gray-400 mb-1">
+                  Metric
+                </label>
                 <select
                   value={newAlert.metric}
-                  onChange={(e) => setNewAlert({ ...newAlert, metric: e.target.value })}
+                  onChange={(e) =>
+                    setNewAlert({ ...newAlert, metric: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-white"
                 >
-                  {metricOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs text-gray-400 mb-1">Condition</label>
-                <select
-                  value={newAlert.condition}
-                  onChange={(e) => setNewAlert({ ...newAlert, condition: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-white"
-                >
-                  {conditionOptions.map(option => (
+                  {metricOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -156,12 +146,35 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
 
               <div>
                 <label className="block text-xs text-gray-400 mb-1">
-                  Value {getMetricUnit(newAlert.metric) && `(${getMetricUnit(newAlert.metric)})`}
+                  Condition
+                </label>
+                <select
+                  value={newAlert.condition}
+                  onChange={(e) =>
+                    setNewAlert({ ...newAlert, condition: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-white"
+                >
+                  {conditionOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">
+                  Value{' '}
+                  {getMetricUnit(newAlert.metric) &&
+                    `(${getMetricUnit(newAlert.metric)})`}
                 </label>
                 <input
                   type="number"
                   value={newAlert.value}
-                  onChange={(e) => setNewAlert({ ...newAlert, value: e.target.value })}
+                  onChange={(e) =>
+                    setNewAlert({ ...newAlert, value: e.target.value })
+                  }
                   placeholder="Enter value"
                   className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-white"
                 />
@@ -173,7 +186,9 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                 <input
                   type="checkbox"
                   checked={newAlert.email}
-                  onChange={(e) => setNewAlert({ ...newAlert, email: e.target.checked })}
+                  onChange={(e) =>
+                    setNewAlert({ ...newAlert, email: e.target.checked })
+                  }
                   className="rounded bg-gray-700 border-gray-600"
                 />
                 Email notification
@@ -182,7 +197,9 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                 <input
                   type="checkbox"
                   checked={newAlert.sms}
-                  onChange={(e) => setNewAlert({ ...newAlert, sms: e.target.checked })}
+                  onChange={(e) =>
+                    setNewAlert({ ...newAlert, sms: e.target.checked })
+                  }
                   className="rounded bg-gray-700 border-gray-600"
                 />
                 SMS notification
@@ -202,18 +219,30 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
           {/* Existing Alerts */}
           {alerts.length > 0 ? (
             <div>
-              <h3 className="text-white font-semibold mb-3">Active Alerts ({alerts.length})</h3>
+              <h3 className="text-white font-semibold mb-3">
+                Active Alerts ({alerts.length})
+              </h3>
               <div className="space-y-2">
-                {alerts.map(alert => (
-                  <div key={alert.id} className="flex items-center justify-between bg-gray-800 rounded-lg p-4">
+                {alerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="flex items-center justify-between bg-gray-800 rounded-lg p-4"
+                  >
                     <div className="flex-1">
                       <p className="text-white text-sm font-medium">
                         {getMetricLabel(alert.metric)}{' '}
-                        <span className="text-gray-400">{getConditionLabel(alert.condition).toLowerCase()}</span>{' '}
-                        <span className="text-white">{alert.value}{getMetricUnit(alert.metric)}</span>
+                        <span className="text-gray-400">
+                          {getConditionLabel(alert.condition).toLowerCase()}
+                        </span>{' '}
+                        <span className="text-white">
+                          {alert.value}
+                          {getMetricUnit(alert.metric)}
+                        </span>
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Notify via: {alert.email && 'Email'}{alert.email && alert.sms && ', '}{alert.sms && 'SMS'}
+                        Notify via: {alert.email && 'Email'}
+                        {alert.email && alert.sms && ', '}
+                        {alert.sms && 'SMS'}
                       </p>
                     </div>
                     <button
@@ -230,7 +259,9 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
             <div className="text-center py-8">
               <Bell className="w-12 h-12 text-gray-600 mx-auto mb-3" />
               <p className="text-gray-400">No alerts configured yet</p>
-              <p className="text-sm text-gray-500 mt-1">Create your first alert above</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Create your first alert above
+              </p>
             </div>
           )}
         </div>

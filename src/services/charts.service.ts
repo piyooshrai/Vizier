@@ -90,17 +90,20 @@ export const chartsService = {
    */
   async isChartPinned(queryText: string): Promise<boolean> {
     const charts = await this.getCharts();
-    return charts.some(c => c.query_text === queryText);
+    return charts.some((c) => c.query_text === queryText);
   },
 
   /**
    * Update chart size
    */
-  async updateChartSize(chartId: string, size: 'small' | 'medium' | 'large'): Promise<void> {
+  async updateChartSize(
+    chartId: string,
+    size: 'small' | 'medium' | 'large',
+  ): Promise<void> {
     if (isDemoMode()) {
       const saved = JSON.parse(localStorage.getItem('pinned_charts') || '[]');
       const updated = saved.map((c: PinnedChart) =>
-        c.id === chartId ? { ...c, size } : c
+        c.id === chartId ? { ...c, size } : c,
       );
       localStorage.setItem('pinned_charts', JSON.stringify(updated));
       return;

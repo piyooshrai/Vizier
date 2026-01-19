@@ -1,5 +1,6 @@
-import React, { forwardRef, useState } from 'react';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import type React from 'react';
+import { forwardRef, useState } from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -22,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const inputId = id || `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
@@ -102,7 +103,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

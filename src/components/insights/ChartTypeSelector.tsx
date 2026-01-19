@@ -1,7 +1,8 @@
 // src/components/insights/ChartTypeSelector.tsx
-import React from 'react';
-import { BarChart3, PieChart, TrendingUp, Table, Hash } from 'lucide-react';
-import { ChartType } from '../../utils/chartRecommendation';
+
+import { BarChart3, Hash, PieChart, Table, TrendingUp } from 'lucide-react';
+import type React from 'react';
+import type { ChartType } from '../../utils/chartRecommendation';
 
 interface ChartTypeSelectorProps {
   currentType: ChartType;
@@ -12,7 +13,11 @@ export const ChartTypeSelector: React.FC<ChartTypeSelectorProps> = ({
   currentType,
   onChange,
 }) => {
-  const chartTypes: { type: ChartType; label: string; icon: React.ElementType }[] = [
+  const chartTypes: {
+    type: ChartType;
+    label: string;
+    icon: React.ElementType;
+  }[] = [
     { type: 'bar_chart', label: 'Bar', icon: BarChart3 },
     { type: 'horizontal_bar_chart', label: 'H-Bar', icon: BarChart3 },
     { type: 'pie_chart', label: 'Pie', icon: PieChart },

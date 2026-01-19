@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import type React from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import { Toast } from '../components/common/Toast';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -17,13 +24,18 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ToastProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = 'success') => {
-    const id = `toast_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    setToasts((prev) => [...prev, { id, message, type }]);
-  }, []);
+  const showToast = useCallback(
+    (message: string, type: ToastType = 'success') => {
+      const id = `toast_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setToasts((prev) => [...prev, { id, message, type }]);
+    },
+    [],
+  );
 
   const hideToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));

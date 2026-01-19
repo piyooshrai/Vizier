@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Trash2, Maximize2, MessageSquare, Lock, Globe } from 'lucide-react';
+import { Globe, Lock, Maximize2, MessageSquare, Trash2 } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { ChartRenderer } from '../insights/ChartRenderer';
 
 interface Annotation {
@@ -71,13 +72,13 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   };
 
   const handleDeleteAnnotation = (annotationId: string) => {
-    const updated = annotations.filter(a => a.id !== annotationId);
+    const updated = annotations.filter((a) => a.id !== annotationId);
     setAnnotations(updated);
     localStorage.setItem(`annotations_${insight.id}`, JSON.stringify(updated));
   };
 
   const visibleAnnotations = annotations.filter(
-    ann => ann.isPublic || ann.userId === currentUser.id
+    (ann) => ann.isPublic || ann.userId === currentUser.id,
   );
 
   // Size-based styling
@@ -94,8 +95,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   };
 
   return (
-    <div className={`bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full ${sizeClasses[size]}`}>
-
+    <div
+      className={`bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full ${sizeClasses[size]}`}
+    >
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex items-start justify-between flex-shrink-0">
         <div className="flex-1 min-w-0">
@@ -106,7 +108,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
             {new Date(insight.timestamp).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
-              year: 'numeric'
+              year: 'numeric',
             })}
           </p>
         </div>
@@ -189,7 +191,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       {/* Annotations Display */}
       {visibleAnnotations.length > 0 && (
         <div className="px-4 py-3 bg-gray-900/30 border-b border-gray-700 space-y-2 max-h-32 overflow-y-auto">
-          {visibleAnnotations.map(annotation => (
+          {visibleAnnotations.map((annotation) => (
             <div key={annotation.id} className="flex items-start gap-2 group">
               <div className="flex-shrink-0 mt-0.5">
                 {annotation.isPublic ? (
@@ -200,7 +202,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  <span className="font-semibold text-white">{annotation.userName}:</span>{' '}
+                  <span className="font-semibold text-white">
+                    {annotation.userName}:
+                  </span>{' '}
                   {annotation.text}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">
@@ -208,7 +212,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
                     month: 'short',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </p>
               </div>
@@ -245,7 +249,6 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       {/* Intelligent Explanation */}
       {insight.explanation && (
         <div className="p-4 border-t border-gray-700 bg-gray-900/50 flex-shrink-0 space-y-3">
-
           {/* Main Explanation */}
           <div>
             <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
@@ -282,68 +285,83 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 };
 
 // Helper function to generate "What this means" from insight
-function generateMeaning(insight: { explanation: string; question: string }): string {
+function generateMeaning(insight: {
+  explanation: string;
+  question: string;
+}): string {
   const explanation = insight.explanation.toLowerCase();
   const question = insight.question.toLowerCase();
 
   if (explanation.includes('hypertension') || question.includes('diagnos')) {
-    return "Your screening and diagnosis processes are working effectively. This patient distribution aligns with expected patterns for your facility type.";
+    return 'Your screening and diagnosis processes are working effectively. This patient distribution aligns with expected patterns for your facility type.';
   }
 
   if (explanation.includes('readmission') && explanation.includes('below')) {
-    return "Your care coordination and discharge planning are performing well. This is a positive indicator of care quality and patient engagement.";
+    return 'Your care coordination and discharge planning are performing well. This is a positive indicator of care quality and patient engagement.';
   }
 
   if (explanation.includes('readmission') && explanation.includes('decline')) {
-    return "Your care coordination and discharge planning are performing well. This is a positive indicator of care quality and patient engagement.";
+    return 'Your care coordination and discharge planning are performing well. This is a positive indicator of care quality and patient engagement.';
   }
 
-  if (explanation.includes('age') || question.includes('age') || question.includes('demographic')) {
-    return "Understanding your patient demographics helps tailor care programs and resource allocation to meet the specific needs of your population.";
+  if (
+    explanation.includes('age') ||
+    question.includes('age') ||
+    question.includes('demographic')
+  ) {
+    return 'Understanding your patient demographics helps tailor care programs and resource allocation to meet the specific needs of your population.';
   }
 
   if (question.includes('cost') || question.includes('expense')) {
-    return "Cost analysis helps identify opportunities for operational efficiency while maintaining quality of care.";
+    return 'Cost analysis helps identify opportunities for operational efficiency while maintaining quality of care.';
   }
 
   if (question.includes('encounter') || question.includes('visit')) {
-    return "Understanding encounter patterns helps optimize staffing, scheduling, and resource allocation.";
+    return 'Understanding encounter patterns helps optimize staffing, scheduling, and resource allocation.';
   }
 
-  return "This data point provides important context for clinical and operational decision-making.";
+  return 'This data point provides important context for clinical and operational decision-making.';
 }
 
 // Helper function to generate recommendations
-function generateRecommendations(insight: { explanation: string; question: string }): string {
+function generateRecommendations(insight: {
+  explanation: string;
+  question: string;
+}): string {
   const explanation = insight.explanation.toLowerCase();
   const question = insight.question.toLowerCase();
 
   if (explanation.includes('hypertension') || question.includes('diagnos')) {
-    return "Consider expanding preventive care programs for at-risk patients. Monitor patients with multiple comorbidities for care coordination opportunities.";
+    return 'Consider expanding preventive care programs for at-risk patients. Monitor patients with multiple comorbidities for care coordination opportunities.';
   }
 
-  if ((explanation.includes('readmission') && explanation.includes('below')) ||
-    (explanation.includes('readmission') && explanation.includes('decline'))) {
-    return "Continue current discharge planning protocols. Document successful practices to replicate across departments. Set up monitoring alerts if rate increases above target.";
+  if (
+    (explanation.includes('readmission') && explanation.includes('below')) ||
+    (explanation.includes('readmission') && explanation.includes('decline'))
+  ) {
+    return 'Continue current discharge planning protocols. Document successful practices to replicate across departments. Set up monitoring alerts if rate increases above target.';
   }
 
-  if ((explanation.includes('age') || question.includes('age')) && explanation.includes('older')) {
-    return "Focus resources on geriatric care programs and preventive services. Consider specialized care pathways for older adults with complex conditions.";
+  if (
+    (explanation.includes('age') || question.includes('age')) &&
+    explanation.includes('older')
+  ) {
+    return 'Focus resources on geriatric care programs and preventive services. Consider specialized care pathways for older adults with complex conditions.';
   }
 
   if (question.includes('age') || question.includes('demographic')) {
-    return "Use demographic insights to tailor patient communication and outreach programs. Consider age-specific care protocols.";
+    return 'Use demographic insights to tailor patient communication and outreach programs. Consider age-specific care protocols.';
   }
 
   if (question.includes('cost') || question.includes('expense')) {
-    return "Review high-cost areas for optimization opportunities. Compare with industry benchmarks and identify best practices.";
+    return 'Review high-cost areas for optimization opportunities. Compare with industry benchmarks and identify best practices.';
   }
 
   if (question.includes('encounter') || question.includes('visit')) {
-    return "Review scheduling patterns and staffing levels. Consider opportunities to improve patient flow and reduce wait times.";
+    return 'Review scheduling patterns and staffing levels. Consider opportunities to improve patient flow and reduce wait times.';
   }
 
-  return "Use this insight to inform strategic planning and resource allocation decisions. Share with relevant stakeholders for aligned decision-making.";
+  return 'Use this insight to inform strategic planning and resource allocation decisions. Share with relevant stakeholders for aligned decision-making.';
 }
 
 export default InsightCard;

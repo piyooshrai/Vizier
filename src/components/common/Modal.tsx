@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import type React from 'react';
+import { useEffect } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -93,9 +94,7 @@ export const Modal: React.FC<ModalProps> = ({
               )}
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                {children}
-              </div>
+              <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
             </motion.div>
           </div>
         </>

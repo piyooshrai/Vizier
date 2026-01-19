@@ -1,13 +1,13 @@
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
-  Upload,
-  MessageSquare,
-  User,
   Menu,
+  MessageSquare,
+  Upload,
+  User,
 } from 'lucide-react';
+import type React from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 
 interface MobileNavProps {
   onMenuToggle?: () => void;
@@ -20,8 +20,16 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
-  { path: '/insights', icon: <MessageSquare className="w-5 h-5" />, label: 'Insights' },
+  {
+    path: '/dashboard',
+    icon: <LayoutDashboard className="w-5 h-5" />,
+    label: 'Dashboard',
+  },
+  {
+    path: '/insights',
+    icon: <MessageSquare className="w-5 h-5" />,
+    label: 'Insights',
+  },
   { path: '/upload', icon: <Upload className="w-5 h-5" />, label: 'Upload' },
   { path: '/profile', icon: <User className="w-5 h-5" />, label: 'Profile' },
 ];
@@ -55,10 +63,12 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onMenuToggle }) => {
                   ${isActive ? 'text-primary-600' : 'text-neutral-400'}
                 `}
               >
-                <div className={`
+                <div
+                  className={`
                   p-1.5 rounded-lg transition-colors
                   ${isActive ? 'bg-primary-50' : ''}
-                `}>
+                `}
+                >
                   {item.icon}
                 </div>
                 <span className="text-xs font-medium">{item.label}</span>
@@ -85,9 +95,11 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onMenuToggle }) => {
         layoutId="mobileNavIndicator"
         initial={false}
         animate={{
-          left: `${(navItems.findIndex(item => item.path === location.pathname) / 5) * 100}%`,
+          left: `${(navItems.findIndex((item) => item.path === location.pathname) / 5) * 100}%`,
           width: '20%',
-          opacity: navItems.some(item => item.path === location.pathname) ? 1 : 0,
+          opacity: navItems.some((item) => item.path === location.pathname)
+            ? 1
+            : 0,
         }}
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       />

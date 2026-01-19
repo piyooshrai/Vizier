@@ -1,6 +1,7 @@
 // src/components/insights/SuggestionChips.tsx
-import React from 'react';
+
 import { Sparkles } from 'lucide-react';
+import type React from 'react';
 
 interface SuggestionChipsProps {
   onSuggestionClick: (suggestion: string) => void;

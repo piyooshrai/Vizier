@@ -1,4 +1,4 @@
-import { ChartType } from '../types';
+import type { ChartType } from '../types';
 
 export interface SavedInsight {
   id: string;
@@ -48,7 +48,9 @@ export const savedInsightsManager = {
   // Check if already saved (by question text)
   isSaved: (question: string): boolean => {
     const existing = savedInsightsManager.getAll();
-    return existing.some((i) => i.question.toLowerCase() === question.toLowerCase());
+    return existing.some(
+      (i) => i.question.toLowerCase() === question.toLowerCase(),
+    );
   },
 
   // Clear all saved insights

@@ -1,6 +1,12 @@
-import React from 'react';
+import type React from 'react';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+type BadgeVariant =
+  | 'default'
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'info';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface BadgeProps {

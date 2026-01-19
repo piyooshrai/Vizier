@@ -79,7 +79,13 @@ export interface UploadFile {
   name: string;
   size: number;
   type: string;
-  status: 'pending' | 'uploading' | 'validating' | 'valid' | 'invalid' | 'error';
+  status:
+    | 'pending'
+    | 'uploading'
+    | 'validating'
+    | 'valid'
+    | 'invalid'
+    | 'error';
   progress: number;
   error?: string;
   validationErrors?: string[];
@@ -132,7 +138,8 @@ export const SUPPORTED_FILE_TYPES: SupportedFileType[] = [
   },
   {
     extension: '.xlsx',
-    mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    mimeType:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     label: 'Excel',
     description: 'Microsoft Excel spreadsheet',
     maxSize: 50 * 1024 * 1024, // 50MB

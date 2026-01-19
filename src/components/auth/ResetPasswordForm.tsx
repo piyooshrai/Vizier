@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckCircle, Lock } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Lock, CheckCircle } from 'lucide-react';
-import { Button, Input } from '../common';
 import { authService, getErrorMessage } from '../../services';
+import { Button, Input } from '../common';
 
 const resetPasswordSchema = z
   .object({
@@ -13,7 +14,7 @@ const resetPasswordSchema = z
       .min(8, 'Password must be at least 8 characters')
       .regex(
         /^(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}$/,
-        'Password must contain at least one number and one special character'
+        'Password must contain at least one number and one special character',
       ),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
@@ -65,7 +66,8 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           Password reset successful
         </h2>
         <p className="text-sm text-neutral-600 mb-6">
-          Your password has been reset. You can now sign in with your new password.
+          Your password has been reset. You can now sign in with your new
+          password.
         </p>
       </div>
     );

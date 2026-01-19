@@ -1,6 +1,7 @@
 // src/components/upload/FileList.tsx
-import React from 'react';
-import { FileText, X, Check } from 'lucide-react';
+
+import { Check, FileText, X } from 'lucide-react';
+import type React from 'react';
 
 interface FileListProps {
   files: File[];

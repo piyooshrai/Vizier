@@ -19,7 +19,7 @@ export const signupSchema = z.object({
     .max(128, 'Password must be less than 128 characters')
     .regex(
       /^(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}$/,
-      'Password must contain at least one number and one special character'
+      'Password must contain at least one number and one special character',
     ),
   role: z.string().min(1, 'Role is required'),
 });
@@ -41,7 +41,7 @@ export const passwordChangeSchema = z
       .max(128, 'Password must be less than 128 characters')
       .regex(
         /^(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}$/,
-        'Password must contain at least one number and one special character'
+        'Password must contain at least one number and one special character',
       ),
     confirm_password: z.string().min(1, 'Please confirm your password'),
   })

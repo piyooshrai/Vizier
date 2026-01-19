@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { User as UserIcon, Mail, Save } from 'lucide-react';
-import { Card, Button, Input, Select } from '../common';
-import { User } from '../../types';
-import { userService, getErrorMessage } from '../../services';
+import { Mail, Save, User as UserIcon } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { getErrorMessage, userService } from '../../services';
+import type { User } from '../../types';
+import { Button, Card, Input, Select } from '../common';
 
 const profileSchema = z.object({
   first_name: z.string().min(1, 'First name is required').max(50),
@@ -92,7 +93,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
         {success && (
           <div className="mb-4 p-4 bg-success-50 border border-success-200 rounded-lg">
-            <p className="text-sm text-success-600">Profile updated successfully!</p>
+            <p className="text-sm text-success-600">
+              Profile updated successfully!
+            </p>
           </div>
         )}
 

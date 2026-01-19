@@ -1,9 +1,9 @@
-export { MessageBubble } from './MessageBubble';
-export { TypingIndicator } from './TypingIndicator';
-export { SuggestionChips } from './SuggestionChips';
-export { ConversationContainer } from './ConversationContainer';
 export { ChartRenderer } from './ChartRenderer';
-export { QueryInput } from './QueryInput';
+export { ChartTypeSelector } from './ChartTypeSelector';
+export { ConversationContainer } from './ConversationContainer';
 export { ConversationView } from './ConversationView';
 export { InsightMessage } from './InsightMessage';
-export { ChartTypeSelector } from './ChartTypeSelector';
+export { MessageBubble } from './MessageBubble';
+export { QueryInput } from './QueryInput';
+export { SuggestionChips } from './SuggestionChips';
+export { TypingIndicator } from './TypingIndicator';

@@ -1,11 +1,12 @@
 // src/pages/ChatLanding.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageBubble } from '../components/chat/MessageBubble';
-import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { GoalCard } from '../components/chat/GoalCard';
 import { InlineAuth } from '../components/chat/InlineAuth';
+import { MessageBubble } from '../components/chat/MessageBubble';
 import { TrustBadges } from '../components/chat/TrustBadges';
+import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { useAuth } from '../hooks/useAuth';
 
 interface Message {
@@ -24,7 +25,8 @@ const ChatLanding: React.FC = () => {
     {
       id: '1',
       role: 'vizier',
-      content: "Good evening. I'm Vizier, your healthcare analytics intelligence.\n\nI help executive teams transform complex healthcare data into clear, actionable insights—through conversation, not dashboards.\n\nWhat would you like to accomplish?",
+      content:
+        "Good evening. I'm Vizier, your healthcare analytics intelligence.\n\nI help executive teams transform complex healthcare data into clear, actionable insights—through conversation, not dashboards.\n\nWhat would you like to accomplish?",
       timestamp: new Date(),
     },
   ]);
@@ -222,7 +224,11 @@ const ChatLanding: React.FC = () => {
                   onClick={handleDemo}
                   className="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1 transition-colors"
                 >
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                   </svg>
                   Try with sample data

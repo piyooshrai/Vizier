@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Pin, CheckCircle, Download, Code } from 'lucide-react';
-import { ChartRenderer } from './ChartRenderer';
-import { VannaResponse } from '../../types';
+import { CheckCircle, Code, Download, Pin } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import type { VannaResponse } from '../../types';
 import { formatTimestamp } from '../../utils/formatters';
+import { ChartRenderer } from './ChartRenderer';
 
 interface MessageBubbleProps {
   id: string;
@@ -53,7 +54,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             }
             return stringValue;
           })
-          .join(',')
+          .join(','),
       ),
     ].join('\n');
 

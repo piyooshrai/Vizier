@@ -1,5 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import type React from 'react';
 
 interface CardProps {
   children: React.ReactNode;
@@ -32,12 +32,13 @@ export const Card: React.FC<CardProps> = ({
   onClick,
 }) => {
   const Component = hover || onClick ? motion.div : 'div';
-  const motionProps = hover || onClick
-    ? {
-        whileHover: { scale: 1.01, y: -2 },
-        transition: { duration: 0.2 },
-      }
-    : {};
+  const motionProps =
+    hover || onClick
+      ? {
+          whileHover: { scale: 1.01, y: -2 },
+          transition: { duration: 0.2 },
+        }
+      : {};
 
   return (
     <Component

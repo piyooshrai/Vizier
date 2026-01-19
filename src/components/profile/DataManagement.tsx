@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Download, AlertTriangle } from 'lucide-react';
-import { Card, Button, Modal } from '../common';
+import { AlertTriangle, Download, Shield } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { Button, Card, Modal } from '../common';
 
 interface DataManagementProps {
   onExportData?: () => void;
@@ -40,9 +41,12 @@ export const DataManagement: React.FC<DataManagementProps> = ({
           <div className="flex items-start gap-3 p-4 bg-success-50 rounded-lg">
             <Shield className="w-5 h-5 text-success-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-success-900">Your data is secure</p>
+              <p className="font-medium text-success-900">
+                Your data is secure
+              </p>
               <p className="text-sm text-success-700 mt-1">
-                All uploaded data is encrypted at rest and in transit using industry-standard encryption (AES-256).
+                All uploaded data is encrypted at rest and in transit using
+                industry-standard encryption (AES-256).
               </p>
             </div>
           </div>
@@ -112,16 +116,23 @@ export const DataManagement: React.FC<DataManagementProps> = ({
           <div className="flex items-start gap-3 p-4 bg-error-50 rounded-lg">
             <AlertTriangle className="w-5 h-5 text-error-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-error-900">This action cannot be undone</p>
+              <p className="font-medium text-error-900">
+                This action cannot be undone
+              </p>
               <p className="text-sm text-error-700 mt-1">
-                All your data, saved insights, and account information will be permanently deleted.
+                All your data, saved insights, and account information will be
+                permanently deleted.
               </p>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Type <span className="font-mono bg-neutral-100 px-1 rounded">DELETE</span> to confirm
+              Type{' '}
+              <span className="font-mono bg-neutral-100 px-1 rounded">
+                DELETE
+              </span>{' '}
+              to confirm
             </label>
             <input
               type="text"

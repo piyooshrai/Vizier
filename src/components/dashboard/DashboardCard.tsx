@@ -1,7 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { X, Maximize2, RefreshCw, ExternalLink, MessageSquare, Globe, Lock, Edit2, Trash2 } from 'lucide-react';
+import {
+  Edit2,
+  ExternalLink,
+  Globe,
+  Lock,
+  Maximize2,
+  MessageSquare,
+  RefreshCw,
+  Trash2,
+  X,
+} from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import type { PinnedChart } from '../../services/charts.service';
 import { ChartRenderer } from '../insights/ChartRenderer';
-import { PinnedChart } from '../../services/charts.service';
 
 interface Annotation {
   id: string;
@@ -36,16 +47,34 @@ function getChartHeight(size: string | undefined, density: string): number {
     compact: { small: 240, medium: 320, large: 420 },
     dense: { small: 180, medium: 260, large: 340 },
   };
-  const densityHeights = heights[density as keyof typeof heights] || heights.compact;
-  return densityHeights[size as keyof typeof densityHeights] || densityHeights.medium;
+  const densityHeights =
+    heights[density as keyof typeof heights] || heights.compact;
+  return (
+    densityHeights[size as keyof typeof densityHeights] || densityHeights.medium
+  );
 }
 
 // Density-based padding classes
 function getPaddingClasses(density: string) {
   const padding = {
-    comfortable: { header: 'p-4', chart: 'p-4', explanation: 'p-4', annotation: 'p-4' },
-    compact: { header: 'px-3 py-2.5', chart: 'p-3', explanation: 'px-3 py-2.5', annotation: 'px-3 py-2' },
-    dense: { header: 'px-2.5 py-2', chart: 'p-2', explanation: 'px-2.5 py-2', annotation: 'px-2.5 py-1.5' },
+    comfortable: {
+      header: 'p-4',
+      chart: 'p-4',
+      explanation: 'p-4',
+      annotation: 'p-4',
+    },
+    compact: {
+      header: 'px-3 py-2.5',
+      chart: 'p-3',
+      explanation: 'px-3 py-2.5',
+      annotation: 'px-3 py-2',
+    },
+    dense: {
+      header: 'px-2.5 py-2',
+      chart: 'p-2',
+      explanation: 'px-2.5 py-2',
+      annotation: 'px-2.5 py-1.5',
+    },
   };
   return padding[density as keyof typeof padding] || padding.compact;
 }
@@ -62,7 +91,11 @@ function getTextClasses(density: string) {
 
 // Density-based icon sizes
 function getIconSize(density: string): string {
-  const sizes = { comfortable: 'w-4 h-4', compact: 'w-3.5 h-3.5', dense: 'w-3 h-3' };
+  const sizes = {
+    comfortable: 'w-4 h-4',
+    compact: 'w-3.5 h-3.5',
+    dense: 'w-3 h-3',
+  };
   return sizes[density as keyof typeof sizes] || sizes.compact;
 }
 
@@ -78,24 +111,24 @@ function generateKeyInsight(chart: PinnedChart): string {
   const question = (chart.query_text || chart.title || '').toLowerCase();
 
   if (question.includes('diagnosis') || question.includes('diagnoses')) {
-    return "Your most common diagnosis is Essential Hypertension, affecting approximately 25% of your patient population.";
+    return 'Your most common diagnosis is Essential Hypertension, affecting approximately 25% of your patient population.';
   }
   if (question.includes('age') || question.includes('demographic')) {
-    return "Your patient population skews older, with 63% of patients over 45 years old.";
+    return 'Your patient population skews older, with 63% of patients over 45 years old.';
   }
   if (question.includes('readmission')) {
-    return "Your 30-day readmission rate has declined from 14.2% to 12.3%, below national average.";
+    return 'Your 30-day readmission rate has declined from 14.2% to 12.3%, below national average.';
   }
   if (question.includes('encounter') || question.includes('volume')) {
-    return "Encounter volume remains stable at approximately 4,000 encounters per month.";
+    return 'Encounter volume remains stable at approximately 4,000 encounters per month.';
   }
   if (question.includes('cost')) {
-    return "Average encounter cost is $4,250, consistent with expected ranges.";
+    return 'Average encounter cost is $4,250, consistent with expected ranges.';
   }
   if (question.includes('patient') && question.includes('count')) {
-    return "Your patient population shows healthy growth patterns with consistent engagement.";
+    return 'Your patient population shows healthy growth patterns with consistent engagement.';
   }
-  return "Analysis reveals important patterns for clinical and operational decision-making.";
+  return 'Analysis reveals important patterns for clinical and operational decision-making.';
 }
 
 // Generate What This Means - Clinical significance
@@ -103,24 +136,24 @@ function generateMeaning(chart: PinnedChart): string {
   const question = (chart.query_text || chart.title || '').toLowerCase();
 
   if (question.includes('diagnosis') || question.includes('diagnoses')) {
-    return "This indicates effective screening processes. High hypertension prevalence suggests need for chronic disease management.";
+    return 'This indicates effective screening processes. High hypertension prevalence suggests need for chronic disease management.';
   }
   if (question.includes('age') || question.includes('demographic')) {
-    return "Older population requires different care pathways and specialized geriatric protocols.";
+    return 'Older population requires different care pathways and specialized geriatric protocols.';
   }
   if (question.includes('readmission')) {
-    return "Declining rates indicate improving care coordination and discharge planning.";
+    return 'Declining rates indicate improving care coordination and discharge planning.';
   }
   if (question.includes('encounter') || question.includes('volume')) {
-    return "Stable volume provides predictability for staffing and resource planning.";
+    return 'Stable volume provides predictability for staffing and resource planning.';
   }
   if (question.includes('cost')) {
-    return "Cost metrics within expected ranges suggest appropriate resource utilization.";
+    return 'Cost metrics within expected ranges suggest appropriate resource utilization.';
   }
   if (question.includes('patient') && question.includes('count')) {
-    return "Volume metrics essential for capacity planning and resource allocation.";
+    return 'Volume metrics essential for capacity planning and resource allocation.';
   }
-  return "Use these insights to inform strategic resource allocation decisions.";
+  return 'Use these insights to inform strategic resource allocation decisions.';
 }
 
 // Generate Recommended Actions
@@ -128,24 +161,24 @@ function generateRecommendations(chart: PinnedChart): string {
   const question = (chart.query_text || chart.title || '').toLowerCase();
 
   if (question.includes('diagnosis') || question.includes('diagnoses')) {
-    return "Expand preventive care programs. Implement care coordination for comorbidities.";
+    return 'Expand preventive care programs. Implement care coordination for comorbidities.';
   }
   if (question.includes('age') || question.includes('demographic')) {
-    return "Develop age-appropriate care pathways. Consider Medicare Advantage partnerships.";
+    return 'Develop age-appropriate care pathways. Consider Medicare Advantage partnerships.';
   }
   if (question.includes('readmission')) {
-    return "Continue discharge planning protocols. Set alerts if rate exceeds 13%.";
+    return 'Continue discharge planning protocols. Set alerts if rate exceeds 13%.';
   }
   if (question.includes('encounter') || question.includes('volume')) {
-    return "Optimize staffing schedules based on volume patterns.";
+    return 'Optimize staffing schedules based on volume patterns.';
   }
   if (question.includes('cost')) {
-    return "Monitor cost outliers. Compare costs across diagnosis groups.";
+    return 'Monitor cost outliers. Compare costs across diagnosis groups.';
   }
   if (question.includes('patient') && question.includes('count')) {
-    return "Track acquisition sources. Monitor retention rates.";
+    return 'Track acquisition sources. Monitor retention rates.';
   }
-  return "Share insights with stakeholders for aligned decision-making.";
+  return 'Share insights with stakeholders for aligned decision-making.';
 }
 
 export const DashboardCard: React.FC<DashboardCardProps> = ({
@@ -164,7 +197,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   const [isAddingAnnotation, setIsAddingAnnotation] = useState(false);
   const [annotationText, setAnnotationText] = useState('');
   const [annotationPublic, setAnnotationPublic] = useState(true);
-  const [editingAnnotationId, setEditingAnnotationId] = useState<string | null>(null);
+  const [editingAnnotationId, setEditingAnnotationId] = useState<string | null>(
+    null,
+  );
   const [editText, setEditText] = useState('');
 
   // Load annotations from localStorage
@@ -215,15 +250,15 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   const handleSaveEdit = () => {
     if (!editText.trim()) return;
 
-    const updated = annotations.map(ann =>
+    const updated = annotations.map((ann) =>
       ann.id === editingAnnotationId
         ? {
             ...ann,
             text: editText.trim(),
             timestamp: new Date().toISOString(),
-            edited: true
+            edited: true,
           }
-        : ann
+        : ann,
     );
 
     setAnnotations(updated);
@@ -241,16 +276,18 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   // Delete annotation handler
   const handleDeleteAnnotation = (annotationId: string) => {
-    const confirmed = window.confirm('Delete this note? This cannot be undone.');
+    const confirmed = window.confirm(
+      'Delete this note? This cannot be undone.',
+    );
     if (!confirmed) return;
 
-    const updated = annotations.filter(ann => ann.id !== annotationId);
+    const updated = annotations.filter((ann) => ann.id !== annotationId);
     setAnnotations(updated);
     localStorage.setItem(`annotations_${chart.id}`, JSON.stringify(updated));
   };
 
   const visibleAnnotations = annotations.filter(
-    ann => ann.isPublic || ann.userId === currentUser.id
+    (ann) => ann.isPublic || ann.userId === currentUser.id,
   );
 
   const chartHeight = getChartHeight(chart.size, density);
@@ -261,11 +298,14 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   return (
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden h-full flex flex-col">
-
       {/* Header */}
-      <div className={`${padding.header} border-b border-gray-700 flex items-start justify-between flex-shrink-0`}>
+      <div
+        className={`${padding.header} border-b border-gray-700 flex items-start justify-between flex-shrink-0`}
+      >
         <div className="flex-1 min-w-0">
-          <h3 className={`text-white font-semibold ${text.title} mb-0.5 line-clamp-2`}>
+          <h3
+            className={`text-white font-semibold ${text.title} mb-0.5 line-clamp-2`}
+          >
             {chart.query_text || chart.title}
           </h3>
           <p className={`${text.label} text-gray-400`}>
@@ -273,7 +313,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
               month: 'short',
               day: 'numeric',
               hour: '2-digit',
-              minute: '2-digit'
+              minute: '2-digit',
             })}
           </p>
         </div>
@@ -283,7 +323,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           <button
             onClick={() => setIsAddingAnnotation(!isAddingAnnotation)}
             className={`${btnPadding} rounded-lg transition-colors ${
-              isAddingAnnotation ? 'bg-amber-500/20 text-amber-400' : 'hover:bg-gray-700 text-gray-400 hover:text-white'
+              isAddingAnnotation
+                ? 'bg-amber-500/20 text-amber-400'
+                : 'hover:bg-gray-700 text-gray-400 hover:text-white'
             }`}
             title="Add note"
           >
@@ -297,19 +339,33 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
               className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
               title="Resize"
             >
-              <Maximize2 className={`${iconSize} text-gray-400 hover:text-white`} />
+              <Maximize2
+                className={`${iconSize} text-gray-400 hover:text-white`}
+              />
             </button>
 
             {showSizeMenu && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setShowSizeMenu(false)} />
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowSizeMenu(false)}
+                />
                 <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-20 min-w-[100px] py-0.5">
                   {['small', 'medium', 'large'].map((size) => (
                     <button
                       key={size}
-                      onClick={() => { onResize(chart.id, size as 'small' | 'medium' | 'large'); setShowSizeMenu(false); }}
+                      onClick={() => {
+                        onResize(
+                          chart.id,
+                          size as 'small' | 'medium' | 'large',
+                        );
+                        setShowSizeMenu(false);
+                      }}
                       className={`w-full px-3 py-1.5 text-left ${text.body} transition-colors ${
-                        chart.size === size || (!chart.size && size === 'medium') ? 'text-amber-400 bg-gray-700' : 'text-white hover:bg-gray-700'
+                        chart.size === size ||
+                        (!chart.size && size === 'medium')
+                          ? 'text-amber-400 bg-gray-700'
+                          : 'text-white hover:bg-gray-700'
                       }`}
                     >
                       {size.charAt(0).toUpperCase() + size.slice(1)}
@@ -327,7 +383,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
             className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
             title="Refresh data"
           >
-            <RefreshCw className={`${iconSize} text-gray-400 hover:text-white ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`${iconSize} text-gray-400 hover:text-white ${isRefreshing ? 'animate-spin' : ''}`}
+            />
           </button>
 
           {/* Expand */}
@@ -336,7 +394,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
             className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
             title="View in Ask Vizier"
           >
-            <ExternalLink className={`${iconSize} text-gray-400 hover:text-white`} />
+            <ExternalLink
+              className={`${iconSize} text-gray-400 hover:text-white`}
+            />
           </button>
 
           {/* Unpin */}
@@ -352,7 +412,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
       {/* Annotation Form */}
       {isAddingAnnotation && (
-        <div className={`${padding.annotation} bg-gray-900/50 border-b border-gray-700`}>
+        <div
+          className={`${padding.annotation} bg-gray-900/50 border-b border-gray-700`}
+        >
           <textarea
             value={annotationText}
             onChange={(e) => setAnnotationText(e.target.value)}
@@ -362,7 +424,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           />
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-3">
-              <label className={`flex items-center gap-1.5 ${text.label} text-gray-400 cursor-pointer`}>
+              <label
+                className={`flex items-center gap-1.5 ${text.label} text-gray-400 cursor-pointer`}
+              >
                 <input
                   type="radio"
                   name={`visibility-${chart.id}`}
@@ -373,7 +437,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                 <Globe className="w-3 h-3" />
                 <span>Public</span>
               </label>
-              <label className={`flex items-center gap-1.5 ${text.label} text-gray-400 cursor-pointer`}>
+              <label
+                className={`flex items-center gap-1.5 ${text.label} text-gray-400 cursor-pointer`}
+              >
                 <input
                   type="radio"
                   name={`visibility-${chart.id}`}
@@ -406,8 +472,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
       {/* Annotations Display */}
       {visibleAnnotations.length > 0 && (
-        <div className={`${padding.annotation} bg-gray-900/30 border-b border-gray-700 space-y-1.5 max-h-28 overflow-y-auto`}>
-          {visibleAnnotations.map(annotation => (
+        <div
+          className={`${padding.annotation} bg-gray-900/30 border-b border-gray-700 space-y-1.5 max-h-28 overflow-y-auto`}
+        >
+          {visibleAnnotations.map((annotation) => (
             <div key={annotation.id} className="group">
               {editingAnnotationId === annotation.id ? (
                 // EDIT MODE
@@ -464,20 +532,27 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`${text.label} text-gray-300 leading-tight`}>
-                      <span className="font-semibold text-white">{annotation.userName}:</span>{' '}
+                      <span className="font-semibold text-white">
+                        {annotation.userName}:
+                      </span>{' '}
                       {annotation.text}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className={`${text.label} text-gray-500`}>
-                        {new Date(annotation.timestamp).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {new Date(annotation.timestamp).toLocaleDateString(
+                          'en-US',
+                          {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          },
+                        )}
                       </span>
                       {annotation.edited && (
-                        <span className={`${text.label} text-gray-500 italic`}>(edited)</span>
+                        <span className={`${text.label} text-gray-500 italic`}>
+                          (edited)
+                        </span>
                       )}
                     </div>
                   </div>
@@ -523,41 +598,56 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
             />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500 text-sm">No visualization available</p>
+              <p className="text-gray-500 text-sm">
+                No visualization available
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* Explanations - Three Sections */}
-      <div className={`${padding.explanation} border-t border-gray-700 bg-gray-900/50 space-y-2 flex-shrink-0`}>
-
+      <div
+        className={`${padding.explanation} border-t border-gray-700 bg-gray-900/50 space-y-2 flex-shrink-0`}
+      >
         {/* Key Insight */}
         <div>
-          <h4 className={`${text.label} font-semibold text-gray-400 uppercase tracking-wide mb-0.5`}>
+          <h4
+            className={`${text.label} font-semibold text-gray-400 uppercase tracking-wide mb-0.5`}
+          >
             Key Insight
           </h4>
-          <p className={`${text.body} text-gray-300 leading-relaxed line-clamp-2`}>
+          <p
+            className={`${text.body} text-gray-300 leading-relaxed line-clamp-2`}
+          >
             {generateKeyInsight(chart)}
           </p>
         </div>
 
         {/* What This Means */}
         <div>
-          <h4 className={`${text.label} font-semibold text-green-400 uppercase tracking-wide mb-0.5`}>
+          <h4
+            className={`${text.label} font-semibold text-green-400 uppercase tracking-wide mb-0.5`}
+          >
             What This Means
           </h4>
-          <p className={`${text.body} text-gray-300 leading-relaxed line-clamp-2`}>
+          <p
+            className={`${text.body} text-gray-300 leading-relaxed line-clamp-2`}
+          >
             {generateMeaning(chart)}
           </p>
         </div>
 
         {/* Recommended Actions */}
         <div>
-          <h4 className={`${text.label} font-semibold text-blue-400 uppercase tracking-wide mb-0.5`}>
+          <h4
+            className={`${text.label} font-semibold text-blue-400 uppercase tracking-wide mb-0.5`}
+          >
             Recommended Actions
           </h4>
-          <p className={`${text.body} text-gray-300 leading-relaxed line-clamp-2`}>
+          <p
+            className={`${text.body} text-gray-300 leading-relaxed line-clamp-2`}
+          >
             {generateRecommendations(chart)}
           </p>
         </div>

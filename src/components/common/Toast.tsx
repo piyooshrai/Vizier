@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, X, AlertCircle, Info } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertCircle, CheckCircle, Info, X } from 'lucide-react';
+import type React from 'react';
+import { useEffect } from 'react';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -64,7 +65,10 @@ interface ToastContainerProps {
   onRemove: (id: string) => void;
 }
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onRemove }) => {
+export const ToastContainer: React.FC<ToastContainerProps> = ({
+  toasts,
+  onRemove,
+}) => {
   return (
     <div className="fixed bottom-6 right-6 z-50 space-y-2">
       <AnimatePresence>

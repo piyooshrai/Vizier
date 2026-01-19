@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * A hook that debounces a value
@@ -30,7 +30,7 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
  */
 export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
-  delay: number = 500
+  delay: number = 500,
 ): (...args: Parameters<T>) => void {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
@@ -59,7 +59,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
         callbackRef.current(...args);
       }, delay);
     },
-    [delay]
+    [delay],
   );
 
   return debouncedCallback;

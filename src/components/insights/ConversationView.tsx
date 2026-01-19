@@ -1,7 +1,7 @@
 // src/components/insights/ConversationView.tsx
-import React from 'react';
+import type React from 'react';
+import type { Message } from '../../pages/Insights';
 import { InsightMessage } from './InsightMessage';
-import { Message } from '../../pages/Insights';
 
 interface ConversationViewProps {
   messages: Message[];

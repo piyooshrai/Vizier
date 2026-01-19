@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Lock, Check } from 'lucide-react';
-import { Button, Input, Card } from '../common';
+import { Check, Lock } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { authService, getErrorMessage } from '../../services';
-import { passwordChangeSchema, PasswordChangeFormData } from '../../utils/validators';
+import {
+  type PasswordChangeFormData,
+  passwordChangeSchema,
+} from '../../utils/validators';
+import { Button, Card, Input } from '../common';
 
 export const PasswordChangeForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +41,9 @@ export const PasswordChangeForm: React.FC = () => {
 
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-neutral-900 mb-4">Change Password</h3>
+      <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+        Change Password
+      </h3>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {error && (
@@ -49,7 +55,9 @@ export const PasswordChangeForm: React.FC = () => {
         {success && (
           <div className="p-4 bg-success-50 border border-success-200 rounded-lg flex items-center gap-2">
             <Check className="w-5 h-5 text-success-600" />
-            <p className="text-sm text-success-600">Password changed successfully!</p>
+            <p className="text-sm text-success-600">
+              Password changed successfully!
+            </p>
           </div>
         )}
 

@@ -1,9 +1,10 @@
 // src/components/layout/AppLayout.tsx
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Sidebar } from './Sidebar';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthModal } from '../auth/AuthModal';
+import { Sidebar } from './Sidebar';
 
 export const AppLayout: React.FC = () => {
   const { isDemoMode } = useAuth();
@@ -26,7 +27,8 @@ export const AppLayout: React.FC = () => {
         {/* Demo banner - fixed height, flex-shrink-0 prevents shrinking */}
         {isDemoMode && (
           <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 text-white px-6 py-3 text-center text-sm">
-            <span className="text-gray-400">Demo Mode</span> - You're exploring sample healthcare data (12,847 patients, 47,293 encounters).
+            <span className="text-gray-400">Demo Mode</span> - You're exploring
+            sample healthcare data (12,847 patients, 47,293 encounters).
             <button
               onClick={() => setShowAuthModal(true)}
               className="ml-2 underline text-white hover:text-gray-200 font-medium"

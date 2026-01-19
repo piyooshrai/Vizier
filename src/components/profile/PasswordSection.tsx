@@ -1,7 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Card } from '../common';
+import type React from 'react';
 import { PasswordChangeForm } from '../auth';
+import { Card } from '../common';
 
 interface PasswordSectionProps {
   disabled?: boolean;

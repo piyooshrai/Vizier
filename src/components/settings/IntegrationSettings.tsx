@@ -1,7 +1,20 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plug, Database, Cloud, FileSpreadsheet, Activity, Key, Copy, Eye, EyeOff, RefreshCw, Check } from 'lucide-react';
-import { Card, Button, Badge, Modal } from '../common';
+import {
+  Activity,
+  Check,
+  Cloud,
+  Copy,
+  Database,
+  Eye,
+  EyeOff,
+  FileSpreadsheet,
+  Key,
+  Plug,
+  RefreshCw,
+} from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { Badge, Button, Card, Modal } from '../common';
 
 interface Integration {
   id: string;
@@ -198,21 +211,28 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
               className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
             >
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-lg ${
-                  integration.status === 'connected'
-                    ? 'bg-success-100 text-success-600'
-                    : integration.status === 'pending'
-                    ? 'bg-warning-100 text-warning-600'
-                    : 'bg-neutral-200 text-neutral-600'
-                }`}>
+                <div
+                  className={`p-3 rounded-lg ${
+                    integration.status === 'connected'
+                      ? 'bg-success-100 text-success-600'
+                      : integration.status === 'pending'
+                        ? 'bg-warning-100 text-warning-600'
+                        : 'bg-neutral-200 text-neutral-600'
+                  }`}
+                >
                   {integration.icon}
                 </div>
                 <div>
-                  <p className="font-medium text-neutral-900">{integration.name}</p>
-                  <p className="text-sm text-neutral-500">{integration.description}</p>
+                  <p className="font-medium text-neutral-900">
+                    {integration.name}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {integration.description}
+                  </p>
                   {integration.connectedAt && (
                     <p className="text-xs text-neutral-400 mt-1">
-                      Connected since {new Date(integration.connectedAt).toLocaleDateString()}
+                      Connected since{' '}
+                      {new Date(integration.connectedAt).toLocaleDateString()}
                     </p>
                   )}
                 </div>
@@ -221,7 +241,11 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
                 {getStatusBadge(integration.status)}
                 {!disabled && (
                   <Button
-                    variant={integration.status === 'connected' ? 'secondary' : 'primary'}
+                    variant={
+                      integration.status === 'connected'
+                        ? 'secondary'
+                        : 'primary'
+                    }
                     size="sm"
                     onClick={() =>
                       integration.status === 'connected'
@@ -229,7 +253,9 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
                         : onConnect?.(integration.id)
                     }
                   >
-                    {integration.status === 'connected' ? 'Disconnect' : 'Connect'}
+                    {integration.status === 'connected'
+                      ? 'Disconnect'
+                      : 'Connect'}
                   </Button>
                 )}
               </div>
@@ -260,11 +286,15 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
             <li>Break any existing integrations using the old key</li>
           </ul>
           <p className="text-sm text-warning-600 font-medium">
-            You will need to update your API key in all applications that use it.
+            You will need to update your API key in all applications that use
+            it.
           </p>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button variant="secondary" onClick={() => setShowRegenerateModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowRegenerateModal(false)}
+            >
               Cancel
             </Button>
             <Button

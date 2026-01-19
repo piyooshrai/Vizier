@@ -1,5 +1,5 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { ApiError } from '../types';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import type { ApiError } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -22,7 +22,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - handle auth errors
@@ -35,13 +35,15 @@ api.interceptors.response.use(
       localStorage.removeItem('user');
 
       // Only redirect if not already on auth pages
-      if (!window.location.pathname.includes('/login') &&
-          !window.location.pathname.includes('/signup')) {
+      if (
+        !window.location.pathname.includes('/login') &&
+        !window.location.pathname.includes('/signup')
+      ) {
         window.location.href = '/login';
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Helper function to transform technical errors into user-friendly messages
@@ -55,9 +57,11 @@ export function getErrorMessage(error: unknown): string {
       'Email already registered': 'An account with this email already exists.',
       'Token expired': 'Your session has expired. Please log in again.',
       'Invalid token': 'Your session is invalid. Please log in again.',
-      'Connection refused': "I'm having trouble connecting. Please try again in a moment.",
-      'Network Error': "I'm having trouble connecting. Please check your internet connection.",
-      'timeout': 'This request is taking longer than expected. Please try again.',
+      'Connection refused':
+        "I'm having trouble connecting. Please try again in a moment.",
+      'Network Error':
+        "I'm having trouble connecting. Please check your internet connection.",
+      timeout: 'This request is taking longer than expected. Please try again.',
     };
 
     if (apiError?.detail) {

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Mail } from 'lucide-react';
-import { Button, Input } from '../common';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { authService, getErrorMessage } from '../../services';
+import { Button, Input } from '../common';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -57,7 +58,8 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           Forgot your password?
         </h2>
         <p className="text-sm text-neutral-600">
-          Enter your email and we'll send you instructions to reset your password.
+          Enter your email and we'll send you instructions to reset your
+          password.
         </p>
       </div>
 

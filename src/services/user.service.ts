@@ -1,5 +1,5 @@
+import type { PasswordChangeData, User } from '../types';
 import api from './api';
-import { User, PasswordChangeData } from '../types';
 
 export interface UpdateProfileData {
   first_name?: string;
@@ -91,7 +91,7 @@ const userService = {
   async changePassword(data: PasswordChangeData): Promise<void> {
     if (isDemoMode()) {
       // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       // In demo mode, just pretend it worked
       return;
     }
@@ -104,7 +104,7 @@ const userService = {
    */
   async requestPasswordReset(email: string): Promise<void> {
     if (isDemoMode()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return;
     }
 
@@ -116,7 +116,7 @@ const userService = {
    */
   async resetPassword(token: string, newPassword: string): Promise<void> {
     if (isDemoMode()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return;
     }
 
@@ -146,7 +146,9 @@ const userService = {
   /**
    * Update user preferences
    */
-  async updatePreferences(preferences: Partial<UserPreferences>): Promise<UserPreferences> {
+  async updatePreferences(
+    preferences: Partial<UserPreferences>,
+  ): Promise<UserPreferences> {
     if (isDemoMode()) {
       const current = await this.getPreferences();
       const updated = { ...current, ...preferences };
@@ -154,7 +156,10 @@ const userService = {
       return updated;
     }
 
-    const response = await api.patch<UserPreferences>('/api/users/preferences', preferences);
+    const response = await api.patch<UserPreferences>(
+      '/api/users/preferences',
+      preferences,
+    );
     return response.data;
   },
 
@@ -170,7 +175,9 @@ const userService = {
         preferences,
         exportedAt: new Date().toISOString(),
       };
-      return new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      return new Blob([JSON.stringify(data, null, 2)], {
+        type: 'application/json',
+      });
     }
 
     const response = await api.get('/api/users/export', {
@@ -210,11 +217,15 @@ const userService = {
     const formData = new FormData();
     formData.append('avatar', file);
 
-    const response = await api.post<{ avatar_url: string }>('/api/users/avatar', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await api.post<{ avatar_url: string }>(
+      '/api/users/avatar',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    });
+    );
 
     return response.data.avatar_url;
   },

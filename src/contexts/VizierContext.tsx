@@ -1,7 +1,19 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { vannaService, createUserMessage, createVizierMessage, Message } from '../services';
-import { VannaResponse } from '../types';
+import type React from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { mockHealthcareData } from '../data/mockData';
+import {
+  createUserMessage,
+  createVizierMessage,
+  type Message,
+  vannaService,
+} from '../services';
+import type { VannaResponse } from '../types';
 
 // Check if user is in demo mode
 const isDemoMode = (): boolean => {
@@ -57,10 +69,14 @@ function generateConversationalResponse(data: VannaResponse): string {
     gauge_chart: `Here's the current status:`,
   };
 
-  return responses[data.chart_type] || `I found ${count} results for your question:`;
+  return (
+    responses[data.chart_type] || `I found ${count} results for your question:`
+  );
 }
 
-export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [messages, setMessages] = useState<Message[]>([
     createVizierMessage(getWelcomeMessage()),
   ]);
@@ -94,7 +110,7 @@ export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Replace loading message with actual response
       const vizierMessage = createVizierMessage(
         generateConversationalResponse(response),
-        response
+        response,
       );
 
       setMessages((prev) => {
@@ -103,17 +119,21 @@ export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
 
       // Update suggestions if provided
-      if (response.follow_up_questions && response.follow_up_questions.length > 0) {
+      if (
+        response.follow_up_questions &&
+        response.follow_up_questions.length > 0
+      ) {
         setSuggestions(response.follow_up_questions);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      const errorMessage =
+        err instanceof Error ? err.message : 'An error occurred';
 
       const vizierErrorMessage = createVizierMessage(
         "I'm sorry, I had trouble understanding that question. Could you try rephrasing it?",
         undefined,
         false,
-        true
+        true,
       );
 
       setMessages((prev) => {

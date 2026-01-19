@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
+import type React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -19,8 +19,7 @@ const variantStyles = {
     'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 active:bg-neutral-300',
   outline:
     'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 active:bg-primary-100',
-  ghost:
-    'text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200',
+  ghost: 'text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200',
   danger:
     'bg-error-500 text-white hover:bg-error-600 active:bg-error-700 shadow-sm',
 };
@@ -71,9 +70,13 @@ export const Button: React.FC<ButtonProps> = ({
           </>
         ) : (
           <>
-            {icon && iconPosition === 'left' && <span className="flex-shrink-0">{icon}</span>}
+            {icon && iconPosition === 'left' && (
+              <span className="flex-shrink-0">{icon}</span>
+            )}
             {children}
-            {icon && iconPosition === 'right' && <span className="flex-shrink-0">{icon}</span>}
+            {icon && iconPosition === 'right' && (
+              <span className="flex-shrink-0">{icon}</span>
+            )}
           </>
         )}
       </button>

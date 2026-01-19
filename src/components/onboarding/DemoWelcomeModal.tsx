@@ -1,6 +1,8 @@
 // src/components/onboarding/DemoWelcomeModal.tsx
-import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Users, Activity, TrendingUp } from 'lucide-react';
+
+import { Activity, Sparkles, TrendingUp, Users, X } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 interface DemoWelcomeModalProps {
   onStartTour: () => void;
@@ -45,13 +47,21 @@ export const DemoWelcomeModal: React.FC<DemoWelcomeModalProps> = ({
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                <svg
+                  className="w-8 h-8 text-black"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                 </svg>
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white">Welcome to Vizier Demo</h2>
-                <p className="text-gray-400 mt-1">Explore healthcare analytics intelligence</p>
+                <h2 className="text-3xl font-bold text-white">
+                  Welcome to Vizier Demo
+                </h2>
+                <p className="text-gray-400 mt-1">
+                  Explore healthcare analytics intelligence
+                </p>
               </div>
             </div>
             <button
@@ -67,8 +77,8 @@ export const DemoWelcomeModal: React.FC<DemoWelcomeModalProps> = ({
         <div className="p-8">
           <p className="text-gray-300 text-lg mb-8 leading-relaxed">
             You're exploring sample data from a mid-sized healthcare system. No
-            account needed—just experience how Vizier transforms complex healthcare
-            data into conversational insights.
+            account needed—just experience how Vizier transforms complex
+            healthcare data into conversational insights.
           </p>
 
           {/* Stats */}
@@ -97,8 +107,12 @@ export const DemoWelcomeModal: React.FC<DemoWelcomeModalProps> = ({
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-white font-medium">Ask questions in plain English</p>
-                <p className="text-sm text-gray-400">"What are my top diagnoses?" or "Show me readmission trends"</p>
+                <p className="text-white font-medium">
+                  Ask questions in plain English
+                </p>
+                <p className="text-sm text-gray-400">
+                  "What are my top diagnoses?" or "Show me readmission trends"
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -106,8 +120,12 @@ export const DemoWelcomeModal: React.FC<DemoWelcomeModalProps> = ({
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-white font-medium">Get intelligent visualizations</p>
-                <p className="text-sm text-gray-400">Charts chosen automatically based on your question and data</p>
+                <p className="text-white font-medium">
+                  Get intelligent visualizations
+                </p>
+                <p className="text-sm text-gray-400">
+                  Charts chosen automatically based on your question and data
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -115,8 +133,12 @@ export const DemoWelcomeModal: React.FC<DemoWelcomeModalProps> = ({
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-white font-medium">Save and export insights</p>
-                <p className="text-sm text-gray-400">Build a library of analytics for your team</p>
+                <p className="text-white font-medium">
+                  Save and export insights
+                </p>
+                <p className="text-sm text-gray-400">
+                  Build a library of analytics for your team
+                </p>
               </div>
             </div>
           </div>

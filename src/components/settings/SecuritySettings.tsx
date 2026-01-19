@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Key, Smartphone, Clock, LogOut, AlertTriangle } from 'lucide-react';
-import { Card, Button, Badge, Modal } from '../common';
+import {
+  AlertTriangle,
+  Clock,
+  Key,
+  LogOut,
+  Shield,
+  Smartphone,
+} from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { Badge, Button, Card, Modal } from '../common';
 
 interface Session {
   id: string;
@@ -66,7 +74,8 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
   };
 
   const daysSincePasswordChange = Math.floor(
-    (Date.now() - new Date(lastPasswordChange).getTime()) / (1000 * 60 * 60 * 24)
+    (Date.now() - new Date(lastPasswordChange).getTime()) /
+      (1000 * 60 * 60 * 24),
   );
 
   return (
@@ -115,7 +124,9 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                 <Button
                   variant={twoFactorEnabled ? 'secondary' : 'primary'}
                   size="sm"
-                  onClick={twoFactorEnabled ? onDisableTwoFactor : onEnableTwoFactor}
+                  onClick={
+                    twoFactorEnabled ? onDisableTwoFactor : onEnableTwoFactor
+                  }
                 >
                   {twoFactorEnabled ? 'Disable' : 'Enable'}
                 </Button>
@@ -150,7 +161,8 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
               <div>
                 <p className="font-medium text-neutral-900">Login Activity</p>
                 <p className="text-sm text-neutral-500">
-                  {sessions.length} active {sessions.length === 1 ? 'session' : 'sessions'}
+                  {sessions.length} active{' '}
+                  {sessions.length === 1 ? 'session' : 'sessions'}
                 </p>
               </div>
             </div>
@@ -194,9 +206,13 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-neutral-900">{session.device}</p>
+                    <p className="font-medium text-neutral-900">
+                      {session.device}
+                    </p>
                     {session.isCurrent && (
-                      <Badge variant="primary" size="sm">Current</Badge>
+                      <Badge variant="primary" size="sm">
+                        Current
+                      </Badge>
                     )}
                   </div>
                   <p className="text-sm text-neutral-500">
@@ -242,13 +258,17 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                 You will be signed out everywhere
               </p>
               <p className="text-sm text-warning-700 mt-1">
-                This will sign you out of all devices except this one. You'll need to sign in again on those devices.
+                This will sign you out of all devices except this one. You'll
+                need to sign in again on those devices.
               </p>
             </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button variant="secondary" onClick={() => setShowRevokeAllModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowRevokeAllModal(false)}
+            >
               Cancel
             </Button>
             <Button

@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Building2, Globe, Phone, MapPin, Save } from 'lucide-react';
-import { Card, Button, Input, Select } from '../common';
+import { Building2, Globe, MapPin, Phone, Save } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button, Card, Input, Select } from '../common';
 
 const organizationSchema = z.object({
   name: z.string().min(1, 'Organization name is required').max(100),
   type: z.string().min(1, 'Organization type is required'),
-  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  phone: z.string().min(10, 'Please enter a valid phone number').optional().or(z.literal('')),
+  website: z
+    .string()
+    .url('Please enter a valid URL')
+    .optional()
+    .or(z.literal('')),
+  phone: z
+    .string()
+    .min(10, 'Please enter a valid phone number')
+    .optional()
+    .or(z.literal('')),
   address: z.string().max(200).optional(),
   city: z.string().max(100).optional(),
   state: z.string().max(100).optional(),
@@ -94,10 +103,7 @@ export const OrganizationSettings: React.FC<OrganizationSettingsProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <Card>
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 bg-primary-100 rounded-lg">
@@ -115,7 +121,9 @@ export const OrganizationSettings: React.FC<OrganizationSettingsProps> = ({
 
         {success && (
           <div className="mb-4 p-4 bg-success-50 border border-success-200 rounded-lg">
-            <p className="text-sm text-success-600">Organization settings saved successfully!</p>
+            <p className="text-sm text-success-600">
+              Organization settings saved successfully!
+            </p>
           </div>
         )}
 

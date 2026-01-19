@@ -1,6 +1,6 @@
-import React from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import type React from 'react';
 
 interface ErrorMessageProps {
   message: string;

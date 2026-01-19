@@ -1,33 +1,35 @@
+import type { PipelineStatus, UploadResponse } from '../types';
 import api from './api';
-import { UploadResponse, PipelineStatus } from '../types';
 
-export interface UploadProgressCallback {
-  (progress: number): void;
-}
+export type UploadProgressCallback = (progress: number) => void;
 
 export const pipelineService = {
   uploadAndTrigger: async (
     files: File[],
-    onProgress?: UploadProgressCallback
+    onProgress?: UploadProgressCallback,
   ): Promise<UploadResponse> => {
     const formData = new FormData();
     files.forEach((file) => {
       formData.append('files', file);
     });
 
-    const response = await api.post<UploadResponse>('/pipeline/upload_and_trigger', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await api.post<UploadResponse>(
+      '/pipeline/upload_and_trigger',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress && progressEvent.total) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total,
+            );
+            onProgress(percentCompleted);
+          }
+        },
       },
-      onUploadProgress: (progressEvent) => {
-        if (onProgress && progressEvent.total) {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          onProgress(percentCompleted);
-        }
-      },
-    });
+    );
 
     return response.data;
   },
@@ -36,7 +38,9 @@ export const pipelineService = {
   // Will be connected to real endpoint when available
   getStatus: async (uploadRunId: string): Promise<PipelineStatus> => {
     try {
-      const response = await api.get<PipelineStatus>(`/pipeline/status/${uploadRunId}`);
+      const response = await api.get<PipelineStatus>(
+        `/pipeline/status/${uploadRunId}`,
+      );
       return response.data;
     } catch {
       // Return mock data for now - will be replaced when endpoint is ready
@@ -50,7 +54,7 @@ export const pipelineService = {
     uploadRunId: string,
     onUpdate: (status: PipelineStatus) => void,
     intervalMs: number = 2000,
-    maxAttempts: number = 150 // 5 minutes max
+    maxAttempts: number = 150, // 5 minutes max
   ): Promise<PipelineStatus> => {
     let attempts = 0;
 
@@ -95,9 +99,14 @@ const mockSteps = [
 
 function getMockStatus(uploadRunId: string): PipelineStatus {
   // Simulate progress based on time
-  const startTime = parseInt(localStorage.getItem(`pipeline_start_${uploadRunId}`) || '0');
+  const startTime = parseInt(
+    localStorage.getItem(`pipeline_start_${uploadRunId}`) || '0',
+  );
   if (!startTime) {
-    localStorage.setItem(`pipeline_start_${uploadRunId}`, Date.now().toString());
+    localStorage.setItem(
+      `pipeline_start_${uploadRunId}`,
+      Date.now().toString(),
+    );
     return {
       status: 'running',
       upload_run_id: uploadRunId,
@@ -111,12 +120,12 @@ function getMockStatus(uploadRunId: string): PipelineStatus {
   const stepDuration = 3000; // 3 seconds per step for demo
   const currentStepIndex = Math.min(
     Math.floor(elapsed / stepDuration),
-    mockSteps.length - 1
+    mockSteps.length - 1,
   );
   const progressInStep = (elapsed % stepDuration) / stepDuration;
   const overallProgress = Math.min(
     ((currentStepIndex + progressInStep) / mockSteps.length) * 100,
-    100
+    100,
   );
 
   if (overallProgress >= 100) {

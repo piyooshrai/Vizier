@@ -1,6 +1,8 @@
 // src/components/onboarding/FirstInsightPrompt.tsx
-import React, { useState, useEffect } from 'react';
+
 import { Sparkles, X } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 interface FirstInsightPromptProps {
   onAskQuestion: (question: string) => void;
@@ -13,7 +15,7 @@ export const FirstInsightPrompt: React.FC<FirstInsightPromptProps> = ({
 
   useEffect(() => {
     const hasAskedFirstQuestion = localStorage.getItem(
-      'onboarding_first_question_asked'
+      'onboarding_first_question_asked',
     );
     const isDemoMode = localStorage.getItem('is_demo') === 'true';
 
@@ -35,7 +37,7 @@ export const FirstInsightPrompt: React.FC<FirstInsightPromptProps> = ({
 
   if (!isVisible) return null;
 
-  const suggestedQuestion = "What are my top 10 diagnoses?";
+  const suggestedQuestion = 'What are my top 10 diagnoses?';
 
   return (
     <div className="mb-6 animate-slide-up">
@@ -46,8 +48,12 @@ export const FirstInsightPrompt: React.FC<FirstInsightPromptProps> = ({
               <Sparkles className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Let's start with a common question</h3>
-              <p className="text-sm text-gray-400">Try this to see Vizier in action</p>
+              <h3 className="text-lg font-bold text-white">
+                Let's start with a common question
+              </h3>
+              <p className="text-sm text-gray-400">
+                Try this to see Vizier in action
+              </p>
             </div>
           </div>
           <button

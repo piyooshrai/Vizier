@@ -1,8 +1,8 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown } from 'lucide-react';
-import { Card } from '../common';
+import { TrendingDown, TrendingUp } from 'lucide-react';
+import type React from 'react';
 import { formatNumber } from '../../utils/formatters';
+import { Card } from '../common';
 
 interface StatCardProps {
   title: string;

@@ -1,6 +1,7 @@
 // src/components/insights/QueryInput.tsx
-import React from 'react';
+
 import { Send } from 'lucide-react';
+import type React from 'react';
 
 interface QueryInputProps {
   value: string;

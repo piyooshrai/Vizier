@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, SignupData } from '../types';
+import type React from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { authService, getErrorMessage } from '../services';
+import type { SignupData, User } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -16,7 +23,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,15 +47,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const signup = useCallback(async (data: SignupData) => {
-    try {
-      await authService.signup(data);
-      // After successful signup, automatically log in
-      await login(data.email, data.password);
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  }, [login]);
+  const signup = useCallback(
+    async (data: SignupData) => {
+      try {
+        await authService.signup(data);
+        // After successful signup, automatically log in
+        await login(data.email, data.password);
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
+    [login],
+  );
 
   const logout = useCallback(async () => {
     const isDemoMode = localStorage.getItem('is_demo') === 'true';
@@ -64,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithDemo = useCallback(async () => {
     // Simulate a small delay for UX
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Create a mock demo user (no API call needed)
     const demoUser = {

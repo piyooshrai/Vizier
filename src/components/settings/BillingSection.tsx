@@ -1,7 +1,13 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, CheckCircle, AlertCircle, Download, ExternalLink } from 'lucide-react';
-import { Card, Button, Badge } from '../common';
+import {
+  AlertCircle,
+  CheckCircle,
+  CreditCard,
+  Download,
+  ExternalLink,
+} from 'lucide-react';
+import type React from 'react';
+import { Badge, Button, Card } from '../common';
 
 interface BillingPlan {
   name: string;
@@ -123,10 +129,15 @@ export const BillingSection: React.FC<BillingSectionProps> = ({
           </div>
 
           <div className="mt-4 pt-4 border-t border-primary-100">
-            <p className="text-sm font-medium text-neutral-700 mb-2">Plan includes:</p>
+            <p className="text-sm font-medium text-neutral-700 mb-2">
+              Plan includes:
+            </p>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {currentPlan.features.map((feature, index) => (
-                <li key={index} className="flex items-center gap-2 text-sm text-neutral-600">
+                <li
+                  key={index}
+                  className="flex items-center gap-2 text-sm text-neutral-600"
+                >
                   <CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0" />
                   {feature}
                 </li>
@@ -168,9 +179,12 @@ export const BillingSection: React.FC<BillingSectionProps> = ({
           <div className="flex items-center gap-3 p-4 bg-warning-50 rounded-lg">
             <AlertCircle className="w-5 h-5 text-warning-600" />
             <div>
-              <p className="font-medium text-warning-900">No payment method on file</p>
+              <p className="font-medium text-warning-900">
+                No payment method on file
+              </p>
               <p className="text-sm text-warning-700">
-                Add a payment method to continue using Vizier after your trial ends.
+                Add a payment method to continue using Vizier after your trial
+                ends.
               </p>
             </div>
           </div>
@@ -206,7 +220,10 @@ export const BillingSection: React.FC<BillingSectionProps> = ({
             </thead>
             <tbody>
               {invoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b border-neutral-50 last:border-0">
+                <tr
+                  key={invoice.id}
+                  className="border-b border-neutral-50 last:border-0"
+                >
                   <td className="py-3 px-4 font-medium text-neutral-900">
                     {invoice.id}
                   </td>

@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mic } from 'lucide-react';
+import { Mic, Send } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { VizierAvatar } from './VizierAvatar';
 
 interface QueryInputProps {
@@ -23,7 +24,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${Math.min(
         textareaRef.current.scrollHeight,
-        150
+        150,
       )}px`;
     }
   }, [value]);
@@ -47,10 +48,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
     <div className="bg-white border border-neutral-200 rounded-xl shadow-sm">
       <div className="flex items-end gap-3 p-3">
         <div className="flex-shrink-0 pb-1">
-          <VizierAvatar
-            size="sm"
-            state={isLoading ? 'thinking' : 'idle'}
-          />
+          <VizierAvatar size="sm" state={isLoading ? 'thinking' : 'idle'} />
         </div>
 
         <div className="flex-1 min-w-0">

@@ -1,5 +1,5 @@
-export { VizierAvatar } from './VizierAvatar';
-export { QueryInput } from './QueryInput';
 export { ChartRenderer } from './ChartRenderer';
-export { ResultsDisplay } from './ResultsDisplay';
 export { ChatInterface } from './ChatInterface';
+export { QueryInput } from './QueryInput';
+export { ResultsDisplay } from './ResultsDisplay';
+export { VizierAvatar } from './VizierAvatar';

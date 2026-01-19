@@ -1,19 +1,26 @@
 // src/components/dashboard/SavedInsightCard.tsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { BarChart3, PieChart, TrendingUp, Trash2, MessageSquare } from 'lucide-react';
+
 import {
-  BarChart,
+  BarChart3,
+  MessageSquare,
+  PieChart,
+  Trash2,
+  TrendingUp,
+} from 'lucide-react';
+import type React from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
   Bar,
-  PieChart as RechartsPie,
-  Pie,
+  BarChart,
   Cell,
-  LineChart,
   Line,
+  LineChart,
+  Pie,
+  PieChart as RechartsPie,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
 
 interface SavedInsight {
@@ -80,14 +87,18 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
               >
-                {insight.chartData.map((_entry: Record<string, unknown>, index: number) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={GOLD_COLORS[index % GOLD_COLORS.length]}
-                  />
-                ))}
+                {insight.chartData.map(
+                  (_entry: Record<string, unknown>, index: number) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={GOLD_COLORS[index % GOLD_COLORS.length]}
+                    />
+                  ),
+                )}
               </Pie>
               <Tooltip
                 contentStyle={{
@@ -105,10 +116,7 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
         return (
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={insight.chartData}>
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 12, fill: '#9CA3AF' }}
-              />
+              <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
               <YAxis tick={{ fontSize: 12, fill: '#9CA3AF' }} />
               <Tooltip
                 contentStyle={{

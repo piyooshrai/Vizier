@@ -62,7 +62,13 @@ export const USER_ROLES: UserRoleInfo[] = [
 export interface Organization {
   id: string;
   name: string;
-  type: 'hospital' | 'clinic' | 'health_system' | 'medical_group' | 'research_institution' | 'other';
+  type:
+    | 'hospital'
+    | 'clinic'
+    | 'health_system'
+    | 'medical_group'
+    | 'research_institution'
+    | 'other';
   website?: string;
   phone?: string;
   address?: {

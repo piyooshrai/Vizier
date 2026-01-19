@@ -1,26 +1,29 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Lock, CheckCircle, AlertCircle } from 'lucide-react';
-import { Button, Input, Card } from '../components/common';
+import { AlertCircle, ArrowLeft, CheckCircle, Lock } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { z } from 'zod';
+import { Button, Card, Input } from '../components/common';
 import { authService, getErrorMessage } from '../services';
 
-const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}$/,
-      'Password must contain at least one number and one special character'
-    ),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(
+        /^(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}$/,
+        'Password must contain at least one number and one special character',
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
@@ -59,14 +62,12 @@ export const ResetPassword: React.FC = () => {
                 Invalid reset link
               </h2>
               <p className="text-neutral-600 mb-6">
-                This password reset link is invalid or has expired.
-                Please request a new one.
+                This password reset link is invalid or has expired. Please
+                request a new one.
               </p>
               <div className="space-y-3">
                 <Link to="/forgot-password" className="block">
-                  <Button fullWidth>
-                    Request new link
-                  </Button>
+                  <Button fullWidth>Request new link</Button>
                 </Link>
                 <Link
                   to="/login"
@@ -112,12 +113,10 @@ export const ResetPassword: React.FC = () => {
                 Password reset successful
               </h2>
               <p className="text-neutral-600 mb-6">
-                Your password has been reset. You can now sign in with your new password.
+                Your password has been reset. You can now sign in with your new
+                password.
               </p>
-              <Button
-                onClick={() => navigate('/login')}
-                fullWidth
-              >
+              <Button onClick={() => navigate('/login')} fullWidth>
                 Sign in
               </Button>
             </div>

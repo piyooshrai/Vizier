@@ -1,11 +1,12 @@
-import React, { useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { VizierAvatar } from './VizierAvatar';
-import { ResultsDisplay } from './ResultsDisplay';
-import { ThreeDotsLoader } from '../common/LoadingSpinner';
-import { Message } from '../../services';
-import { VannaResponse } from '../../types';
+import { AnimatePresence, motion } from 'framer-motion';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
+import type { Message } from '../../services';
+import type { VannaResponse } from '../../types';
 import { formatTimestamp } from '../../utils/formatters';
+import { ThreeDotsLoader } from '../common/LoadingSpinner';
+import { ResultsDisplay } from './ResultsDisplay';
+import { VizierAvatar } from './VizierAvatar';
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -86,7 +87,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 <div className="mt-4">
                   <ResultsDisplay
                     data={message.data}
-                    onSave={onSaveInsight ? (data) => onSaveInsight(message.content, data) : undefined}
+                    onSave={
+                      onSaveInsight
+                        ? (data) => onSaveInsight(message.content, data)
+                        : undefined
+                    }
                     isSaved={savedQuestions.has(message.content)}
                   />
                 </div>
@@ -102,20 +107,22 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       You might also want to know:
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {message.data.follow_up_questions.slice(0, 3).map((question, i) => (
-                        <button
-                          key={i}
-                          onClick={() => onSuggestionClick?.(question)}
-                          className="
+                      {message.data.follow_up_questions
+                        .slice(0, 3)
+                        .map((question, i) => (
+                          <button
+                            key={i}
+                            onClick={() => onSuggestionClick?.(question)}
+                            className="
                             text-xs px-3 py-1.5 rounded-full
                             bg-white border border-neutral-200
                             text-neutral-700 hover:border-primary-300 hover:text-primary-600
                             transition-colors
                           "
-                        >
-                          {question}
-                        </button>
-                      ))}
+                          >
+                            {question}
+                          </button>
+                        ))}
                     </div>
                   </div>
                 )}

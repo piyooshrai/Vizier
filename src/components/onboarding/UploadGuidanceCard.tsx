@@ -1,6 +1,7 @@
 // src/components/onboarding/UploadGuidanceCard.tsx
-import React from 'react';
-import { FileText, Download, CheckCircle, AlertCircle } from 'lucide-react';
+
+import { AlertCircle, CheckCircle, Download, FileText } from 'lucide-react';
+import type React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
 export const UploadGuidanceCard: React.FC = () => {
@@ -30,7 +31,9 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-amber-900 mb-1">You're in Demo Mode</p>
+              <p className="font-semibold text-amber-900 mb-1">
+                You're in Demo Mode
+              </p>
               <p className="text-sm text-amber-800">
                 You're currently exploring sample data.{' '}
                 <a href="/" className="underline font-semibold">
@@ -58,7 +61,10 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
           <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-gray-900">Supported Formats</p>
-            <p className="text-sm text-gray-600">CSV, XLSX, XLS files from Epic, Cerner, Allscripts, or most EHR systems</p>
+            <p className="text-sm text-gray-600">
+              CSV, XLSX, XLS files from Epic, Cerner, Allscripts, or most EHR
+              systems
+            </p>
           </div>
         </div>
 
@@ -67,7 +73,8 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
           <div>
             <p className="font-semibold text-gray-900">Common Columns</p>
             <p className="text-sm text-gray-600">
-              patient_id, encounter_date, diagnosis_code, diagnosis_name, age, gender, encounter_type
+              patient_id, encounter_date, diagnosis_code, diagnosis_name, age,
+              gender, encounter_type
             </p>
           </div>
         </div>
@@ -76,7 +83,10 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
           <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-gray-900">Data Privacy</p>
-            <p className="text-sm text-gray-600">All data is encrypted in transit and at rest. HIPAA compliant infrastructure.</p>
+            <p className="text-sm text-gray-600">
+              All data is encrypted in transit and at rest. HIPAA compliant
+              infrastructure.
+            </p>
           </div>
         </div>
       </div>

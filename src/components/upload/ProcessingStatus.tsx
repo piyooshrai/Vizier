@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Circle, Loader2 } from 'lucide-react';
-import { PipelineStatus } from '../../types';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { pipelineService } from '../../services';
+import type { PipelineStatus } from '../../types';
 
 interface ProcessingStatusProps {
   uploadRunId: string;
@@ -55,11 +56,11 @@ const PROCESSING_STEPS: ProcessingStep[] = [
 ];
 
 const CONVERSATIONAL_MESSAGES = [
-  "I can see this is healthcare encounter data. Let me organize it properly...",
-  "Interesting patterns emerging in your patient demographics...",
+  'I can see this is healthcare encounter data. Let me organize it properly...',
+  'Interesting patterns emerging in your patient demographics...',
   "I'm identifying diagnostic codes and mapping relationships...",
-  "Building connections between patients, encounters, and conditions...",
-  "Almost there! Creating the analytics layer for fast queries...",
+  'Building connections between patients, encounters, and conditions...',
+  'Almost there! Creating the analytics layer for fast queries...',
 ];
 
 export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
@@ -89,7 +90,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
             }
           },
           2000,
-          150
+          150,
         );
       } catch (error) {
         if (isMounted) {
@@ -134,8 +135,18 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
           }}
           className="w-32 h-32 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center shadow-lg mb-6"
         >
-          <svg viewBox="0 0 24 24" className="w-16 h-16 text-white" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M6 9L12 15L18 9" strokeLinecap="round" strokeLinejoin="round" />
+          <svg
+            viewBox="0 0 24 24"
+            className="w-16 h-16 text-white"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              d="M6 9L12 15L18 9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
             <circle cx="12" cy="6" r="2" fill="currentColor" />
           </svg>
         </motion.div>
@@ -203,9 +214,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
                   {isCurrent && (
                     <Loader2 className="w-5 h-5 text-primary-600 animate-spin" />
                   )}
-                  {isPending && (
-                    <Circle className="w-5 h-5 text-neutral-300" />
-                  )}
+                  {isPending && <Circle className="w-5 h-5 text-neutral-300" />}
                 </div>
 
                 <div className="flex-1">

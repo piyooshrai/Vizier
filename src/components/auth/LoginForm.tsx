@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useAuth } from '../../contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -51,7 +52,10 @@ export const LoginForm: React.FC = () => {
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-slate-700 mb-1.5"
+        >
           Email
         </label>
         <input
@@ -77,7 +81,10 @@ export const LoginForm: React.FC = () => {
       {/* Password */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-slate-700"
+          >
             Password
           </label>
           <Link
@@ -103,7 +110,9 @@ export const LoginForm: React.FC = () => {
           {...register('password')}
         />
         {errors.password && (
-          <p className="mt-1.5 text-sm text-red-600">{errors.password.message}</p>
+          <p className="mt-1.5 text-sm text-red-600">
+            {errors.password.message}
+          </p>
         )}
       </div>
 

@@ -1,6 +1,6 @@
 export { FileDropZone } from './FileDropZone';
-export { UploadProgress } from './UploadProgress';
-export { ProcessingStatus } from './ProcessingStatus';
-export { ProcessingAnimation } from './ProcessingAnimation';
 export { FileList } from './FileList';
+export { ProcessingAnimation } from './ProcessingAnimation';
+export { ProcessingStatus } from './ProcessingStatus';
 export { UploadComplete } from './UploadComplete';
+export { UploadProgress } from './UploadProgress';

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { Loader2, Play } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Play, Loader2 } from 'lucide-react';
 
 export const DemoCard: React.FC = () => {
   const navigate = useNavigate();
@@ -53,9 +54,7 @@ export const DemoCard: React.FC = () => {
           </p>
         </div>
       </div>
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </button>
   );
 };

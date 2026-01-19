@@ -113,7 +113,8 @@ export const DEMO_USER = {
 
 // Error Messages
 export const ERROR_MESSAGES = {
-  network: "I'm having trouble connecting. Please check your internet connection.",
+  network:
+    "I'm having trouble connecting. Please check your internet connection.",
   timeout: 'This request is taking longer than expected. Please try again.',
   unauthorized: 'Your session has expired. Please log in again.',
   forbidden: "You don't have permission to perform this action.",
@@ -121,7 +122,8 @@ export const ERROR_MESSAGES = {
   serverError: 'Something went wrong on our end. Please try again later.',
   validationError: 'Please check your input and try again.',
   uploadError: 'There was a problem uploading your file. Please try again.',
-  processingError: 'There was a problem processing your data. Please try again.',
+  processingError:
+    'There was a problem processing your data. Please try again.',
 };
 
 // Success Messages

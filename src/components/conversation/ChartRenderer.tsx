@@ -1,20 +1,20 @@
-import React from 'react';
+import type React from 'react';
 import {
-  BarChart,
   Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
+  BarChart,
+  CartesianGrid,
   Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from 'recharts';
-import { ChartType } from '../../types';
+import type { ChartType } from '../../types';
 import { formatNumber } from '../../utils/formatters';
 
 interface ChartRendererProps {
@@ -79,7 +79,8 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
         <p className="text-sm font-medium text-neutral-900">{label}</p>
         {payload.map((entry: TooltipPayloadItem, index: number) => (
           <p key={index} className="text-sm text-neutral-600">
-            {entry.name}: <span className="font-medium">{formatNumber(entry.value)}</span>
+            {entry.name}:{' '}
+            <span className="font-medium">{formatNumber(entry.value)}</span>
           </p>
         ))}
       </div>
@@ -98,7 +99,14 @@ interface PieLabelProps {
 }
 
 // Custom label for pie charts - simpler, no cutoff
-const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: PieLabelProps) => {
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  outerRadius,
+  percent,
+  name,
+}: PieLabelProps) => {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius * 1.2;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -143,7 +151,10 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
       case 'bar_chart':
         return (
           <ResponsiveContainer width="100%" height={height}>
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+            <BarChart
+              data={data}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey={labelKey}
@@ -161,7 +172,10 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
       case 'horizontal_bar_chart':
         return (
-          <ResponsiveContainer width="100%" height={Math.max(height, data.length * 40)}>
+          <ResponsiveContainer
+            width="100%"
+            height={Math.max(height, data.length * 40)}
+          >
             <BarChart
               data={data}
               layout="vertical"
@@ -184,7 +198,10 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
       case 'line_chart':
         return (
           <ResponsiveContainer width="100%" height={height}>
-            <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+            <LineChart
+              data={data}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey={labelKey}
@@ -208,7 +225,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
         );
 
       case 'pie_chart':
-      case 'donut_chart':
+      case 'donut_chart': {
         // Calculate proper dimensions to prevent cutoff
         const pieHeight = Math.max(height, 350);
         const outerRadius = Math.min(pieHeight * 0.28, 120);
@@ -246,6 +263,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
             </PieChart>
           </ResponsiveContainer>
         );
+      }
 
       case 'big_number': {
         const bigNumValue = data[0]?.[valueKey];
@@ -253,16 +271,20 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
         return (
           <div className="flex flex-col items-center justify-center py-8">
             <p className="text-5xl font-bold text-amber-500">
-              {typeof bigNumValue === 'number' ? formatNumber(bigNumValue) : String(bigNumValue)}
+              {typeof bigNumValue === 'number'
+                ? formatNumber(bigNumValue)
+                : String(bigNumValue)}
             </p>
             {bigNumLabel !== undefined && bigNumLabel !== null && (
-              <p className="text-lg text-neutral-600 mt-2">{String(bigNumLabel)}</p>
+              <p className="text-lg text-neutral-600 mt-2">
+                {String(bigNumLabel)}
+              </p>
             )}
           </div>
         );
       }
 
-      case 'table':
+      case 'table': {
         const columns = Object.keys(data[0] || {});
         return (
           <div className="overflow-x-auto">
@@ -274,7 +296,9 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                       key={col}
                       className="px-4 py-3 text-left font-medium text-neutral-700 bg-neutral-50"
                     >
-                      {col.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                      {col
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
                     </th>
                   ))}
                 </tr>
@@ -303,6 +327,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
             )}
           </div>
         );
+      }
 
       default:
         // Default to table for unsupported types

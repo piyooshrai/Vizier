@@ -1,6 +1,7 @@
 // src/components/upload/ProcessingAnimation.tsx
-import React from 'react';
+
 import { Check } from 'lucide-react';
+import type React from 'react';
 
 interface ProcessingStep {
   name: string;
@@ -62,9 +63,9 @@ export const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
             {/* Conversational message */}
             <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-xl max-w-md border border-gray-300/20">
               <p className="text-gray-800 leading-relaxed">
-                Analyzing your data... I can see this is encounter data from your
-                healthcare system. I'm identifying patient cohorts, diagnostic
-                patterns, and outcome indicators.
+                Analyzing your data... I can see this is encounter data from
+                your healthcare system. I'm identifying patient cohorts,
+                diagnostic patterns, and outcome indicators.
               </p>
             </div>
           </div>
@@ -99,9 +100,7 @@ export const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
                         : 'bg-gray-300 animate-pulse'
                     }`}
                   >
-                    {step.completed && (
-                      <Check className="w-5 h-5 text-white" />
-                    )}
+                    {step.completed && <Check className="w-5 h-5 text-white" />}
                   </div>
                   <span
                     className={`font-medium ${

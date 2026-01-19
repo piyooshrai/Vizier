@@ -16,7 +16,7 @@ interface ChartRecommendation {
 
 export function recommendChartType(
   data: Record<string, unknown>[],
-  question: string
+  question: string,
 ): ChartRecommendation {
   if (!data || data.length === 0) {
     return {
@@ -37,11 +37,11 @@ export function recommendChartType(
   const hasPercentage = columns.some(
     (col) =>
       percentPattern.exec(col) !== null ||
-      firstRow[col]?.toString().includes('%')
+      firstRow[col]?.toString().includes('%'),
   );
 
   const numericColumns = columns.filter(
-    (col) => typeof firstRow[col] === 'number'
+    (col) => typeof firstRow[col] === 'number',
   );
 
   // Decision tree based on data structure and question
@@ -65,11 +65,9 @@ export function recommendChartType(
   }
 
   // 3. Distribution/proportions
-  const distributionPattern = /distribution|breakdown|composition|percentage|proportion/i;
-  if (
-    hasPercentage ||
-    distributionPattern.exec(question) !== null
-  ) {
+  const distributionPattern =
+    /distribution|breakdown|composition|percentage|proportion/i;
+  if (hasPercentage || distributionPattern.exec(question) !== null) {
     if (rowCount <= 6) {
       return {
         type: 'pie_chart',

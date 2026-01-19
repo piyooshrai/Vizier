@@ -1,4 +1,4 @@
-import { ChartType } from '../types';
+import type { ChartType } from '../types';
 
 // Chart color palette
 export const CHART_COLOR_PALETTE = [
@@ -58,13 +58,15 @@ export function suggestChartType(data: Record<string, unknown>[]): ChartType {
 
   const keys = Object.keys(data[0]);
   const numericKeys = keys.filter((key) =>
-    data.every((row) => typeof row[key] === 'number' || !Number.isNaN(Number(row[key])))
+    data.every(
+      (row) => typeof row[key] === 'number' || !Number.isNaN(Number(row[key])),
+    ),
   );
   const dateKeys = keys.filter((key) =>
     data.every((row) => {
       const val = row[key];
       return typeof val === 'string' && !Number.isNaN(Date.parse(val));
-    })
+    }),
   );
 
   // Single row with one numeric value = big number
@@ -94,7 +96,7 @@ export function suggestChartType(data: Record<string, unknown>[]): ChartType {
 // Format data for Recharts based on chart type
 export function formatChartData(
   data: Record<string, unknown>[],
-  chartType: ChartType
+  chartType: ChartType,
 ): Record<string, unknown>[] {
   if (!data || data.length === 0) return [];
 
@@ -106,7 +108,7 @@ export function formatChartData(
       return data.map((item, index) => {
         const keys = Object.keys(item);
         const numericKey = keys.find(
-          (k) => typeof item[k] === 'number' || !Number.isNaN(Number(item[k]))
+          (k) => typeof item[k] === 'number' || !Number.isNaN(Number(item[k])),
         );
         const labelKey = keys.find((k) => k !== numericKey);
 
@@ -121,7 +123,9 @@ export function formatChartData(
       // Return just the first numeric value
       const firstItem = data[0];
       const numKey = Object.keys(firstItem).find(
-        (k) => typeof firstItem[k] === 'number' || !Number.isNaN(Number(firstItem[k]))
+        (k) =>
+          typeof firstItem[k] === 'number' ||
+          !Number.isNaN(Number(firstItem[k])),
       );
       return [{ value: numKey ? Number(firstItem[numKey]) : 0 }];
     }
@@ -133,13 +137,15 @@ export function formatChartData(
 
 // Get axis configuration based on data
 export function getAxisConfig(
-  data: Record<string, unknown>[]
+  data: Record<string, unknown>[],
 ): { xKey: string; yKey: string } | null {
   if (!data || data.length === 0) return null;
 
   const keys = Object.keys(data[0]);
   const numericKey = keys.find((k) =>
-    data.every((row) => typeof row[k] === 'number' || !Number.isNaN(Number(row[k])))
+    data.every(
+      (row) => typeof row[k] === 'number' || !Number.isNaN(Number(row[k])),
+    ),
   );
   const labelKey = keys.find((k) => k !== numericKey);
 
@@ -169,7 +175,10 @@ export function formatPercentage(value: number, decimals = 1): string {
 }
 
 // Calculate percentage change
-export function calculatePercentageChange(current: number, previous: number): number {
+export function calculatePercentageChange(
+  current: number,
+  previous: number,
+): number {
   if (previous === 0) return current > 0 ? 100 : 0;
   return ((current - previous) / previous) * 100;
 }
@@ -184,7 +193,7 @@ export function getTrendDirection(change: number): 'up' | 'down' | 'neutral' {
 // Generate chart tooltip formatter
 export function createTooltipFormatter(
   _valueKey: string,
-  format: 'number' | 'currency' | 'percentage' = 'number'
+  format: 'number' | 'currency' | 'percentage' = 'number',
 ): (value: number) => string {
   return (value: number) => {
     switch (format) {
@@ -206,7 +215,7 @@ export function createTooltipFormatter(
 // Export chart as image (canvas-based)
 export async function exportChartAsImage(
   _chartRef: HTMLElement,
-  filename: string = 'chart'
+  filename: string = 'chart',
 ): Promise<void> {
   try {
     // This would typically use html2canvas or a similar library
@@ -228,7 +237,7 @@ export async function exportChartAsImage(
 // Export chart data as CSV
 export function exportDataAsCSV(
   data: Record<string, unknown>[],
-  filename: string = 'data'
+  filename: string = 'data',
 ): void {
   if (!data || data.length === 0) return;
 
@@ -242,9 +251,11 @@ export function exportDataAsCSV(
           if (typeof value === 'string' && value.includes(',')) {
             return `"${value}"`;
           }
-          return typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? '');
+          return typeof value === 'object' && value !== null
+            ? JSON.stringify(value)
+            : String(value ?? '');
         })
-        .join(',')
+        .join(','),
     ),
   ].join('\n');
 

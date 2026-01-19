@@ -1,6 +1,8 @@
 // src/components/onboarding/ProductTour.tsx
-import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 interface TourStep {
   target: string; // CSS selector
@@ -13,25 +15,29 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: '[data-tour="stats"]',
     title: 'Your Key Metrics',
-    description: 'See your most important healthcare metrics at a glance—patients, encounters, readmissions, and costs.',
+    description:
+      'See your most important healthcare metrics at a glance—patients, encounters, readmissions, and costs.',
     placement: 'bottom',
   },
   {
     target: '[data-tour="ask-vizier"]',
     title: 'Ask Vizier',
-    description: 'Click here anytime to ask questions about your data in plain English. No SQL or technical knowledge needed.',
+    description:
+      'Click here anytime to ask questions about your data in plain English. No SQL or technical knowledge needed.',
     placement: 'bottom',
   },
   {
     target: '[data-tour="saved-insights"]',
     title: 'Saved Insights',
-    description: 'Your saved analyses appear here. Build a library of insights your team can reference anytime.',
+    description:
+      'Your saved analyses appear here. Build a library of insights your team can reference anytime.',
     placement: 'top',
   },
   {
     target: '[data-tour="sidebar-nav"]',
     title: 'Navigate Your Data',
-    description: 'Switch between your dashboard, ask new questions, or upload additional data files.',
+    description:
+      'Switch between your dashboard, ask new questions, or upload additional data files.',
     placement: 'right',
   },
 ];
@@ -131,7 +137,8 @@ export const ProductTour: React.FC<ProductTourProps> = ({
           left: `${targetPosition.left - 4}px`,
           width: `${targetPosition.width + 8}px`,
           height: `${targetPosition.height + 8}px`,
-          boxShadow: '0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 9999px rgba(0, 0, 0, 0.6)',
+          boxShadow:
+            '0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 9999px rgba(0, 0, 0, 0.6)',
           borderRadius: '12px',
         }}
       />
@@ -141,11 +148,12 @@ export const ProductTour: React.FC<ProductTourProps> = ({
         className="fixed z-50 animate-slide-up"
         style={{
           ...getTooltipStyle(),
-          transform: step.placement === 'top' || step.placement === 'bottom'
-            ? 'translateX(-50%)'
-            : step.placement === 'left'
-            ? 'translateX(-100%)'
-            : 'none',
+          transform:
+            step.placement === 'top' || step.placement === 'bottom'
+              ? 'translateX(-50%)'
+              : step.placement === 'left'
+                ? 'translateX(-100%)'
+                : 'none',
         }}
       >
         <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm border-2 border-gray-200">

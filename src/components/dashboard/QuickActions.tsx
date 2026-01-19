@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Upload, Bell, Lightbulb } from 'lucide-react';
+import { Bell, Lightbulb, Upload } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertModal } from './AlertModal';
 import { AdviseModal } from './AdviseModal';
+import { AlertModal } from './AlertModal';
 
 export const QuickActions: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +16,6 @@ export const QuickActions: React.FC = () => {
         <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-
           {/* Upload Data */}
           <button
             onClick={() => navigate('/upload')}
@@ -41,7 +41,9 @@ export const QuickActions: React.FC = () => {
               />
             </div>
             <h4 className="text-white font-semibold mb-2">Ask Vizier</h4>
-            <p className="text-sm text-gray-400">Get instant insights from your data</p>
+            <p className="text-sm text-gray-400">
+              Get instant insights from your data
+            </p>
           </button>
 
           {/* Alert Me When */}
@@ -65,7 +67,9 @@ export const QuickActions: React.FC = () => {
               <Lightbulb className="w-8 h-8 text-white" />
             </div>
             <h4 className="text-white font-semibold mb-2">Advise!</h4>
-            <p className="text-sm text-gray-400">Suggest features or improvements</p>
+            <p className="text-sm text-gray-400">
+              Suggest features or improvements
+            </p>
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 // src/components/chat/MessageBubble.tsx
-import React from 'react';
+import type React from 'react';
 
 interface Message {
   id: string;

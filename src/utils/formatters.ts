@@ -10,7 +10,10 @@ export function formatNumber(value: number | string): string {
 /**
  * Format a number as currency
  */
-export function formatCurrency(value: number | string, currency = 'USD'): string {
+export function formatCurrency(
+  value: number | string,
+  currency = 'USD',
+): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(num)) return '$0';
   return new Intl.NumberFormat('en-US', {
@@ -39,7 +42,7 @@ export function formatDate(
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-  }
+  },
 ): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   return d.toLocaleDateString('en-US', options);
@@ -74,7 +77,7 @@ export function formatFileSize(bytes: number): string {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 /**

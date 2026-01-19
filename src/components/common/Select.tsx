@@ -1,5 +1,6 @@
-import React, { forwardRef } from 'react';
 import { ChevronDown } from 'lucide-react';
+import type React from 'react';
+import { forwardRef, useId } from 'react';
 
 interface SelectOption {
   value: string;
@@ -14,16 +15,23 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, options, error, hint, className = '', ...props }, ref) => {
+  ({ label, options, error, hint, className = '', id, ...props }, ref) => {
+    const generatedId = useId();
+    const selectId = id || generatedId;
+
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+          <label
+            htmlFor={selectId}
+            className="block text-sm font-medium text-neutral-700 mb-1.5"
+          >
             {label}
           </label>
         )}
         <div className="relative">
           <select
+            id={selectId}
             ref={ref}
             className={`
               w-full px-4 py-3 pr-10
@@ -47,15 +55,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none" />
         </div>
-        {error && (
-          <p className="mt-1.5 text-sm text-error-500">{error}</p>
-        )}
+        {error && <p className="mt-1.5 text-sm text-error-500">{error}</p>}
         {hint && !error && (
           <p className="mt-1.5 text-sm text-neutral-500">{hint}</p>
         )}
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = 'Select';

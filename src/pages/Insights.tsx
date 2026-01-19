@@ -1,12 +1,13 @@
 // src/pages/Insights.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ConversationView } from '../components/insights/ConversationView';
 import { QueryInput } from '../components/insights/QueryInput';
 import { SuggestionChips } from '../components/insights/SuggestionChips';
-import { ConversationView } from '../components/insights/ConversationView';
-import { vannaService } from '../services/vanna.service';
-import { recommendChartType } from '../utils/chartRecommendation';
 import { FirstInsightPrompt } from '../components/onboarding/FirstInsightPrompt';
 import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
+import { vannaService } from '../services/vanna.service';
+import { recommendChartType } from '../utils/chartRecommendation';
 
 export interface Message {
   id: string;
@@ -89,7 +90,8 @@ const Insights: React.FC = () => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'vizier',
-        content: "I'm sorry, I encountered an error while processing your question. Please try again.",
+        content:
+          "I'm sorry, I encountered an error while processing your question. Please try again.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -107,11 +109,12 @@ const Insights: React.FC = () => {
     handleSendMessage(question);
 
     // Track interaction for upgrade prompt
-    const interactions = Number.parseInt(sessionStorage.getItem('demo_interactions') || '0', 10);
+    const interactions = Number.parseInt(
+      sessionStorage.getItem('demo_interactions') || '0',
+      10,
+    );
     sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
   };
-
-
 
   // Handler for exporting data to CSV
   const handleExport = (message: Message) => {
@@ -134,14 +137,19 @@ const Insights: React.FC = () => {
 
     const headers = Object.keys(data[0]);
     const rows = data.map((row) =>
-      headers.map((header) => {
-        const value = row[header];
-        // Escape commas and quotes in values
-        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-          return `"${value.replaceAll('"', '""')}"`;
-        }
-        return value;
-      }).join(',')
+      headers
+        .map((header) => {
+          const value = row[header];
+          // Escape commas and quotes in values
+          if (
+            typeof value === 'string' &&
+            (value.includes(',') || value.includes('"'))
+          ) {
+            return `"${value.replaceAll('"', '""')}"`;
+          }
+          return value;
+        })
+        .join(','),
     );
 
     return [headers.join(','), ...rows].join('\n');

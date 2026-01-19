@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Loader2, Upload } from 'lucide-react';
+import type React from 'react';
 
 interface UploadProgressProps {
   files: File[];
@@ -56,9 +56,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
                 {isCurrent && (
                   <Loader2 className="w-5 h-5 text-primary-600 animate-spin" />
                 )}
-                {isPending && (
-                  <Upload className="w-5 h-5 text-neutral-300" />
-                )}
+                {isPending && <Upload className="w-5 h-5 text-neutral-300" />}
               </div>
 
               <div className="flex-1 min-w-0">

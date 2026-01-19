@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
-import { Button, Input, Card } from '../components/common';
+import { ArrowLeft, CheckCircle, Mail } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import { z } from 'zod';
+import { Button, Card, Input } from '../components/common';
 import { authService, getErrorMessage } from '../services';
 
 const forgotPasswordSchema = z.object({
@@ -112,7 +113,8 @@ export const ForgotPassword: React.FC = () => {
               Forgot your password?
             </h2>
             <p className="mt-2 text-neutral-600">
-              Enter your email and we'll send you instructions to reset your password.
+              Enter your email and we'll send you instructions to reset your
+              password.
             </p>
           </div>
 

@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
+import type { VannaResponse } from '../../types';
 import { MessageBubble } from './MessageBubble';
-import { TypingIndicator } from './TypingIndicator';
 import { SuggestionChips } from './SuggestionChips';
-import { VannaResponse } from '../../types';
+import { TypingIndicator } from './TypingIndicator';
 
 interface Message {
   id: string;
@@ -69,7 +70,9 @@ export const ConversationContainer: React.FC<ConversationContainerProps> = ({
               isLoading={message.isLoading}
               isError={message.isError}
               onSave={onSaveInsight}
-              isSaved={message.data ? savedQuestions.has(message.content) : false}
+              isSaved={
+                message.data ? savedQuestions.has(message.content) : false
+              }
             />
           ))}
 

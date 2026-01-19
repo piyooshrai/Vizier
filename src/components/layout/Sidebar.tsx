@@ -1,17 +1,19 @@
 // src/components/layout/Sidebar.tsx
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+
 import {
-  LayoutDashboard,
-  MessageSquare,
-  Upload,
-  User,
-  Settings,
-  LogOut,
   ChevronLeft,
   ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  MessageSquare,
+  Settings,
+  Upload,
+  User,
 } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 export const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -81,7 +83,10 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation items - Scrollable if needed */}
-      <nav data-tour="sidebar-nav" className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav
+        data-tour="sidebar-nav"
+        className="flex-1 p-4 space-y-2 overflow-y-auto"
+      >
         {navItems.map((item) => (
           <NavLink
             key={item.path}

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useAuth } from '../../contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
 
 const signupSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -53,7 +54,9 @@ export const SignupForm: React.FC = () => {
       navigate('/upload');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : '';
-      setError(errorMessage || 'Could not create account. Email may already exist.');
+      setError(
+        errorMessage || 'Could not create account. Email may already exist.',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -79,7 +82,10 @@ export const SignupForm: React.FC = () => {
       {/* Name fields */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label htmlFor="first_name" className="block text-sm font-medium text-slate-700 mb-1.5">
+          <label
+            htmlFor="first_name"
+            className="block text-sm font-medium text-slate-700 mb-1.5"
+          >
             First name
           </label>
           <input
@@ -91,12 +97,17 @@ export const SignupForm: React.FC = () => {
             {...register('first_name')}
           />
           {errors.first_name && (
-            <p className="mt-1 text-xs text-red-600">{errors.first_name.message}</p>
+            <p className="mt-1 text-xs text-red-600">
+              {errors.first_name.message}
+            </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="last_name" className="block text-sm font-medium text-slate-700 mb-1.5">
+          <label
+            htmlFor="last_name"
+            className="block text-sm font-medium text-slate-700 mb-1.5"
+          >
             Last name
           </label>
           <input
@@ -108,14 +119,19 @@ export const SignupForm: React.FC = () => {
             {...register('last_name')}
           />
           {errors.last_name && (
-            <p className="mt-1 text-xs text-red-600">{errors.last_name.message}</p>
+            <p className="mt-1 text-xs text-red-600">
+              {errors.last_name.message}
+            </p>
           )}
         </div>
       </div>
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-slate-700 mb-1.5"
+        >
           Work email
         </label>
         <input
@@ -133,7 +149,10 @@ export const SignupForm: React.FC = () => {
 
       {/* Role */}
       <div>
-        <label htmlFor="role" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label
+          htmlFor="role"
+          className="block text-sm font-medium text-slate-700 mb-1.5"
+        >
           Your role
         </label>
         <select
@@ -154,7 +173,10 @@ export const SignupForm: React.FC = () => {
 
       {/* Password */}
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-slate-700 mb-1.5"
+        >
           Password
         </label>
         <input
@@ -166,7 +188,9 @@ export const SignupForm: React.FC = () => {
           {...register('password')}
         />
         {errors.password && (
-          <p className="mt-1.5 text-sm text-red-600">{errors.password.message}</p>
+          <p className="mt-1.5 text-sm text-red-600">
+            {errors.password.message}
+          </p>
         )}
         <p className="mt-1.5 text-xs text-slate-400">
           8+ characters with a number and special character

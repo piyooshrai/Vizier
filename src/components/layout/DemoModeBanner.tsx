@@ -1,6 +1,6 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import type React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const DemoModeBanner: React.FC = () => {
   const navigate = useNavigate();
@@ -11,7 +11,8 @@ export const DemoModeBanner: React.FC = () => {
         <div className="flex items-center justify-center gap-3">
           <Sparkles className="w-5 h-5 text-amber-600" />
           <p className="text-sm text-amber-900">
-            <span className="font-semibold">Demo Mode</span> - You're exploring with sample healthcare data (12,847 patients, 47,293 encounters).
+            <span className="font-semibold">Demo Mode</span> - You're exploring
+            with sample healthcare data (12,847 patients, 47,293 encounters).
             <button
               onClick={() => navigate('/signup')}
               className="ml-2 underline hover:text-amber-950 font-medium"

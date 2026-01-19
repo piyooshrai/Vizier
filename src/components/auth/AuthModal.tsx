@@ -1,8 +1,10 @@
 // src/components/auth/AuthModal.tsx
-import React, { useState } from 'react';
-import { X, Mail, Lock, User, Building2, Loader2 } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+
+import { Building2, Loader2, Lock, Mail, User, X } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -45,8 +47,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     try {
       if (mode === 'signup') {
         // Validation
-        if (!formData.email || !formData.password || !formData.firstName ||
-          !formData.lastName || !formData.organizationName) {
+        if (
+          !formData.email ||
+          !formData.password ||
+          !formData.firstName ||
+          !formData.lastName ||
+          !formData.organizationName
+        ) {
           setError('All fields are required');
           setIsLoading(false);
           return;
@@ -100,7 +107,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-8 h-8 text-black"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                 </svg>
               </div>
@@ -238,7 +249,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={formData.password}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none"
-                  placeholder={mode === 'signup' ? 'Minimum 8 characters' : '••••••••'}
+                  placeholder={
+                    mode === 'signup' ? 'Minimum 8 characters' : '••••••••'
+                  }
                 />
               </div>
             </div>
@@ -252,7 +265,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
             {(() => {
               if (isLoading) {
-                return mode === 'signup' ? 'Creating Account...' : 'Signing In...';
+                return mode === 'signup'
+                  ? 'Creating Account...'
+                  : 'Signing In...';
               }
               return mode === 'signup' ? 'Create Account' : 'Sign In';
             })()}

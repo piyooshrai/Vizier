@@ -1,6 +1,7 @@
 // src/components/dashboard/StatsOverview.tsx
-import React from 'react';
-import { Users, Activity, TrendingDown, DollarSign } from 'lucide-react';
+
+import { Activity, DollarSign, TrendingDown, Users } from 'lucide-react';
+import type React from 'react';
 
 interface Stats {
   totalPatients: number;
@@ -70,7 +71,9 @@ export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
 
           {/* Optional Subtext */}
           {stat.subtext && (
-            <div className={`text-xs font-medium leading-tight ${subtextColorClasses[stat.subtextColor || 'gray']}`}>
+            <div
+              className={`text-xs font-medium leading-tight ${subtextColorClasses[stat.subtextColor || 'gray']}`}
+            >
               {stat.subtext}
             </div>
           )}

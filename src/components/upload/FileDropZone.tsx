@@ -1,6 +1,8 @@
 // src/components/upload/FileDropZone.tsx
-import React, { useCallback, useState } from 'react';
-import { Upload, FileText } from 'lucide-react';
+
+import { FileText, Upload } from 'lucide-react';
+import type React from 'react';
+import { useCallback, useState } from 'react';
 
 interface FileDropZoneProps {
   onFilesSelected: (files: File[]) => void;
@@ -34,14 +36,14 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           file.name.endsWith('.csv') ||
           file.type === 'application/vnd.ms-excel' ||
           file.name.endsWith('.xlsx') ||
-          file.name.endsWith('.xls')
+          file.name.endsWith('.xls'),
       );
 
       if (files.length > 0) {
         onFilesSelected([...selectedFiles, ...files]);
       }
     },
-    [selectedFiles, onFilesSelected]
+    [selectedFiles, onFilesSelected],
   );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,15 +85,11 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           {isDragging ? 'Drop your files here' : 'Drop your files here'}
         </h3>
 
-        <p className="text-gray-400 mb-6">
-          or click to browse your computer
-        </p>
+        <p className="text-gray-400 mb-6">or click to browse your computer</p>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 rounded-lg border border-gray-700">
           <FileText className="w-4 h-4 text-white" />
-          <span className="text-sm text-gray-300">
-            CSV, XLSX, or XLS files
-          </span>
+          <span className="text-sm text-gray-300">CSV, XLSX, or XLS files</span>
         </div>
 
         <p className="text-xs text-gray-500 mt-6">

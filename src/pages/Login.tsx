@@ -1,8 +1,8 @@
-import React from 'react';
+import type React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { AuthLayout } from '../components/auth/AuthLayout';
-import { LoginForm } from '../components/auth/LoginForm';
 import { DemoCard } from '../components/auth/DemoCard';
+import { LoginForm } from '../components/auth/LoginForm';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Login: React.FC = () => {
@@ -28,9 +28,7 @@ export const Login: React.FC = () => {
           <h1 className="text-2xl font-semibold text-slate-900">
             Welcome back
           </h1>
-          <p className="mt-1 text-slate-500">
-            Sign in to continue to Vizier
-          </p>
+          <p className="mt-1 text-slate-500">Sign in to continue to Vizier</p>
         </div>
 
         {/* Login form */}

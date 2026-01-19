@@ -1,5 +1,5 @@
-import { VannaResponse, ChartType } from '../types';
-import { SavedInsight } from '../utils/savedInsights';
+import type { ChartType, VannaResponse } from '../types';
+import type { SavedInsight } from '../utils/savedInsights';
 
 interface MockQAResponse {
   question: string;
@@ -19,7 +19,11 @@ interface MockHealthcareData {
       end: string;
     };
     topConditions: Array<{ name: string; count: number; percentage: number }>;
-    ageDistribution: Array<{ range: string; count: number; percentage: number }>;
+    ageDistribution: Array<{
+      range: string;
+      count: number;
+      percentage: number;
+    }>;
     readmissionRate: number;
     averageEncounterCost: number;
   };
@@ -43,7 +47,11 @@ export const mockHealthcareData: MockHealthcareData = {
       { name: 'Essential Hypertension', count: 2847, percentage: 22.1 },
       { name: 'Type 2 Diabetes', count: 1923, percentage: 15.0 },
       { name: 'Hyperlipidemia', count: 1456, percentage: 11.3 },
-      { name: 'Chronic Obstructive Pulmonary Disease', count: 892, percentage: 6.9 },
+      {
+        name: 'Chronic Obstructive Pulmonary Disease',
+        count: 892,
+        percentage: 6.9,
+      },
       { name: 'Coronary Artery Disease', count: 734, percentage: 5.7 },
     ],
     ageDistribution: [
@@ -63,10 +71,18 @@ export const mockHealthcareData: MockHealthcareData = {
       answer: "I found your most common diagnoses. Here's what I see:",
       data: [
         { diagnosis: 'Essential Hypertension', patients: 2847, icd10: 'I10' },
-        { diagnosis: 'Type 2 Diabetes Mellitus', patients: 1923, icd10: 'E11.9' },
+        {
+          diagnosis: 'Type 2 Diabetes Mellitus',
+          patients: 1923,
+          icd10: 'E11.9',
+        },
         { diagnosis: 'Hyperlipidemia', patients: 1456, icd10: 'E78.5' },
         { diagnosis: 'COPD', patients: 892, icd10: 'J44.9' },
-        { diagnosis: 'Coronary Artery Disease', patients: 734, icd10: 'I25.10' },
+        {
+          diagnosis: 'Coronary Artery Disease',
+          patients: 734,
+          icd10: 'I25.10',
+        },
         { diagnosis: 'Atrial Fibrillation', patients: 623, icd10: 'I48.91' },
         { diagnosis: 'Heart Failure', patients: 567, icd10: 'I50.9' },
         { diagnosis: 'Chronic Kidney Disease', patients: 489, icd10: 'N18.9' },
@@ -99,7 +115,7 @@ export const mockHealthcareData: MockHealthcareData = {
         'How does insurance type vary by age group?',
       ],
     },
-    'readmission': {
+    readmission: {
       question: 'What is my readmission rate?',
       answer:
         "Your 30-day readmission rate is 12.3%, which is below the national average of 14.5%. Here's the trend over the past 12 months:",
@@ -128,18 +144,68 @@ export const mockHealthcareData: MockHealthcareData = {
     'high cost': {
       question: 'Which patients have the highest costs?',
       answer:
-        "Here are your top 10 highest-cost patients. These patients may benefit from care coordination programs:",
+        'Here are your top 10 highest-cost patients. These patients may benefit from care coordination programs:',
       data: [
-        { patient_id: 'P-8472', total_cost: 124567, encounters: 23, primary_diagnosis: 'CHF' },
-        { patient_id: 'P-2341', total_cost: 98234, encounters: 18, primary_diagnosis: 'COPD' },
-        { patient_id: 'P-9876', total_cost: 87456, encounters: 15, primary_diagnosis: 'CAD' },
-        { patient_id: 'P-4521', total_cost: 76234, encounters: 21, primary_diagnosis: 'Diabetes' },
-        { patient_id: 'P-7632', total_cost: 68923, encounters: 14, primary_diagnosis: 'CKD' },
-        { patient_id: 'P-1298', total_cost: 62145, encounters: 12, primary_diagnosis: 'Stroke' },
-        { patient_id: 'P-5567', total_cost: 58934, encounters: 19, primary_diagnosis: 'ESRD' },
-        { patient_id: 'P-3345', total_cost: 54321, encounters: 11, primary_diagnosis: 'Cancer' },
-        { patient_id: 'P-8891', total_cost: 51234, encounters: 16, primary_diagnosis: 'Sepsis' },
-        { patient_id: 'P-6623', total_cost: 48765, encounters: 13, primary_diagnosis: 'AMI' },
+        {
+          patient_id: 'P-8472',
+          total_cost: 124567,
+          encounters: 23,
+          primary_diagnosis: 'CHF',
+        },
+        {
+          patient_id: 'P-2341',
+          total_cost: 98234,
+          encounters: 18,
+          primary_diagnosis: 'COPD',
+        },
+        {
+          patient_id: 'P-9876',
+          total_cost: 87456,
+          encounters: 15,
+          primary_diagnosis: 'CAD',
+        },
+        {
+          patient_id: 'P-4521',
+          total_cost: 76234,
+          encounters: 21,
+          primary_diagnosis: 'Diabetes',
+        },
+        {
+          patient_id: 'P-7632',
+          total_cost: 68923,
+          encounters: 14,
+          primary_diagnosis: 'CKD',
+        },
+        {
+          patient_id: 'P-1298',
+          total_cost: 62145,
+          encounters: 12,
+          primary_diagnosis: 'Stroke',
+        },
+        {
+          patient_id: 'P-5567',
+          total_cost: 58934,
+          encounters: 19,
+          primary_diagnosis: 'ESRD',
+        },
+        {
+          patient_id: 'P-3345',
+          total_cost: 54321,
+          encounters: 11,
+          primary_diagnosis: 'Cancer',
+        },
+        {
+          patient_id: 'P-8891',
+          total_cost: 51234,
+          encounters: 16,
+          primary_diagnosis: 'Sepsis',
+        },
+        {
+          patient_id: 'P-6623',
+          total_cost: 48765,
+          encounters: 13,
+          primary_diagnosis: 'AMI',
+        },
       ],
       chart: 'table',
       chartTitle: 'Top 10 Highest Cost Patients',
@@ -149,7 +215,7 @@ export const mockHealthcareData: MockHealthcareData = {
         'Compare costs by insurance type',
       ],
     },
-    'encounters': {
+    encounters: {
       question: 'Show me encounters by month',
       answer: "Here's your encounter volume over the past year:",
       data: [
@@ -174,17 +240,45 @@ export const mockHealthcareData: MockHealthcareData = {
         'Show me no-show rates by month',
       ],
     },
-    'provider': {
+    provider: {
       question: 'Which providers see the most patients?',
       answer: "Here's a breakdown of patient volume by provider:",
       data: [
-        { provider: 'Dr. Sarah Johnson', patients: 1245, specialty: 'Internal Medicine' },
-        { provider: 'Dr. Michael Chen', patients: 1123, specialty: 'Family Medicine' },
-        { provider: 'Dr. Emily Rodriguez', patients: 987, specialty: 'Cardiology' },
-        { provider: 'Dr. James Williams', patients: 876, specialty: 'Pulmonology' },
-        { provider: 'Dr. Lisa Thompson', patients: 845, specialty: 'Endocrinology' },
-        { provider: 'Dr. Robert Davis', patients: 789, specialty: 'Nephrology' },
-        { provider: 'Dr. Amanda Wilson', patients: 734, specialty: 'Internal Medicine' },
+        {
+          provider: 'Dr. Sarah Johnson',
+          patients: 1245,
+          specialty: 'Internal Medicine',
+        },
+        {
+          provider: 'Dr. Michael Chen',
+          patients: 1123,
+          specialty: 'Family Medicine',
+        },
+        {
+          provider: 'Dr. Emily Rodriguez',
+          patients: 987,
+          specialty: 'Cardiology',
+        },
+        {
+          provider: 'Dr. James Williams',
+          patients: 876,
+          specialty: 'Pulmonology',
+        },
+        {
+          provider: 'Dr. Lisa Thompson',
+          patients: 845,
+          specialty: 'Endocrinology',
+        },
+        {
+          provider: 'Dr. Robert Davis',
+          patients: 789,
+          specialty: 'Nephrology',
+        },
+        {
+          provider: 'Dr. Amanda Wilson',
+          patients: 734,
+          specialty: 'Internal Medicine',
+        },
         { provider: 'Dr. David Brown', patients: 698, specialty: 'Geriatrics' },
       ],
       chart: 'horizontal_bar_chart',
@@ -216,7 +310,7 @@ export const mockHealthcareData: MockHealthcareData = {
         'Compare LOS by insurance type',
       ],
     },
-    'gender': {
+    gender: {
       question: 'Show me gender breakdown',
       answer: "Here's the gender distribution of your patient population:",
       data: [
@@ -232,9 +326,10 @@ export const mockHealthcareData: MockHealthcareData = {
         'Show me preventive care rates by gender',
       ],
     },
-    'insurance': {
+    insurance: {
       question: 'Show me patients by insurance type',
-      answer: "Here's how your patients are distributed across insurance types:",
+      answer:
+        "Here's how your patients are distributed across insurance types:",
       data: [
         { insurance: 'Medicare', count: 4523, percentage: 35.2 },
         { insurance: 'Commercial', count: 3987, percentage: 31.0 },
@@ -348,7 +443,7 @@ export const demoSavedInsights: SavedInsight[] = [
     id: 'demo_3',
     question: 'What is my readmission rate?',
     answer:
-      "Your 30-day readmission rate is 12.3%, which is below the national average of 14.5%.",
+      'Your 30-day readmission rate is 12.3%, which is below the national average of 14.5%.',
     data: mockHealthcareData.qaResponses['readmission'].data,
     chartType: 'line_chart',
     chartTitle: '30-Day Readmission Rate Trend',

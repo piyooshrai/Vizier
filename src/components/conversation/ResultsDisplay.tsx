@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Download, Code, Pin, CheckCircle } from 'lucide-react';
+import { Check, CheckCircle, Code, Copy, Download, Pin } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import type { VannaResponse } from '../../types';
 import { ChartRenderer } from './ChartRenderer';
-import { VannaResponse } from '../../types';
 
 interface ResultsDisplayProps {
   data: VannaResponse;
@@ -10,7 +11,11 @@ interface ResultsDisplayProps {
   isSaved?: boolean;
 }
 
-export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data, onSave, isSaved = false }) => {
+export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
+  data,
+  onSave,
+  isSaved = false,
+}) => {
   const [showSql, setShowSql] = useState(false);
   const [copied, setCopied] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
@@ -51,7 +56,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data, onSave, is
             }
             return stringValue;
           })
-          .join(',')
+          .join(','),
       ),
     ].join('\n');
 
@@ -112,8 +117,10 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data, onSave, is
         )}
 
         {/* Save to Dashboard */}
-        {onSave && data.results && data.results.length > 0 && (
-          showSavedState ? (
+        {onSave &&
+          data.results &&
+          data.results.length > 0 &&
+          (showSavedState ? (
             <span className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-success-600">
               <CheckCircle className="w-4 h-4" />
               Saved
@@ -129,8 +136,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data, onSave, is
               <Pin className="w-4 h-4" />
               Save to Dashboard
             </button>
-          )
-        )}
+          ))}
       </div>
 
       {/* SQL Code Block */}
@@ -166,9 +172,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ data, onSave, is
 
       {/* Summary */}
       {data.summary && (
-        <p className="text-sm text-neutral-600 italic">
-          {data.summary}
-        </p>
+        <p className="text-sm text-neutral-600 italic">{data.summary}</p>
       )}
     </motion.div>
   );

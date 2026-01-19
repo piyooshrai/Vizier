@@ -1,15 +1,9 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Building2,
-  CreditCard,
-  Shield,
-  Plug,
-  Bell,
-  Globe,
-} from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { Bell, Building2, CreditCard, Globe, Plug, Shield } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { AuthModal } from '../components/auth/AuthModal';
+import { useAuth } from '../contexts/AuthContext';
 
 type SettingsTab = 'organization' | 'billing' | 'security' | 'integrations';
 
@@ -91,9 +85,7 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Preferences
-        </h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Preferences</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b border-gray-700">
             <div className="flex items-center gap-3">
@@ -106,7 +98,12 @@ export const Settings: React.FC = () => {
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked disabled={isDemoMode} />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                defaultChecked
+                disabled={isDemoMode}
+              />
               <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-white/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
             </label>
           </div>
@@ -149,14 +146,16 @@ export const Settings: React.FC = () => {
       <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-white">
-              Current Plan
-            </h3>
+            <h3 className="text-lg font-semibold text-white">Current Plan</h3>
             <p className="text-gray-400 mt-1">
-              {isDemoMode ? 'Demo Mode - No active subscription' : 'Manage your subscription'}
+              {isDemoMode
+                ? 'Demo Mode - No active subscription'
+                : 'Manage your subscription'}
             </p>
           </div>
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-gray-500/20 text-gray-300' : 'bg-green-500/20 text-green-400'}`}>
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-gray-500/20 text-gray-300' : 'bg-green-500/20 text-green-400'}`}
+          >
             {isDemoMode ? 'Demo' : 'Active'}
           </span>
         </div>
@@ -164,7 +163,8 @@ export const Settings: React.FC = () => {
         {isDemoMode ? (
           <div className="bg-gray-900/50 rounded-xl p-6 text-center">
             <p className="text-gray-400 mb-4">
-              Create an account to access billing features and unlock full functionality.
+              Create an account to access billing features and unlock full
+              functionality.
             </p>
             <button
               onClick={() => setShowAuthModal(true)}
@@ -234,12 +234,16 @@ export const Settings: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b border-gray-700">
             <div>
-              <p className="font-medium text-white">Two-Factor Authentication</p>
+              <p className="font-medium text-white">
+                Two-Factor Authentication
+              </p>
               <p className="text-sm text-gray-500">
                 Add an extra layer of security to your account
               </p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-gray-700 text-gray-400' : 'bg-red-500/20 text-red-400'}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${isDemoMode ? 'bg-gray-700 text-gray-400' : 'bg-red-500/20 text-red-400'}`}
+            >
               {isDemoMode ? 'Demo' : 'Not Enabled'}
             </span>
           </div>
@@ -272,16 +276,15 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Data Security
-        </h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Data Security</h3>
         <div className="space-y-4">
           <div className="flex items-start gap-3 py-3 border-b border-gray-700">
             <Shield className="w-5 h-5 text-green-500 mt-0.5" />
             <div>
               <p className="font-medium text-white">HIPAA Compliant</p>
               <p className="text-sm text-gray-500">
-                All data is encrypted and stored in compliance with HIPAA regulations
+                All data is encrypted and stored in compliance with HIPAA
+                regulations
               </p>
             </div>
           </div>
@@ -316,10 +319,26 @@ export const Settings: React.FC = () => {
         </h3>
         <div className="space-y-4">
           {[
-            { name: 'Epic', description: 'Connect to Epic EHR system', status: 'available' },
-            { name: 'Cerner', description: 'Connect to Cerner EHR system', status: 'available' },
-            { name: 'Allscripts', description: 'Connect to Allscripts EHR', status: 'coming_soon' },
-            { name: 'athenahealth', description: 'Connect to athenahealth', status: 'coming_soon' },
+            {
+              name: 'Epic',
+              description: 'Connect to Epic EHR system',
+              status: 'available',
+            },
+            {
+              name: 'Cerner',
+              description: 'Connect to Cerner EHR system',
+              status: 'available',
+            },
+            {
+              name: 'Allscripts',
+              description: 'Connect to Allscripts EHR',
+              status: 'coming_soon',
+            },
+            {
+              name: 'athenahealth',
+              description: 'Connect to athenahealth',
+              status: 'coming_soon',
+            },
           ].map((integration) => (
             <div
               key={integration.name}
@@ -331,7 +350,9 @@ export const Settings: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium text-white">{integration.name}</p>
-                  <p className="text-sm text-gray-500">{integration.description}</p>
+                  <p className="text-sm text-gray-500">
+                    {integration.description}
+                  </p>
                 </div>
               </div>
               {integration.status === 'available' ? (
@@ -352,12 +373,11 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          API Access
-        </h3>
+        <h3 className="text-lg font-semibold text-white mb-4">API Access</h3>
         <div className="bg-gray-900/50 rounded-xl p-6">
           <p className="text-gray-400 mb-4">
-            API access is available on Enterprise plans. Contact our team to learn more.
+            API access is available on Enterprise plans. Contact our team to
+            learn more.
           </p>
           <button
             className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -389,26 +409,26 @@ export const Settings: React.FC = () => {
     <div className="h-full overflow-y-auto">
       <div className="p-8">
         <div className="max-w-5xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-white">Settings</h1>
-          <p className="text-gray-400 mt-1">
-            Manage your account and organization settings
-          </p>
-        </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            {/* Header */}
+            <div>
+              <h1 className="text-2xl font-bold text-white">Settings</h1>
+              <p className="text-gray-400 mt-1">
+                Manage your account and organization settings
+              </p>
+            </div>
 
-        {/* Settings Navigation */}
-        <div className="grid md:grid-cols-4 gap-4">
-          {settingsSections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveTab(section.id)}
-              className={`
+            {/* Settings Navigation */}
+            <div className="grid md:grid-cols-4 gap-4">
+              {settingsSections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveTab(section.id)}
+                  className={`
                 p-4 rounded-xl text-left transition-all
                 ${
                   activeTab === section.id
@@ -416,40 +436,44 @@ export const Settings: React.FC = () => {
                     : 'bg-gray-800/50 border border-gray-700 hover:border-gray-500'
                 }
               `}
-            >
-              <div className={`
+                >
+                  <div
+                    className={`
                 w-10 h-10 rounded-lg flex items-center justify-center mb-3
                 ${activeTab === section.id ? 'bg-white/20 text-white' : 'bg-gray-700/50 text-gray-400'}
-              `}>
-                {section.icon}
-              </div>
-              <p className={`font-medium ${activeTab === section.id ? 'text-white' : 'text-white'}`}>
-                {section.label}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {section.description}
-              </p>
-            </button>
-          ))}
-        </div>
+              `}
+                  >
+                    {section.icon}
+                  </div>
+                  <p
+                    className={`font-medium ${activeTab === section.id ? 'text-white' : 'text-white'}`}
+                  >
+                    {section.label}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {section.description}
+                  </p>
+                </button>
+              ))}
+            </div>
 
-        {/* Settings Content */}
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {renderContent()}
-        </motion.div>
-      </motion.div>
+            {/* Settings Content */}
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {renderContent()}
+            </motion.div>
+          </motion.div>
 
-      {/* Auth Modal for upgrading from demo */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        defaultMode="signup"
-      />
+          {/* Auth Modal for upgrading from demo */}
+          <AuthModal
+            isOpen={showAuthModal}
+            onClose={() => setShowAuthModal(false)}
+            defaultMode="signup"
+          />
         </div>
       </div>
     </div>

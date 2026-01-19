@@ -1,8 +1,8 @@
-export { LoginForm } from './LoginForm';
-export { SignupForm } from './SignupForm';
-export { PasswordChangeForm } from './PasswordChangeForm';
-export { ForgotPasswordForm } from './ForgotPasswordForm';
-export { ResetPasswordForm } from './ResetPasswordForm';
 export { AuthLayout } from './AuthLayout';
-export { VizierIntroduction } from './VizierIntroduction';
 export { DemoCard } from './DemoCard';
+export { ForgotPasswordForm } from './ForgotPasswordForm';
+export { LoginForm } from './LoginForm';
+export { PasswordChangeForm } from './PasswordChangeForm';
+export { ResetPasswordForm } from './ResetPasswordForm';
+export { SignupForm } from './SignupForm';
+export { VizierIntroduction } from './VizierIntroduction';

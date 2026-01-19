@@ -1,5 +1,5 @@
-import React from 'react';
-import { MessageSquare, TrendingUp, Shield, Sparkles } from 'lucide-react';
+import { MessageSquare, Shield, Sparkles, TrendingUp } from 'lucide-react';
+import type React from 'react';
 
 export const VizierIntroduction: React.FC = () => {
   return (
@@ -13,8 +13,12 @@ export const VizierIntroduction: React.FC = () => {
       {/* Logo */}
       <div className="flex items-center gap-3 relative z-10">
         <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-teal-400 rounded-xl flex items-center justify-center">
-          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+          <svg
+            className="w-6 h-6 text-white"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
           </svg>
         </div>
         <span className="text-xl font-semibold">Vizier</span>
@@ -37,8 +41,8 @@ export const VizierIntroduction: React.FC = () => {
           </h1>
 
           <p className="text-lg text-slate-300 leading-relaxed">
-            Vizier turns complex healthcare data into clear insights.
-            Ask questions in plain English—no SQL, no training required.
+            Vizier turns complex healthcare data into clear insights. Ask
+            questions in plain English—no SQL, no training required.
           </p>
         </div>
 
@@ -48,7 +52,9 @@ export const VizierIntroduction: React.FC = () => {
             {/* User message */}
             <div className="flex justify-end">
               <div className="bg-blue-500/20 rounded-2xl rounded-br-md px-4 py-2.5 max-w-[80%]">
-                <p className="text-sm text-blue-100">What are my top 5 diagnoses this quarter?</p>
+                <p className="text-sm text-blue-100">
+                  What are my top 5 diagnoses this quarter?
+                </p>
               </div>
             </div>
 
@@ -58,7 +64,9 @@ export const VizierIntroduction: React.FC = () => {
                 <span className="text-xs font-bold">V</span>
               </div>
               <div className="bg-white/10 rounded-2xl rounded-tl-md px-4 py-3 flex-1">
-                <p className="text-sm text-slate-200 mb-3">Here are your top diagnoses for Q4:</p>
+                <p className="text-sm text-slate-200 mb-3">
+                  Here are your top diagnoses for Q4:
+                </p>
                 <div className="space-y-2">
                   {[
                     { name: 'Essential Hypertension', code: 'I10', pct: 23 },
@@ -78,7 +86,9 @@ export const VizierIntroduction: React.FC = () => {
                           />
                         </div>
                       </div>
-                      <span className="text-xs text-slate-400 w-8">{item.pct}%</span>
+                      <span className="text-xs text-slate-400 w-8">
+                        {item.pct}%
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -110,7 +120,12 @@ export const VizierIntroduction: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex -space-x-2">
-              {['bg-blue-500', 'bg-teal-500', 'bg-purple-500', 'bg-amber-500'].map((color, i) => (
+              {[
+                'bg-blue-500',
+                'bg-teal-500',
+                'bg-purple-500',
+                'bg-amber-500',
+              ].map((color, i) => (
                 <div
                   key={i}
                   className={`w-8 h-8 rounded-full ${color} border-2 border-slate-900 flex items-center justify-center text-xs font-medium`}
@@ -120,8 +135,12 @@ export const VizierIntroduction: React.FC = () => {
               ))}
             </div>
             <div>
-              <p className="text-sm font-medium text-white">50+ healthcare teams</p>
-              <p className="text-xs text-slate-400">trust Vizier with their data</p>
+              <p className="text-sm font-medium text-white">
+                50+ healthcare teams
+              </p>
+              <p className="text-xs text-slate-400">
+                trust Vizier with their data
+              </p>
             </div>
           </div>
           <div className="text-right text-xs text-slate-500">

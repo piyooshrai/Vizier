@@ -1,5 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import type React from 'react';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -19,7 +19,11 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   fullScreen = false,
 }) => {
   const spinner = (
-    <div className={fullScreen ? '' : 'flex flex-col items-center justify-center gap-3'}>
+    <div
+      className={
+        fullScreen ? '' : 'flex flex-col items-center justify-center gap-3'
+      }
+    >
       <motion.svg
         className={`${sizeStyles[size]} text-primary-600`}
         viewBox="0 0 24 24"
@@ -28,6 +32,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
       >
+        <title>Loading</title>
         <circle
           className="opacity-25"
           cx="12"
@@ -59,7 +64,9 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return spinner;
 };
 
-export const ThreeDotsLoader: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const ThreeDotsLoader: React.FC<{ className?: string }> = ({
+  className = '',
+}) => {
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {[0, 1, 2].map((i) => (

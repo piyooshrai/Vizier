@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { X, Send, Lightbulb, CheckCircle } from 'lucide-react';
+import { CheckCircle, Lightbulb, Send, X } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 
 interface AdviseModalProps {
   isOpen: boolean;
@@ -7,13 +8,28 @@ interface AdviseModalProps {
 }
 
 const categoryOptions = [
-  { value: 'feature_request', label: 'Feature Request', description: 'Suggest a new feature' },
-  { value: 'improvement', label: 'Improvement Suggestion', description: 'Make something better' },
+  {
+    value: 'feature_request',
+    label: 'Feature Request',
+    description: 'Suggest a new feature',
+  },
+  {
+    value: 'improvement',
+    label: 'Improvement Suggestion',
+    description: 'Make something better',
+  },
   { value: 'bug_report', label: 'Bug Report', description: 'Report an issue' },
-  { value: 'general_feedback', label: 'General Feedback', description: 'Share your thoughts' },
+  {
+    value: 'general_feedback',
+    label: 'General Feedback',
+    description: 'Share your thoughts',
+  },
 ];
 
-export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => {
+export const AdviseModal: React.FC<AdviseModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const [category, setCategory] = useState('feature_request');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -27,7 +43,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => 
     setIsSubmitting(true);
 
     // Simulate API call (will be connected to backend later)
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Save to localStorage for now
     const feedback = {
@@ -37,8 +53,13 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => 
       timestamp: new Date().toISOString(),
     };
 
-    const existingFeedback = JSON.parse(localStorage.getItem('vizier_feedback') || '[]');
-    localStorage.setItem('vizier_feedback', JSON.stringify([...existingFeedback, feedback]));
+    const existingFeedback = JSON.parse(
+      localStorage.getItem('vizier_feedback') || '[]',
+    );
+    localStorage.setItem(
+      'vizier_feedback',
+      JSON.stringify([...existingFeedback, feedback]),
+    );
 
     setIsSubmitting(false);
     setSubmitted(true);
@@ -63,7 +84,6 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
       <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-3xl max-w-2xl w-full shadow-2xl">
-
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
@@ -91,13 +111,18 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => 
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
                 <CheckCircle className="w-8 h-8 text-green-400" />
               </div>
-              <p className="text-white font-semibold text-lg mb-2">Thank you for your feedback!</p>
-              <p className="text-gray-400 text-sm">We'll review your suggestion and use it to improve Vizier.</p>
+              <p className="text-white font-semibold text-lg mb-2">
+                Thank you for your feedback!
+              </p>
+              <p className="text-gray-400 text-sm">
+                We'll review your suggestion and use it to improve Vizier.
+              </p>
             </div>
           ) : (
             <>
               <p className="text-gray-300 mb-6">
-                Your feedback helps us build a better product. Tell us what features you'd like to see or what could work better.
+                Your feedback helps us build a better product. Tell us what
+                features you'd like to see or what could work better.
               </p>
 
               {/* Category Selection */}
@@ -106,7 +131,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => 
                   Category
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {categoryOptions.map(option => (
+                  {categoryOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => setCategory(option.value)}
@@ -116,12 +141,18 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({ isOpen, onClose }) => 
                           : 'border-gray-700 hover:border-gray-600'
                       }`}
                     >
-                      <p className={`font-medium text-sm ${
-                        category === option.value ? 'text-white' : 'text-gray-300'
-                      }`}>
+                      <p
+                        className={`font-medium text-sm ${
+                          category === option.value
+                            ? 'text-white'
+                            : 'text-gray-300'
+                        }`}
+                      >
                         {option.label}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {option.description}
+                      </p>
                     </button>
                   ))}
                 </div>

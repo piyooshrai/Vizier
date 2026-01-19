@@ -1,5 +1,11 @@
+import type {
+  AuthResponse,
+  LoginData,
+  PasswordChangeData,
+  SignupData,
+  User,
+} from '../types';
 import api from './api';
-import { SignupData, LoginData, AuthResponse, User, PasswordChangeData } from '../types';
 
 export const authService = {
   signup: async (data: SignupData): Promise<User> => {

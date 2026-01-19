@@ -1,7 +1,9 @@
 // src/components/chat/InlineAuth.tsx
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -44,7 +46,8 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
 
       onComplete();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unable to create account';
+      const message =
+        err instanceof Error ? err.message : 'Unable to create account';
       const axiosError = err as { response?: { data?: { detail?: string } } };
       setError(axiosError.response?.data?.detail || message);
     } finally {
@@ -53,7 +56,10 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 animate-slide-up">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-3 animate-slide-up"
+    >
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
           {error}
@@ -63,8 +69,9 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
       <input
         type="email"
         placeholder="you@hospital.com"
-        className={`w-full px-4 py-3 bg-white border-2 ${errors.email ? 'border-red-300' : 'border-gray-200'
-          } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
+        className={`w-full px-4 py-3 bg-white border-2 ${
+          errors.email ? 'border-red-300' : 'border-gray-200'
+        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('email')}
       />
       {errors.email && (
@@ -74,8 +81,9 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
       <input
         type="password"
         placeholder="Create a password (min 8 characters)"
-        className={`w-full px-4 py-3 bg-white border-2 ${errors.password ? 'border-red-300' : 'border-gray-200'
-          } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
+        className={`w-full px-4 py-3 bg-white border-2 ${
+          errors.password ? 'border-red-300' : 'border-gray-200'
+        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('password')}
       />
       {errors.password && (

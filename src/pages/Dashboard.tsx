@@ -1,16 +1,28 @@
 // src/pages/Dashboard.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+
+import {
+  BarChart3,
+  Grid3X3,
+  Layers,
+  LayoutGrid,
+  List,
+  MessageSquare,
+  Plus,
+  RefreshCw,
+  TableProperties,
+} from 'lucide-react';
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, Plus, RefreshCw, Grid3X3, List, BarChart3, Layers, LayoutGrid, TableProperties } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { StatsOverview } from '../components/dashboard/StatsOverview';
 import { DashboardCard } from '../components/dashboard/DashboardCard';
-import { QuickActions } from '../components/dashboard/QuickActions';
 import { DrillDownModal } from '../components/dashboard/DrillDownModal';
+import { QuickActions } from '../components/dashboard/QuickActions';
+import { StatsOverview } from '../components/dashboard/StatsOverview';
 import { DemoWelcomeModal } from '../components/onboarding/DemoWelcomeModal';
 import { ProductTour } from '../components/onboarding/ProductTour';
 import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
-import { chartsService, PinnedChart } from '../services/charts.service';
+import { useAuth } from '../contexts/AuthContext';
+import { chartsService, type PinnedChart } from '../services/charts.service';
 
 interface ChartWithSize extends PinnedChart {
   size: 'small' | 'medium' | 'large';
@@ -60,7 +72,9 @@ export const Dashboard: React.FC = () => {
       // Transform and add default sizes
       const chartsWithSize: ChartWithSize[] = charts.map((chart, index) => ({
         ...chart,
-        size: chart.size || (index === 0 ? 'large' : index === 1 ? 'small' : 'medium'),
+        size:
+          chart.size ||
+          (index === 0 ? 'large' : index === 1 ? 'small' : 'medium'),
       }));
 
       setPinnedCharts(chartsWithSize);
@@ -81,18 +95,21 @@ export const Dashboard: React.FC = () => {
 
     try {
       await chartsService.deleteChart(chartId);
-      setPinnedCharts(prev => prev.filter(c => c.id !== chartId));
+      setPinnedCharts((prev) => prev.filter((c) => c.id !== chartId));
     } catch (error) {
       console.error('Failed to delete chart:', error);
       alert('Failed to remove chart');
     }
   };
 
-  const handleResize = async (chartId: string, newSize: 'small' | 'medium' | 'large') => {
-    setPinnedCharts(prev =>
-      prev.map(chart =>
-        chart.id === chartId ? { ...chart, size: newSize } : chart
-      )
+  const handleResize = async (
+    chartId: string,
+    newSize: 'small' | 'medium' | 'large',
+  ) => {
+    setPinnedCharts((prev) =>
+      prev.map((chart) =>
+        chart.id === chartId ? { ...chart, size: newSize } : chart,
+      ),
     );
 
     // Persist size change
@@ -100,7 +117,7 @@ export const Dashboard: React.FC = () => {
   };
 
   const handleExpand = (chartId: string) => {
-    const chart = pinnedCharts.find(c => c.id === chartId);
+    const chart = pinnedCharts.find((c) => c.id === chartId);
     if (chart) {
       navigate('/insights', { state: { initialQuestion: chart.query_text } });
     }
@@ -124,17 +141,24 @@ export const Dashboard: React.FC = () => {
   };
 
   // Check if user has data
-  const hasData = isDemoMode || localStorage.getItem('vizier_has_data') === 'true' || pinnedCharts.length > 0;
+  const hasData =
+    isDemoMode ||
+    localStorage.getItem('vizier_has_data') === 'true' ||
+    pinnedCharts.length > 0;
 
   // Get column span based on chart size
   const getColSpan = (size: string) => {
     if (layout === 'list') return 'col-span-12';
 
     switch (size) {
-      case 'small': return 'col-span-12 md:col-span-6 lg:col-span-4';
-      case 'medium': return 'col-span-12 md:col-span-6 lg:col-span-6';
-      case 'large': return 'col-span-12 lg:col-span-8';
-      default: return 'col-span-12 md:col-span-6 lg:col-span-6';
+      case 'small':
+        return 'col-span-12 md:col-span-6 lg:col-span-4';
+      case 'medium':
+        return 'col-span-12 md:col-span-6 lg:col-span-6';
+      case 'large':
+        return 'col-span-12 lg:col-span-8';
+      default:
+        return 'col-span-12 md:col-span-6 lg:col-span-6';
     }
   };
 
@@ -160,7 +184,8 @@ export const Dashboard: React.FC = () => {
         Your Dashboard is Empty
       </h3>
       <p className="text-gray-400 mb-6 max-w-md mx-auto">
-        Start by asking Vizier questions about your data. Pin your favorite insights to build your personalized dashboard.
+        Start by asking Vizier questions about your data. Pin your favorite
+        insights to build your personalized dashboard.
       </p>
       <button
         onClick={() => navigate('/insights')}
@@ -179,13 +204,14 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">
-              {pinnedCharts.length > 0 ? 'My Dashboard' : `Welcome back${user?.first_name ? `, ${user.first_name}` : ''}`}
+              {pinnedCharts.length > 0
+                ? 'My Dashboard'
+                : `Welcome back${user?.first_name ? `, ${user.first_name}` : ''}`}
             </h1>
             <p className="text-gray-400 text-sm mt-0.5">
               {pinnedCharts.length > 0
                 ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
-                : "Here's an overview of your healthcare analytics"
-              }
+                : "Here's an overview of your healthcare analytics"}
             </p>
           </div>
 
@@ -265,7 +291,9 @@ export const Dashboard: React.FC = () => {
                 className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
                 title="Refresh all"
               >
-                <RefreshCw className={`w-4 h-4 text-white ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 text-white ${isLoading ? 'animate-spin' : ''}`}
+                />
               </button>
             )}
 
@@ -308,7 +336,9 @@ export const Dashboard: React.FC = () => {
               <>
                 {/* Section Header */}
                 <div className="px-4 py-3">
-                  <h2 className="text-lg font-bold text-white">Pinned Insights</h2>
+                  <h2 className="text-lg font-bold text-white">
+                    Pinned Insights
+                  </h2>
                 </div>
 
                 {/* Charts Grid - max-width for presentation quality */}
@@ -326,7 +356,7 @@ export const Dashboard: React.FC = () => {
                             onDrillDown={handleDrillDown}
                             currentUser={{
                               id: user?.id?.toString() || 'demo-user',
-                              name: user?.first_name || 'Demo User'
+                              name: user?.first_name || 'Demo User',
                             }}
                             density={density}
                           />
@@ -386,8 +416,50 @@ function generateDrillDownData(chart: PinnedChart) {
   const question = (chart.query_text || chart.title || '').toLowerCase();
 
   // Synthetic patient data
-  const FIRST_NAMES = ['John', 'Mary', 'Robert', 'Patricia', 'Michael', 'Jennifer', 'William', 'Linda', 'David', 'Elizabeth', 'Richard', 'Barbara', 'Joseph', 'Susan', 'Thomas', 'Jessica', 'Charles', 'Sarah', 'Christopher', 'Karen'];
-  const LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
+  const FIRST_NAMES = [
+    'John',
+    'Mary',
+    'Robert',
+    'Patricia',
+    'Michael',
+    'Jennifer',
+    'William',
+    'Linda',
+    'David',
+    'Elizabeth',
+    'Richard',
+    'Barbara',
+    'Joseph',
+    'Susan',
+    'Thomas',
+    'Jessica',
+    'Charles',
+    'Sarah',
+    'Christopher',
+    'Karen',
+  ];
+  const LAST_NAMES = [
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+    'Hernandez',
+    'Lopez',
+    'Gonzalez',
+    'Wilson',
+    'Anderson',
+    'Thomas',
+    'Taylor',
+    'Moore',
+    'Jackson',
+    'Martin',
+  ];
 
   const generatePatients = (count: number) => {
     return Array.from({ length: count }, (_, i) => ({
@@ -397,7 +469,10 @@ function generateDrillDownData(chart: PinnedChart) {
       age: 45 + Math.floor(Math.random() * 40),
       lastVisit: `12/${20 - (i % 20)}/2024`,
       primaryMetric: `${155 + Math.floor(Math.random() * 30)}/${85 + Math.floor(Math.random() * 20)}`,
-      riskScore: (i < 5 ? 'High' : i < 12 ? 'Medium' : 'Low') as 'High' | 'Medium' | 'Low',
+      riskScore: (i < 5 ? 'High' : i < 12 ? 'Medium' : 'Low') as
+        | 'High'
+        | 'Medium'
+        | 'Low',
     }));
   };
 

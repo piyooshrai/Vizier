@@ -1,7 +1,8 @@
 // src/components/upload/UploadComplete.tsx
-import React from 'react';
+
+import { ArrowRight, CheckCircle } from 'lucide-react';
+import type React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, ArrowRight } from 'lucide-react';
 
 export const UploadComplete: React.FC = () => {
   const navigate = useNavigate();
@@ -28,8 +29,8 @@ export const UploadComplete: React.FC = () => {
         </h1>
 
         <p className="text-2xl text-gray-300 mb-12 max-w-xl mx-auto leading-relaxed">
-          I've structured 47,293 encounters across 12,847 unique patients.
-          Ready to answer your questions.
+          I've structured 47,293 encounters across 12,847 unique patients. Ready
+          to answer your questions.
         </p>
 
         <button

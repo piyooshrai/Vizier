@@ -1,4 +1,4 @@
-import { ChartType } from './api.types';
+import type { ChartType } from './api.types';
 
 export interface SavedInsight {
   id: string;

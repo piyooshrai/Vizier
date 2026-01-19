@@ -1,5 +1,5 @@
 // src/components/chat/TypingIndicator.tsx
-import React from 'react';
+import type React from 'react';
 
 export const TypingIndicator: React.FC = () => {
   return (
@@ -18,9 +18,18 @@ export const TypingIndicator: React.FC = () => {
         </div>
         <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl rounded-tl-none p-5 shadow-sm border border-gray-100">
           <div className="flex gap-1">
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+            <div
+              className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+              style={{ animationDelay: '0s' }}
+            />
+            <div
+              className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+              style={{ animationDelay: '0.2s' }}
+            />
+            <div
+              className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+              style={{ animationDelay: '0.4s' }}
+            />
           </div>
         </div>
       </div>

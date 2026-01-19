@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import type React from 'react';
 
 interface VizierAvatarProps {
   state?: 'idle' | 'thinking' | 'success' | 'speaking';
@@ -60,13 +60,20 @@ export const VizierAvatar: React.FC<VizierAvatarProps> = ({
           stroke="currentColor"
           strokeWidth="2.5"
         >
+          <title>Vizier Avatar</title>
           <motion.path
             d="M6 9L12 15L18 9"
             strokeLinecap="round"
             strokeLinejoin="round"
             animate={
               state === 'speaking'
-                ? { d: ['M6 9L12 15L18 9', 'M6 11L12 13L18 11', 'M6 9L12 15L18 9'] }
+                ? {
+                    d: [
+                      'M6 9L12 15L18 9',
+                      'M6 11L12 13L18 11',
+                      'M6 9L12 15L18 9',
+                    ],
+                  }
                 : undefined
             }
             transition={
