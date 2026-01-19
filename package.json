@@ -2,6 +2,9 @@
   "name": "vizier-frontend",
   "version": "1.0.0",
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
+    "@types/node": "^25.0.9",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
