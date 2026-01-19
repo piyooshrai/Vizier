@@ -111,36 +111,7 @@ const Insights: React.FC = () => {
     sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
   };
 
-  // Handler for saving insight to dashboard
-  const handleSaveInsight = (message: Message) => {
-    // Find the question that preceded this answer
-    const messageIndex = messages.findIndex((m) => m.id === message.id);
-    const questionMessage = messageIndex > 0 ? messages[messageIndex - 1] : null;
 
-    // Save to localStorage for dashboard
-    const savedInsights = JSON.parse(
-      localStorage.getItem('saved_insights') || '[]'
-    );
-
-    const newInsight = {
-      id: message.id,
-      question: questionMessage?.content || 'Unknown question',
-      answer: message.content,
-      chartType: message.chartType,
-      chartData: message.chartData,
-      timestamp: message.timestamp,
-      explanation: message.explanation,
-    };
-
-    savedInsights.push(newInsight);
-    localStorage.setItem('saved_insights', JSON.stringify(savedInsights));
-
-    // Track interaction for upgrade prompt
-    const interactions = Number.parseInt(sessionStorage.getItem('demo_interactions') || '0', 10);
-    sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
-
-    alert('Insight saved to dashboard!');
-  };
 
   // Handler for exporting data to CSV
   const handleExport = (message: Message) => {
@@ -208,7 +179,6 @@ const Insights: React.FC = () => {
           <ConversationView
             messages={messages}
             isProcessing={isProcessing}
-            onSaveInsight={handleSaveInsight}
             onExport={handleExport}
           />
 

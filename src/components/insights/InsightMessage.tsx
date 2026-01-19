@@ -9,7 +9,6 @@ import { chartsService } from '../../services/charts.service';
 
 interface InsightMessageProps {
   message: Message;
-  onSave: () => void;
   onExport: () => void;
   onDrillDown?: (question: string) => void;
 }
@@ -88,6 +87,12 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
   }
 
   // Vizier message
+  const pinButtonClass = (() => {
+    if (isPinned) return 'bg-green-500/10 text-green-600 cursor-default border border-green-200';
+    if (isPinning) return 'bg-gray-100 text-gray-400 cursor-wait';
+    return 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-lg';
+  })();
+
   return (
     <div className="flex gap-4 animate-slide-up">
       <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-lg flex-shrink-0">
@@ -154,29 +159,32 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
                 <button
                   onClick={handlePin}
                   disabled={isPinned || isPinning}
-                  className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-lg transition-all ${isPinned
-                      ? 'bg-green-500/10 text-green-600 cursor-default border border-green-200'
-                      : isPinning
-                        ? 'bg-gray-100 text-gray-400 cursor-wait'
-                        : 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-lg'
-                    }`}
+                  className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-lg transition-all ${pinButtonClass}`}
                 >
-                  {isPinned ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      Pinned to Dashboard
-                    </>
-                  ) : isPinning ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
-                      Pinning...
-                    </>
-                  ) : (
-                    <>
-                      <Pin className="w-4 h-4" />
-                      Pin to Dashboard
-                    </>
-                  )}
+                  {(() => {
+                    if (isPinned) {
+                      return (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Pinned to Dashboard
+                        </>
+                      );
+                    }
+                    if (isPinning) {
+                      return (
+                        <>
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                          Pinning...
+                        </>
+                      );
+                    }
+                    return (
+                      <>
+                        <Pin className="w-4 h-4" />
+                        Pin to Dashboard
+                      </>
+                    );
+                  })()}
                 </button>
 
                 {/* Export CSV */}

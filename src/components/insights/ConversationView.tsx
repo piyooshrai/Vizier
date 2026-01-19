@@ -6,14 +6,12 @@ import { Message } from '../../pages/Insights';
 interface ConversationViewProps {
   messages: Message[];
   isProcessing: boolean;
-  onSaveInsight: (message: Message) => void;
   onExport: (message: Message) => void;
 }
 
 export const ConversationView: React.FC<ConversationViewProps> = ({
   messages,
   isProcessing,
-  onSaveInsight,
   onExport,
 }) => {
   return (
@@ -22,7 +20,6 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
         <InsightMessage
           key={message.id}
           message={message}
-          onSave={() => onSaveInsight(message)}
           onExport={() => onExport(message)}
         />
       ))}
