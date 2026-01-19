@@ -181,7 +181,7 @@ export const Dashboard: React.FC = () => {
         let defaultSize: ChartSize = 'medium';
         if (index === 0) defaultSize = 'large';
         else if (index === 1) defaultSize = 'small';
-        
+
         return {
           ...chart,
           size: (chart.size as ChartSize) || defaultSize,
@@ -200,7 +200,9 @@ export const Dashboard: React.FC = () => {
   }, [loadCharts]);
 
   const handleUnpin = async (chartId: string) => {
-    const confirmed = globalThis.confirm('Remove this chart from your dashboard?');
+    const confirmed = globalThis.confirm(
+      'Remove this chart from your dashboard?',
+    );
     if (!confirmed) return;
 
     try {
@@ -273,9 +275,11 @@ export const Dashboard: React.FC = () => {
   };
 
   const headerTitle = pinnedCharts.length > 0 ? 'My Dashboard' : 'Welcome back';
-  const headerSubtitle = pinnedCharts.length > 0
-    ? `${pinnedCharts.length} pinned ${pinnedCharts.length === 1 ? 'insight' : 'insights'}`
-    : "Here's an overview of your healthcare analytics";
+  const pinnedCountText = pinnedCharts.length === 1 ? 'insight' : 'insights';
+  const headerSubtitle =
+    pinnedCharts.length > 0
+      ? `${pinnedCharts.length} pinned ${pinnedCountText}`
+      : "Here's an overview of your healthcare analytics";
 
   return (
     <div className="h-full overflow-y-auto bg-black">
@@ -285,11 +289,11 @@ export const Dashboard: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-white">
               {headerTitle}
-              {pinnedCharts.length === 0 && user?.first_name ? `, ${user.first_name}` : ''}
+              {pinnedCharts.length === 0 && user?.first_name
+                ? `, ${user.first_name}`
+                : ''}
             </h1>
-            <p className="text-gray-400 text-sm mt-0.5">
-              {headerSubtitle}
-            </p>
+            <p className="text-gray-400 text-sm mt-0.5">{headerSubtitle}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -469,16 +473,48 @@ function generateDrillDownData(chart: PinnedChart) {
 
   // Synthetic patient data
   const FIRST_NAMES = [
-    'John', 'Mary', 'Robert', 'Patricia', 'Michael', 'Jennifer',
-    'William', 'Linda', 'David', 'Elizabeth', 'Richard', 'Barbara',
-    'Joseph', 'Susan', 'Thomas', 'Jessica', 'Charles', 'Sarah',
-    'Christopher', 'Karen',
+    'John',
+    'Mary',
+    'Robert',
+    'Patricia',
+    'Michael',
+    'Jennifer',
+    'William',
+    'Linda',
+    'David',
+    'Elizabeth',
+    'Richard',
+    'Barbara',
+    'Joseph',
+    'Susan',
+    'Thomas',
+    'Jessica',
+    'Charles',
+    'Sarah',
+    'Christopher',
+    'Karen',
   ];
   const LAST_NAMES = [
-    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia',
-    'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez',
-    'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore',
-    'Jackson', 'Martin',
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+    'Hernandez',
+    'Lopez',
+    'Gonzalez',
+    'Wilson',
+    'Anderson',
+    'Thomas',
+    'Taylor',
+    'Moore',
+    'Jackson',
+    'Martin',
   ];
 
   // Helper for risk score

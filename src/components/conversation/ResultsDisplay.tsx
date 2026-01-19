@@ -50,7 +50,13 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
           .map((col) => {
             const value = row[col];
             // Escape quotes and wrap in quotes if contains comma
-            const stringValue = value != null ? String(value) : '';
+            let stringValue = '';
+            if (value !== null && value !== undefined) {
+              stringValue =
+                typeof value === 'object'
+                  ? JSON.stringify(value)
+                  : String(value);
+            }
             if (stringValue.includes(',') || stringValue.includes('"')) {
               return `"${stringValue.replaceAll('"', '""')}"`;
             }
