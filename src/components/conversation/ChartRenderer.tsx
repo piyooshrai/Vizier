@@ -283,7 +283,9 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               <p className="text-lg text-neutral-600 mt-2">
                 {typeof bigNumLabel === 'object'
                   ? JSON.stringify(bigNumLabel)
-                  : String(bigNumLabel ?? '')}
+                  : typeof bigNumLabel === 'string'
+                    ? bigNumLabel
+                    : String(bigNumLabel ?? '')}
               </p>
             )}
           </div>
@@ -311,8 +313,8 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               </thead>
               <tbody>
                 {data.slice(0, 20).map((row, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available for arbitrary rows
                   <tr
-                    // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available for arbitrary rows
                     // sonarlint-disable-next-line typescript:S6479
                     key={i}
                     className="border-b border-neutral-100 hover:bg-neutral-50"
