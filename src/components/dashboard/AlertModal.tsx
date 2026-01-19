@@ -111,6 +111,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
           >
@@ -126,10 +127,11 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
 
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">
+                <label htmlFor="metric" className="block text-xs text-gray-400 mb-1">
                   Metric
                 </label>
                 <select
+                  id="metric"
                   value={newAlert.metric}
                   onChange={(e) =>
                     setNewAlert({ ...newAlert, metric: e.target.value })
@@ -145,10 +147,11 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1">
+                <label htmlFor="condition" className="block text-xs text-gray-400 mb-1">
                   Condition
                 </label>
                 <select
+                  id="condition"
                   value={newAlert.condition}
                   onChange={(e) =>
                     setNewAlert({ ...newAlert, condition: e.target.value })
@@ -164,12 +167,13 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1">
+                <label htmlFor="value" className="block text-xs text-gray-400 mb-1">
                   Value{' '}
                   {getMetricUnit(newAlert.metric) &&
                     `(${getMetricUnit(newAlert.metric)})`}
                 </label>
                 <input
+                  id="value"
                   type="number"
                   value={newAlert.value}
                   onChange={(e) =>

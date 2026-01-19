@@ -3,7 +3,7 @@
  */
 export function formatNumber(value: number | string): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return '0';
+  if (Number.isNaN(num)) return '0';
   return num.toLocaleString('en-US');
 }
 
@@ -15,7 +15,7 @@ export function formatCurrency(
   currency = 'USD',
 ): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return '$0';
+  if (Number.isNaN(num)) return '$0';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
@@ -29,7 +29,7 @@ export function formatCurrency(
  */
 export function formatPercent(value: number | string, decimals = 1): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return '0%';
+  if (Number.isNaN(num)) return '0%';
   return `${num.toFixed(decimals)}%`;
 }
 

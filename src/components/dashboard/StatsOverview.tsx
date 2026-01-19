@@ -49,7 +49,7 @@ export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      {statCards.map((stat, index) => (
+      {statCards.map((stat) => (
         <div
           key={stat.label}
           className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-xl p-3.5 shadow-lg hover:border-gray-600 transition-colors"

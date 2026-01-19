@@ -26,7 +26,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   // Auto-scroll to new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages.length]);
 
   return (
     <div className="flex flex-col space-y-6">
@@ -111,7 +111,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                         .slice(0, 3)
                         .map((question, i) => (
                           <button
-                            key={i}
+                            type="button"
+                            key={question}
                             onClick={() => onSuggestionClick?.(question)}
                             className="
                             text-xs px-3 py-1.5 rounded-full
