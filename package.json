@@ -1,51 +1,48 @@
 {
-  "name": "vizier-frontend",
-  "version": "1.0.0",
-  "type": "module",
-  "sideEffects": [
-    "*.css"
-  ],
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^3.3.2",
-    "@tanstack/react-query": "^5.90.19",
-    "axios": "^1.6.2",
-    "framer-motion": "^10.16.16",
-    "lucide-react": "^0.294.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.48.2",
-    "react-router-dom": "^6.20.0",
-    "recharts": "^2.15.4",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^14.1.2",
-    "@types/node": "^25.0.9",
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "@typescript-eslint/parser": "^8.53.1",
-    "@vitejs/plugin-react": "^5.1.2",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^9.39.2",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "globals": "^17.0.0",
-    "postcss": "^8.4.32",
-    "rollup-plugin-visualizer": "^6.0.5",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.53.1",
-    "vite": "^7.3.1",
-    "vite-plugin-compression": "^0.5.1",
-    "vitest": "^4.0.17"
-  }
+	"name": "vizier-frontend",
+	"version": "1.0.0",
+	"type": "module",
+	"sideEffects": [
+		"*.css"
+	],
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"test": "vitest",
+		"lint": "biome lint src",
+		"lint:fix": "biome lint src --write",
+		"format": "biome format src --write",
+		"check": "biome check src"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "^3.3.2",
+		"@tanstack/react-query": "^5.90.19",
+		"axios": "^1.6.2",
+		"framer-motion": "^10.16.16",
+		"lucide-react": "^0.294.0",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-hook-form": "^7.48.2",
+		"react-router-dom": "^6.20.0",
+		"recharts": "^2.15.4",
+		"zod": "^3.22.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.11",
+		"@testing-library/jest-dom": "^6.1.5",
+		"@testing-library/react": "^14.1.2",
+		"@types/node": "^25.0.9",
+		"@types/react": "^18.2.43",
+		"@types/react-dom": "^18.2.17",
+		"@vitejs/plugin-react": "^5.1.2",
+		"autoprefixer": "^10.4.16",
+		"postcss": "^8.4.32",
+		"rollup-plugin-visualizer": "^6.0.5",
+		"tailwindcss": "^3.3.6",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.1",
+		"vite-plugin-compression": "^0.5.1",
+		"vitest": "^4.0.17"
+	}
 }
