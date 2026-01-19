@@ -1,20 +1,27 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { AppLayout } from './components/layout';
-import {
-  Dashboard,
-  Upload,
-  Insights,
-  Profile,
-  Settings,
-  NotFound,
-  ForgotPassword,
-  ResetPassword,
-  ChatLanding,
-} from './pages';
+
+// Lazy load all pages for code splitting
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Upload = lazy(() => import('./pages/Upload'));
+const Insights = lazy(() => import('./pages/Insights'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Settings = lazy(() => import('./pages/Settings'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const ChatLanding = lazy(() => import('./pages/ChatLanding'));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+    <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 // Create a client with sensible defaults
 const queryClient = new QueryClient({
@@ -129,7 +136,9 @@ function App() {
       <AuthProvider>
         <ToastProvider>
           <BrowserRouter>
-            <AppRoutes />
+            <Suspense fallback={<PageLoader />}>
+              <AppRoutes />
+            </Suspense>
           </BrowserRouter>
         </ToastProvider>
       </AuthProvider>
