@@ -51,6 +51,7 @@ export const Toast: React.FC<ToastProps> = ({
       <p className="text-sm font-medium text-neutral-900">{message}</p>
       <button
         onClick={onClose}
+        type="button"
         className="ml-2 text-neutral-400 hover:text-neutral-600 transition-colors"
       >
         <X className="w-4 h-4" />

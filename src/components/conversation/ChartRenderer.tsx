@@ -248,7 +248,11 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               >
                 {data.map((entry, index) => (
                   <Cell
-                    key={typeof entry[labelKey] === 'string' ? entry[labelKey] : String(entry[labelKey] || index)}
+                    key={
+                      typeof entry[labelKey] === 'string'
+                        ? entry[labelKey]
+                        : `cell-${index}`
+                    }
                     fill={GOLD_COLORS[index % GOLD_COLORS.length]}
                   />
                 ))}
@@ -279,7 +283,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               <p className="text-lg text-neutral-600 mt-2">
                 {typeof bigNumLabel === 'object'
                   ? JSON.stringify(bigNumLabel)
-                  : String(bigNumLabel)}
+                  : String(bigNumLabel ?? '')}
               </p>
             )}
           </div>
@@ -309,6 +313,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                 {data.slice(0, 20).map((row, i) => (
                   <tr
                     // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available for arbitrary rows
+                    // sonarlint-disable-next-line typescript:S6479
                     key={i}
                     className="border-b border-neutral-100 hover:bg-neutral-50"
                   >
