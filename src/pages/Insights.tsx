@@ -1,6 +1,5 @@
 // src/pages/Insights.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import { QueryInput } from '../components/insights/QueryInput';
 import { SuggestionChips } from '../components/insights/SuggestionChips';
 import { ConversationView } from '../components/insights/ConversationView';
@@ -15,37 +14,25 @@ export interface Message {
   content: string;
   timestamp: Date;
   chartType?: string;
-  chartData?: any;
+  chartData?: Record<string, unknown>[];
   explanation?: string;
   chartReason?: string;
 }
 
 const Insights: React.FC = () => {
-  const location = useLocation();
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Initialize with greeting message directly
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'vizier',
+      content:
+        "Hi! I'm ready to answer questions about your healthcare data. What would you like to explore?",
+      timestamp: new Date(),
+    },
+  ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Initial greeting
-    setMessages([
-      {
-        id: '1',
-        role: 'vizier',
-        content:
-          "Hi! I'm ready to answer questions about your healthcare data. What would you like to explore?",
-        timestamp: new Date(),
-      },
-    ]);
-
-    // Check if there's an initial question from navigation
-    if (location.state?.initialQuestion) {
-      setTimeout(() => {
-        handleSendMessage(location.state.initialQuestion);
-      }, 500);
-    }
-  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -170,7 +157,7 @@ const Insights: React.FC = () => {
   };
 
   // Convert data array to CSV string
-  const convertToCSV = (data: any[]): string => {
+  const convertToCSV = (data: Record<string, unknown>[]): string => {
     if (!data || data.length === 0) return '';
 
     const headers = Object.keys(data[0]);

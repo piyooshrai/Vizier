@@ -117,13 +117,14 @@ export function formatChartData(
         };
       });
 
-    case 'big_number':
+    case 'big_number': {
       // Return just the first numeric value
       const firstItem = data[0];
       const numKey = Object.keys(firstItem).find(
         (k) => typeof firstItem[k] === 'number' || !isNaN(Number(firstItem[k]))
       );
       return [{ value: numKey ? Number(firstItem[numKey]) : 0 }];
+    }
 
     default:
       return data;

@@ -15,7 +15,7 @@ interface ChartRecommendation {
 }
 
 export function recommendChartType(
-  data: any[],
+  data: Record<string, unknown>[],
   question: string
 ): ChartRecommendation {
   if (!data || data.length === 0) {

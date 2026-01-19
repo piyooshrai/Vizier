@@ -51,7 +51,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
       await chartsService.saveChart({
         query_text: message.content,
         chart_type: activeChartType || 'bar_chart',
-        chart_data: message.chartData,
+        chart_data: message.chartData ?? [],
         explanation: message.explanation,
         title: message.content.substring(0, 100),
       });
@@ -154,13 +154,12 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
                 <button
                   onClick={handlePin}
                   disabled={isPinned || isPinning}
-                  className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-lg transition-all ${
-                    isPinned
+                  className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-lg transition-all ${isPinned
                       ? 'bg-green-500/10 text-green-600 cursor-default border border-green-200'
                       : isPinning
-                      ? 'bg-gray-100 text-gray-400 cursor-wait'
-                      : 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-lg'
-                  }`}
+                        ? 'bg-gray-100 text-gray-400 cursor-wait'
+                        : 'bg-amber-500 hover:bg-amber-600 text-white shadow-md hover:shadow-lg'
+                    }`}
                 >
                   {isPinned ? (
                     <>

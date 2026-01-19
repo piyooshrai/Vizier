@@ -55,8 +55,10 @@ const Upload: React.FC = () => {
 
       setUploadState('processing');
       await pollPipelineStatus(response.upload_run_id);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Upload failed. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Upload failed. Please try again.';
+      const axiosError = err as { response?: { data?: { detail?: string } } };
+      setError(axiosError.response?.data?.detail || message);
       setUploadState('error');
     }
   };

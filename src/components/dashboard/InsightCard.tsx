@@ -17,7 +17,7 @@ interface InsightCardProps {
     question: string;
     answer: string;
     chartType: string;
-    chartData: any;
+    chartData: Record<string, unknown>[];
     explanation: string;
     timestamp: Date;
   };
@@ -323,7 +323,7 @@ function generateRecommendations(insight: { explanation: string; question: strin
   }
 
   if ((explanation.includes('readmission') && explanation.includes('below')) ||
-      (explanation.includes('readmission') && explanation.includes('decline'))) {
+    (explanation.includes('readmission') && explanation.includes('decline'))) {
     return "Continue current discharge planning protocols. Document successful practices to replicate across departments. Set up monitoring alerts if rate increases above target.";
   }
 

@@ -19,23 +19,19 @@ interface Message {
 const ChatLanding: React.FC = () => {
   const navigate = useNavigate();
   const { loginWithDemo } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Initialize with greeting message directly
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'vizier',
+      content: "Good evening. I'm Vizier, your healthcare analytics intelligence.\n\nI help executive teams transform complex healthcare data into clear, actionable insights—through conversation, not dashboards.\n\nWhat would you like to accomplish?",
+      timestamp: new Date(),
+    },
+  ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showGoals, setShowGoals] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Initial Vizier message
-    setMessages([
-      {
-        id: '1',
-        role: 'vizier',
-        content: "Good evening. I'm Vizier, your healthcare analytics intelligence.\n\nI help executive teams transform complex healthcare data into clear, actionable insights—through conversation, not dashboards.\n\nWhat would you like to accomplish?",
-        timestamp: new Date(),
-      },
-    ]);
-  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

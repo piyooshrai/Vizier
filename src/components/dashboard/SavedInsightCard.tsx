@@ -21,7 +21,7 @@ interface SavedInsight {
   question: string;
   answer: string;
   chartType: string;
-  chartData: any;
+  chartData: Record<string, unknown>[];
   timestamp: Date;
   explanation: string;
 }
@@ -82,7 +82,7 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
                 outerRadius={80}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               >
-                {insight.chartData.map((_entry: any, index: number) => (
+                {insight.chartData.map((_entry: Record<string, unknown>, index: number) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={GOLD_COLORS[index % GOLD_COLORS.length]}

@@ -60,12 +60,24 @@ function getLabelKey(data: Record<string, unknown>[]): string {
   return Object.keys(firstItem)[0] || 'name';
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayloadItem {
+  name: string;
+  value: number;
+  color?: string;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white px-3 py-2 shadow-lg rounded-lg border border-neutral-200">
         <p className="text-sm font-medium text-neutral-900">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: TooltipPayloadItem, index: number) => (
           <p key={index} className="text-sm text-neutral-600">
             {entry.name}: <span className="font-medium">{formatNumber(entry.value)}</span>
           </p>
@@ -76,8 +88,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+interface PieLabelProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  outerRadius: number;
+  percent: number;
+  name: string;
+}
+
 // Custom label for pie charts - simpler, no cutoff
-const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: any) => {
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: PieLabelProps) => {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius * 1.2;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);

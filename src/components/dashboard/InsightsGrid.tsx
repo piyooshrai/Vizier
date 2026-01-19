@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { InsightCard } from './InsightCard';
 
+interface Insight {
+  id: string;
+  question: string;
+  answer: string;
+  chartType: string;
+  chartData: Record<string, unknown>[];
+  explanation: string;
+  timestamp: Date;
+}
+
 interface InsightsGridProps {
-  insights: any[];
+  insights: Insight[];
   onDeleteInsight: (id: string) => void;
   onExpandInsight: (id: string) => void;
 }
@@ -49,31 +59,28 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
           <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => setGridColumns('1')}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-                gridColumns === '1'
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${gridColumns === '1'
                   ? 'bg-white text-black'
                   : 'text-gray-400 hover:text-white'
-              }`}
+                }`}
             >
               1 col
             </button>
             <button
               onClick={() => setGridColumns('2')}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-                gridColumns === '2'
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${gridColumns === '2'
                   ? 'bg-white text-black'
                   : 'text-gray-400 hover:text-white'
-              }`}
+                }`}
             >
               2 cols
             </button>
             <button
               onClick={() => setGridColumns('3')}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-                gridColumns === '3'
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${gridColumns === '3'
                   ? 'bg-white text-black'
                   : 'text-gray-400 hover:text-white'
-              }`}
+                }`}
             >
               3 cols
             </button>

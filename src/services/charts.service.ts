@@ -5,7 +5,7 @@ export interface PinnedChart {
   query_text: string;
   sql_query?: string;
   chart_type: string;
-  chart_data: any;
+  chart_data: Record<string, unknown>[];
   title?: string;
   explanation?: string;
   created_at: string;
@@ -17,7 +17,7 @@ export interface SaveChartRequest {
   query_text: string;
   sql_query?: string;
   chart_type: string;
-  chart_data: any;
+  chart_data: Record<string, unknown>[];
   title?: string;
   explanation?: string;
 }
