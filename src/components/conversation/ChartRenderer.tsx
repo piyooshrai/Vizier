@@ -73,12 +73,12 @@ interface TooltipProps {
 }
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div className="bg-white px-3 py-2 shadow-lg rounded-lg border border-neutral-200">
         <p className="text-sm font-medium text-neutral-900">{label}</p>
-        {payload.map((entry: TooltipPayloadItem, index: number) => (
-          <p key={index} className="text-sm text-neutral-600">
+        {payload.map((entry: TooltipPayloadItem) => (
+          <p key={entry.name} className="text-sm text-neutral-600">
             {entry.name}:{' '}
             <span className="font-medium">{formatNumber(entry.value)}</span>
           </p>
@@ -246,9 +246,9 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                 label={renderCustomizedLabel}
                 labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
               >
-                {data.map((_, index) => (
+                {data.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={typeof entry[labelKey] === 'string' ? entry[labelKey] : String(entry[labelKey] || index)}
                     fill={GOLD_COLORS[index % GOLD_COLORS.length]}
                   />
                 ))}
@@ -277,7 +277,9 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
             </p>
             {bigNumLabel !== undefined && bigNumLabel !== null && (
               <p className="text-lg text-neutral-600 mt-2">
-                {String(bigNumLabel)}
+                {typeof bigNumLabel === 'object'
+                  ? JSON.stringify(bigNumLabel)
+                  : String(bigNumLabel)}
               </p>
             )}
           </div>
@@ -297,7 +299,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                       className="px-4 py-3 text-left font-medium text-neutral-700 bg-neutral-50"
                     >
                       {col
-                        .replace(/_/g, ' ')
+                        .replaceAll('_', ' ')
                         .replace(/\b\w/g, (l) => l.toUpperCase())}
                     </th>
                   ))}
@@ -306,16 +308,26 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
               <tbody>
                 {data.slice(0, 20).map((row, i) => (
                   <tr
+                    // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available for arbitrary rows
                     key={i}
                     className="border-b border-neutral-100 hover:bg-neutral-50"
                   >
-                    {columns.map((col) => (
-                      <td key={col} className="px-4 py-3 text-neutral-900">
-                        {typeof row[col] === 'number'
-                          ? formatNumber(row[col] as number)
-                          : String(row[col] ?? '')}
-                      </td>
-                    ))}
+                    {columns.map((col) => {
+                      const value = row[col];
+                      let displayValue = '';
+                      if (typeof value === 'number') {
+                        displayValue = formatNumber(value);
+                      } else if (typeof value === 'object' && value !== null) {
+                        displayValue = JSON.stringify(value);
+                      } else {
+                        displayValue = String(value ?? '');
+                      }
+                      return (
+                        <td key={col} className="px-4 py-3 text-neutral-900">
+                          {displayValue}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

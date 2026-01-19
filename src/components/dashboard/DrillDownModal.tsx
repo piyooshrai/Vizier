@@ -73,6 +73,17 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
 }) => {
   const [showPatientList, setShowPatientList] = useState(false);
 
+  const getRiskClass = (riskScore: string) => {
+    switch (riskScore) {
+      case 'High':
+        return 'bg-red-500/20 text-red-400 border border-red-500/30';
+      case 'Medium':
+        return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+      default:
+        return 'bg-green-500/20 text-green-400 border border-green-500/30';
+    }
+  };
+
   if (!isOpen) return null;
 
   const handleExport = () => {
@@ -82,7 +93,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
   };
 
   const handlePrint = () => {
-    window.print();
+    globalThis.print();
   };
 
   return (
@@ -226,9 +237,9 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {data.demographics.genderSplit.map((_, index) => (
+                    {data.demographics.genderSplit.map((entry, index) => (
                       <Cell
-                        key={`cell-${index}`}
+                        key={entry.name}
                         fill={COLORS[index % COLORS.length]}
                       />
                     ))}
@@ -256,7 +267,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
           <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
             <div className="space-y-3">
               {data.comorbidities.map((condition, index) => (
-                <div key={index}>
+                <div key={condition.name}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs text-gray-300">
                       {condition.name}
@@ -383,6 +394,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
         <div className="sticky bottom-0 bg-gray-900 border-t border-gray-700 p-4 flex items-center justify-between">
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={handleExport}
               className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
             >
@@ -390,6 +402,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
               Export
             </button>
             <button
+              type="button"
               onClick={handlePrint}
               className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
             >
@@ -398,6 +411,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
             </button>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-1.5 bg-white hover:bg-gray-100 text-black font-semibold rounded-lg transition-colors text-sm"
           >
