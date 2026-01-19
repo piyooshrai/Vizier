@@ -19,6 +19,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize textarea
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Resizing should trigger whenever content changes
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -89,6 +90,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            type="button"
             onClick={handleSubmit}
             disabled={!value.trim() || isLoading}
             className={`

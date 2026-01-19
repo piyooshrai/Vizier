@@ -101,6 +101,7 @@ function getMockStatus(uploadRunId: string): PipelineStatus {
   // Simulate progress based on time
   const startTime = parseInt(
     localStorage.getItem(`pipeline_start_${uploadRunId}`) || '0',
+    10,
   );
   if (!startTime) {
     localStorage.setItem(

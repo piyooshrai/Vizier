@@ -26,8 +26,9 @@ export const TopBar: React.FC = () => {
         <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center">
           <p className="text-sm text-amber-800">
             <span className="font-semibold">Demo Mode</span> - You're exploring
-            with sample data.
+            with sample data.{' '}
             <button
+              type="button"
               onClick={() => navigate('/signup')}
               className="ml-2 underline hover:text-amber-900"
             >
@@ -46,6 +47,7 @@ export const TopBar: React.FC = () => {
         <div className="flex items-center gap-4">
           {/* Notifications */}
           <button
+            type="button"
             className="
             p-2 rounded-lg text-neutral-400
             hover:text-neutral-600 hover:bg-neutral-50

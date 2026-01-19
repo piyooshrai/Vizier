@@ -94,17 +94,6 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
     setShowRegenerateModal(false);
   };
 
-  const getStatusBadge = (status: Integration['status']) => {
-    switch (status) {
-      case 'connected':
-        return <Badge variant="success">Connected</Badge>;
-      case 'disconnected':
-        return <Badge variant="default">Disconnected</Badge>;
-      case 'pending':
-        return <Badge variant="warning">Pending</Badge>;
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -138,6 +127,7 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 <button
+                  type="button"
                   onClick={() => setShowApiKey(!showApiKey)}
                   className="p-2 hover:bg-neutral-200 rounded-lg transition-colors"
                   title={showApiKey ? 'Hide API key' : 'Show API key'}
@@ -149,6 +139,7 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
                   )}
                 </button>
                 <button
+                  type="button"
                   onClick={copyApiKey}
                   className="p-2 hover:bg-neutral-200 rounded-lg transition-colors"
                   title="Copy API key"
@@ -212,13 +203,13 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
             >
               <div className="flex items-center gap-4">
                 <div
-                  className={`p-3 rounded-lg ${
-                    integration.status === 'connected'
-                      ? 'bg-success-100 text-success-600'
-                      : integration.status === 'pending'
-                        ? 'bg-warning-100 text-warning-600'
-                        : 'bg-neutral-200 text-neutral-600'
-                  }`}
+                  className={`p-3 rounded-lg ${(() => {
+                    if (integration.status === 'connected')
+                      return 'bg-success-100 text-success-600';
+                    if (integration.status === 'pending')
+                      return 'bg-warning-100 text-warning-600';
+                    return 'bg-neutral-200 text-neutral-600';
+                  })()}`}
                 >
                   {integration.icon}
                 </div>
@@ -238,7 +229,20 @@ export const IntegrationSettings: React.FC<IntegrationSettingsProps> = ({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {getStatusBadge(integration.status)}
+                <Badge
+                  variant={(() => {
+                    if (integration.status === 'connected') return 'success';
+                    if (integration.status === 'disconnected') return 'default';
+                    return 'warning';
+                  })()}
+                >
+                  {(() => {
+                    if (integration.status === 'connected') return 'Connected';
+                    if (integration.status === 'disconnected')
+                      return 'Disconnected';
+                    return 'Pending';
+                  })()}
+                </Badge>
                 {!disabled && (
                   <Button
                     variant={

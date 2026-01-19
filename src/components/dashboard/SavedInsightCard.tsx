@@ -92,12 +92,19 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
                 }
               >
                 {insight.chartData.map(
-                  (_entry: Record<string, unknown>, index: number) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={GOLD_COLORS[index % GOLD_COLORS.length]}
-                    />
-                  ),
+                  (entry: Record<string, unknown>, index: number) => {
+                    const nameValue = entry.name;
+                    const key =
+                      typeof nameValue === 'string'
+                        ? `cell-${nameValue}`
+                        : `cell-${index}`;
+                    return (
+                      <Cell
+                        key={key}
+                        fill={GOLD_COLORS[index % GOLD_COLORS.length]}
+                      />
+                    );
+                  },
                 )}
               </Pie>
               <Tooltip
@@ -181,6 +188,7 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
           </div>
 
           <button
+            type="button"
             onClick={() => onRemove(insight.id)}
             className="w-8 h-8 rounded-lg hover:bg-red-500/20 flex items-center justify-center transition-colors flex-shrink-0"
           >
@@ -199,6 +207,7 @@ export const SavedInsightCard: React.FC<SavedInsightCardProps> = ({
         </p>
 
         <button
+          type="button"
           onClick={() => navigate('/insights')}
           className="inline-flex items-center gap-2 text-sm font-medium text-white hover:text-gray-300 transition-colors"
         >

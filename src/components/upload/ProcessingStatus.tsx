@@ -141,6 +141,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            aria-hidden="true"
           >
             <path
               d="M6 9L12 15L18 9"

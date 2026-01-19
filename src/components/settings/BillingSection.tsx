@@ -133,9 +133,9 @@ export const BillingSection: React.FC<BillingSectionProps> = ({
               Plan includes:
             </p>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {currentPlan.features.map((feature, index) => (
+              {currentPlan.features.map((feature) => (
                 <li
-                  key={index}
+                  key={feature}
                   className="flex items-center gap-2 text-sm text-neutral-600"
                 >
                   <CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0" />

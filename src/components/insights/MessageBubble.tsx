@@ -3,11 +3,10 @@ import { CheckCircle, Code, Download, Pin } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import type { VannaResponse } from '../../types';
-import { formatTimestamp } from '../../utils/formatters';
+import { coerceToString, formatTimestamp } from '../../utils/formatters';
 import { ChartRenderer } from './ChartRenderer';
 
 interface MessageBubbleProps {
-  id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
@@ -48,9 +47,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         columns
           .map((col) => {
             const value = row[col];
-            const stringValue = String(value ?? '');
+            const stringValue = coerceToString(value);
             if (stringValue.includes(',') || stringValue.includes('"')) {
-              return `"${stringValue.replace(/"/g, '""')}"`;
+              return `"${stringValue.replaceAll('"', '""')}"`;
             }
             return stringValue;
           })
@@ -162,6 +161,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               ) : (
                 onSave && (
                   <button
+                    type="button"
                     onClick={handleSave}
                     className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
                   >
@@ -172,6 +172,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               )}
 
               <button
+                type="button"
                 onClick={handleExport}
                 className="flex items-center gap-1.5 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
               >
@@ -181,6 +182,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
               {data.sql && (
                 <button
+                  type="button"
                   onClick={() => setShowSql(!showSql)}
                   className={`
                     flex items-center gap-1.5 text-sm transition-colors

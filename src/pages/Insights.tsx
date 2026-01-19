@@ -7,6 +7,7 @@ import { SuggestionChips } from '../components/insights/SuggestionChips';
 import { FirstInsightPrompt } from '../components/onboarding/FirstInsightPrompt';
 import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
 import { vannaService } from '../services/vanna.service';
+import type { ChartType } from '../types';
 import { recommendChartType } from '../utils/chartRecommendation';
 
 export interface Message {
@@ -14,7 +15,7 @@ export interface Message {
   role: 'user' | 'vizier';
   content: string;
   timestamp: Date;
-  chartType?: string;
+  chartType?: ChartType;
   chartData?: Record<string, unknown>[];
   explanation?: string;
   chartReason?: string;
@@ -35,6 +36,7 @@ const Insights: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Scrolling should trigger whenever messages or processing state changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isProcessing]);

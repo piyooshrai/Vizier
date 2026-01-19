@@ -124,6 +124,17 @@ export const ProductTour: React.FC<ProductTourProps> = ({
     return { top: `${top}px`, left: `${left}px` };
   };
 
+  // Calculate tooltip transform based on placement
+  const getTooltipTransform = () => {
+    if (step.placement === 'top' || step.placement === 'bottom') {
+      return 'translateX(-50%)';
+    } else if (step.placement === 'left') {
+      return 'translateX(-100%)';
+    } else {
+      return 'none';
+    }
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -148,12 +159,7 @@ export const ProductTour: React.FC<ProductTourProps> = ({
         className="fixed z-50 animate-slide-up"
         style={{
           ...getTooltipStyle(),
-          transform:
-            step.placement === 'top' || step.placement === 'bottom'
-              ? 'translateX(-50%)'
-              : step.placement === 'left'
-                ? 'translateX(-100%)'
-                : 'none',
+          transform: getTooltipTransform(),
         }}
       >
         <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm border-2 border-gray-200">
@@ -164,6 +170,7 @@ export const ProductTour: React.FC<ProductTourProps> = ({
               </span>
             </div>
             <button
+              type="button"
               onClick={handleSkip}
               className="text-gray-400 hover:text-gray-600"
             >
@@ -176,6 +183,7 @@ export const ProductTour: React.FC<ProductTourProps> = ({
 
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={handlePrevious}
               disabled={currentStep === 0}
               className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -185,6 +193,7 @@ export const ProductTour: React.FC<ProductTourProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={handleNext}
               className="flex items-center gap-1 px-6 py-2 bg-black hover:bg-gray-800 text-white font-semibold rounded-lg transition-colors"
             >

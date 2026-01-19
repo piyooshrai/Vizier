@@ -3,6 +3,7 @@ import { Check, CheckCircle, Code, Copy, Download, Pin } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import type { VannaResponse } from '../../types';
+import { coerceToString } from '../../utils/formatters';
 import { ChartRenderer } from './ChartRenderer';
 
 interface ResultsDisplayProps {
@@ -50,13 +51,8 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
           .map((col) => {
             const value = row[col];
             // Escape quotes and wrap in quotes if contains comma
-            let stringValue = '';
-            if (value !== null && value !== undefined) {
-              stringValue =
-                typeof value === 'object'
-                  ? JSON.stringify(value)
-                  : String(value);
-            }
+            // Escape quotes and wrap in quotes if contains comma
+            const stringValue = coerceToString(value);
             if (stringValue.includes(',') || stringValue.includes('"')) {
               return `"${stringValue.replaceAll('"', '""')}"`;
             }

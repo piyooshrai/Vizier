@@ -37,6 +37,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
         />
       </div>
       <button
+        type="button"
         onClick={onSend}
         disabled={disabled || !value.trim()}
         className="px-6 py-3.5 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2"

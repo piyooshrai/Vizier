@@ -54,7 +54,8 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   };
 
   return (
-    <div
+    <label
+      aria-label="File upload dropzone"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -82,7 +83,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         </div>
 
         <h3 className="text-2xl font-bold text-white mb-3">
-          {isDragging ? 'Drop your files here' : 'Drop your files here'}
+          Drop your files here
         </h3>
 
         <p className="text-gray-400 mb-6">or click to browse your computer</p>
@@ -96,7 +97,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           Your data is encrypted in transit and at rest
         </p>
       </div>
-    </div>
+    </label>
   );
 };
 

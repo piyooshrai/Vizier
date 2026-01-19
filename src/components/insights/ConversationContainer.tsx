@@ -39,6 +39,7 @@ export const ConversationContainer: React.FC<ConversationContainerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Auto-scroll should trigger when messages or loading state changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -62,7 +63,6 @@ export const ConversationContainer: React.FC<ConversationContainerProps> = ({
           {messages.map((message) => (
             <MessageBubble
               key={message.id}
-              id={message.id}
               role={message.role}
               content={message.content}
               timestamp={message.timestamp}

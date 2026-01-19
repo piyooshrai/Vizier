@@ -1,13 +1,6 @@
 // src/utils/chartRecommendation.ts
 
-export type ChartType =
-  | 'bar_chart'
-  | 'horizontal_bar_chart'
-  | 'line_chart'
-  | 'pie_chart'
-  | 'donut_chart'
-  | 'table'
-  | 'big_number';
+import type { ChartType } from '../types';
 
 interface ChartRecommendation {
   type: ChartType;

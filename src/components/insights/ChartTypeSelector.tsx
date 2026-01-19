@@ -2,7 +2,7 @@
 
 import { BarChart3, Hash, PieChart, Table, TrendingUp } from 'lucide-react';
 import type React from 'react';
-import type { ChartType } from '../../utils/chartRecommendation';
+import type { ChartType } from '../../types';
 
 interface ChartTypeSelectorProps {
   currentType: ChartType;
@@ -34,6 +34,7 @@ export const ChartTypeSelector: React.FC<ChartTypeSelectorProps> = ({
         return (
           <button
             key={chart.type}
+            type="button"
             onClick={() => onChange(chart.type)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               currentType === chart.type

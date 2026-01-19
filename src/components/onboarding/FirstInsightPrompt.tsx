@@ -57,6 +57,7 @@ export const FirstInsightPrompt: React.FC<FirstInsightPromptProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={handleDismiss}
             className="text-gray-500 hover:text-white transition-colors"
           >
@@ -70,12 +71,14 @@ export const FirstInsightPrompt: React.FC<FirstInsightPromptProps> = ({
 
         <div className="flex gap-3">
           <button
+            type="button"
             onClick={() => handleAskQuestion(suggestedQuestion)}
             className="flex-1 px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all"
           >
             Ask This Question
           </button>
           <button
+            type="button"
             onClick={handleDismiss}
             className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all"
           >

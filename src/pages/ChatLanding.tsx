@@ -36,8 +36,10 @@ const ChatLanding: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+    if (messages.length || isTyping) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages.length, isTyping]);
 
   const handleGoalSelect = (goal: string) => {
     const goalMessages: Record<string, string> = {
@@ -197,16 +199,21 @@ const ChatLanding: React.FC = () => {
                   />
                 </div>
                 <button
+                  type="button"
                   onClick={() => handleSendMessage()}
                   disabled={!inputValue.trim()}
                   className="px-6 py-3.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                  aria-label="Send message"
                 >
                   <svg
                     className="w-5 h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    role="img"
+                    aria-labelledby="send-icon-title"
                   >
+                    <title id="send-icon-title">Send Icon</title>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -221,6 +228,7 @@ const ChatLanding: React.FC = () => {
               <div className="mt-4 flex items-center justify-center gap-2 text-xs">
                 <span className="text-gray-400">Not ready to commit?</span>
                 <button
+                  type="button"
                   onClick={handleDemo}
                   className="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1 transition-colors"
                 >
@@ -228,7 +236,10 @@ const ChatLanding: React.FC = () => {
                     className="w-3.5 h-3.5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
+                    role="img"
+                    aria-labelledby="demo-icon-title"
                   >
+                    <title id="demo-icon-title">Demo Icon</title>
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                   </svg>
                   Try with sample data

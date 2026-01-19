@@ -10,16 +10,16 @@ interface FileListProps {
 
 export const FileList: React.FC<FileListProps> = ({ files, onRemove }) => {
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
     <div className="space-y-3">
       {files.map((file, index) => (
         <div
-          key={index}
+          key={`${file.name}-${file.size}`}
           className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 flex items-center gap-4 hover:border-gray-500 transition-colors"
         >
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
@@ -36,6 +36,7 @@ export const FileList: React.FC<FileListProps> = ({ files, onRemove }) => {
           </div>
 
           <button
+            type="button"
             onClick={() => onRemove(index)}
             className="w-8 h-8 rounded-full hover:bg-red-500/20 flex items-center justify-center transition-colors flex-shrink-0"
           >

@@ -28,8 +28,9 @@ export const AppLayout: React.FC = () => {
         {isDemoMode && (
           <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 text-white px-6 py-3 text-center text-sm">
             <span className="text-gray-400">Demo Mode</span> - You're exploring
-            sample healthcare data (12,847 patients, 47,293 encounters).
+            sample healthcare data (12,847 patients, 47,293 encounters).{' '}
             <button
+              type="button"
               onClick={() => setShowAuthModal(true)}
               className="ml-2 underline text-white hover:text-gray-200 font-medium"
             >

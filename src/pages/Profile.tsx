@@ -128,7 +128,10 @@ export const Profile: React.FC = () => {
                       Permanently delete your account and all associated data
                     </p>
                   </div>
-                  <button className="text-sm text-red-400 hover:text-red-300 font-medium">
+                  <button
+                    type="button"
+                    className="text-sm text-red-400 hover:text-red-300 font-medium"
+                  >
                     Request deletion
                   </button>
                 </div>

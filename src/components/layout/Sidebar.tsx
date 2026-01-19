@@ -70,6 +70,7 @@ export const Sidebar: React.FC = () => {
               className="w-6 h-6 text-white"
               fill="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
             </svg>
@@ -128,6 +129,7 @@ export const Sidebar: React.FC = () => {
 
         {/* Logout Button */}
         <button
+          type="button"
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
           title={isCollapsed ? 'Logout' : undefined}
@@ -165,6 +167,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Collapse Toggle */}
       <button
+        type="button"
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-24 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all shadow-lg z-10"
       >

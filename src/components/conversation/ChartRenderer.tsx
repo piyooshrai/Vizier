@@ -15,23 +15,7 @@ import {
   YAxis,
 } from 'recharts';
 import type { ChartType } from '../../types';
-import { formatNumber } from '../../utils/formatters';
-
-const coerceToString = (value: unknown) => {
-  if (value === undefined || value === null) {
-    return '';
-  }
-
-  if (typeof value === 'object') {
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return Object.prototype.toString.call(value);
-    }
-  }
-
-  return String(value);
-};
+import { coerceToString, formatNumber } from '../../utils/formatters';
 
 interface ChartRendererProps {
   type: ChartType;

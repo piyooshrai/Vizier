@@ -17,7 +17,7 @@ P004,E004,2024-01-18,M81.0,Osteoporosis,71,F
 P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
+    const url = globalThis.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'vizier-sample-template.csv';
@@ -92,6 +92,7 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
       </div>
 
       <button
+        type="button"
         onClick={handleDownloadTemplate}
         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-all"
       >

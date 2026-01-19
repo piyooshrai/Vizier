@@ -1,6 +1,7 @@
 import { Globe, Lock, Maximize2, MessageSquare, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import type { ChartType } from '../../types';
 import { ChartRenderer } from '../insights/ChartRenderer';
 
 interface Annotation {
@@ -17,7 +18,7 @@ interface InsightCardProps {
     id: string;
     question: string;
     answer: string;
-    chartType: string;
+    chartType: ChartType;
     chartData: Record<string, unknown>[];
     explanation: string;
     timestamp: Date;
@@ -115,6 +116,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
         <div className="flex items-center gap-2 ml-3">
           <button
+            type="button"
             onClick={() => setIsAddingAnnotation(!isAddingAnnotation)}
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
             title="Add note"
@@ -122,6 +124,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
             <MessageSquare className="w-4 h-4 text-gray-400 hover:text-white" />
           </button>
           <button
+            type="button"
             onClick={() => onExpand(insight.id)}
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
             title="View in Ask Vizier"
@@ -129,6 +132,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
             <Maximize2 className="w-4 h-4 text-gray-400 hover:text-white" />
           </button>
           <button
+            type="button"
             onClick={() => onDelete(insight.id)}
             className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
             title="Remove from dashboard"
@@ -172,12 +176,14 @@ export const InsightCard: React.FC<InsightCardProps> = ({
             </div>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => setIsAddingAnnotation(false)}
                 className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleAddAnnotation}
                 className="px-3 py-1.5 bg-white hover:bg-gray-100 text-black text-sm font-medium rounded-lg transition-colors"
               >
@@ -218,6 +224,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
               </div>
               {annotation.userId === currentUser.id && (
                 <button
+                  type="button"
                   onClick={() => handleDeleteAnnotation(annotation.id)}
                   className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/10 rounded transition-all"
                 >
@@ -234,7 +241,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         {insight.chartData && insight.chartType ? (
           <div className="h-full">
             <ChartRenderer
-              type={insight.chartType as any}
+              type={insight.chartType}
               data={insight.chartData}
               height={chartHeight[size]}
             />

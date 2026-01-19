@@ -1,10 +1,11 @@
+import type { ChartType } from '../types';
 import api from './api';
 
 export interface PinnedChart {
   id: string;
   query_text: string;
   sql_query?: string;
-  chart_type: string;
+  chart_type: ChartType;
   chart_data: Record<string, unknown>[];
   title?: string;
   explanation?: string;
@@ -16,7 +17,7 @@ export interface PinnedChart {
 export interface SaveChartRequest {
   query_text: string;
   sql_query?: string;
-  chart_type: string;
+  chart_type: ChartType;
   chart_data: Record<string, unknown>[];
   title?: string;
   explanation?: string;
@@ -106,7 +107,6 @@ export const chartsService = {
         c.id === chartId ? { ...c, size } : c,
       );
       localStorage.setItem('pinned_charts', JSON.stringify(updated));
-      return;
     }
 
     // Production: Update on backend (would need endpoint)

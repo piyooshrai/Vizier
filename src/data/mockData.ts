@@ -45,7 +45,7 @@ export const mockHealthcareData: MockHealthcareData = {
     },
     topConditions: [
       { name: 'Essential Hypertension', count: 2847, percentage: 22.1 },
-      { name: 'Type 2 Diabetes', count: 1923, percentage: 15.0 },
+      { name: 'Type 2 Diabetes', count: 1923, percentage: 15 },
       { name: 'Hyperlipidemia', count: 1456, percentage: 11.3 },
       {
         name: 'Chronic Obstructive Pulmonary Disease',
@@ -295,9 +295,9 @@ export const mockHealthcareData: MockHealthcareData = {
         "Your average length of stay is 4.2 days, which is slightly below the benchmark of 4.5 days. Here's how it varies by condition:",
       data: [
         { condition: 'Pneumonia', avg_los: 5.8, benchmark: 5.5 },
-        { condition: 'Heart Failure', avg_los: 6.2, benchmark: 6.0 },
+        { condition: 'Heart Failure', avg_los: 6.2, benchmark: 6 },
         { condition: 'COPD Exacerbation', avg_los: 4.9, benchmark: 5.2 },
-        { condition: 'Hip Replacement', avg_los: 2.8, benchmark: 3.0 },
+        { condition: 'Hip Replacement', avg_los: 2.8, benchmark: 3 },
         { condition: 'Knee Replacement', avg_los: 2.5, benchmark: 2.8 },
         { condition: 'AMI', avg_los: 4.1, benchmark: 4.5 },
         { condition: 'Stroke', avg_los: 5.5, benchmark: 5.8 },
@@ -314,9 +314,9 @@ export const mockHealthcareData: MockHealthcareData = {
       question: 'Show me gender breakdown',
       answer: "Here's the gender distribution of your patient population:",
       data: [
-        { gender: 'Female', count: 6938, percentage: 54.0 },
-        { gender: 'Male', count: 5782, percentage: 45.0 },
-        { gender: 'Other/Unknown', count: 127, percentage: 1.0 },
+        { gender: 'Female', count: 6938, percentage: 54 },
+        { gender: 'Male', count: 5782, percentage: 45 },
+        { gender: 'Other/Unknown', count: 127, percentage: 1 },
       ],
       chart: 'pie_chart',
       chartTitle: 'Patient Gender Distribution',
@@ -332,7 +332,7 @@ export const mockHealthcareData: MockHealthcareData = {
         "Here's how your patients are distributed across insurance types:",
       data: [
         { insurance: 'Medicare', count: 4523, percentage: 35.2 },
-        { insurance: 'Commercial', count: 3987, percentage: 31.0 },
+        { insurance: 'Commercial', count: 3987, percentage: 31 },
         { insurance: 'Medicaid', count: 2341, percentage: 18.2 },
         { insurance: 'Self-Pay', count: 1234, percentage: 9.6 },
         { insurance: 'Other', count: 762, percentage: 5.9 },
@@ -444,7 +444,7 @@ export const demoSavedInsights: SavedInsight[] = [
     question: 'What is my readmission rate?',
     answer:
       'Your 30-day readmission rate is 12.3%, which is below the national average of 14.5%.',
-    data: mockHealthcareData.qaResponses['readmission'].data,
+    data: mockHealthcareData.qaResponses.readmission.data,
     chartType: 'line_chart',
     chartTitle: '30-Day Readmission Rate Trend',
     savedAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago

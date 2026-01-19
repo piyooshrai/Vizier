@@ -24,7 +24,10 @@ export const NotFound: React.FC = () => {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
+              role="img"
+              aria-labelledby="not-found-icon-title"
             >
+              <title id="not-found-icon-title">Not Found Icon</title>
               <path
                 d="M6 9L12 15L18 9"
                 strokeLinecap="round"

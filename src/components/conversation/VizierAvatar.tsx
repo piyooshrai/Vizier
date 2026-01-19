@@ -59,8 +59,8 @@ export const VizierAvatar: React.FC<VizierAvatarProps> = ({
           fill="none"
           stroke="currentColor"
           strokeWidth="2.5"
+          aria-hidden="true"
         >
-          <title>Vizier Avatar</title>
           <motion.path
             d="M6 9L12 15L18 9"
             strokeLinecap="round"

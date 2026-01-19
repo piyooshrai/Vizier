@@ -35,9 +35,10 @@ export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
   if (variant === 'compact') {
     return (
       <div className="flex flex-wrap gap-2">
-        {displaySuggestions.map((suggestion, index) => (
+        {displaySuggestions.map((suggestion) => (
           <button
-            key={index}
+            key={suggestion}
+            type="button"
             onClick={() => onSuggestionClick(suggestion)}
             className="text-xs px-3 py-1.5 rounded-full bg-gray-800/50 border border-gray-700 text-gray-300 hover:border-white/50 hover:text-white transition-all duration-200"
           >
@@ -57,9 +58,10 @@ export const SuggestionChips: React.FC<SuggestionChipsProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {displaySuggestions.map((suggestion, index) => (
+        {displaySuggestions.map((suggestion) => (
           <button
-            key={index}
+            key={suggestion}
+            type="button"
             onClick={() => onSuggestionClick(suggestion)}
             className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-gray-700 hover:border-white text-gray-300 text-sm rounded-xl transition-all text-left"
           >

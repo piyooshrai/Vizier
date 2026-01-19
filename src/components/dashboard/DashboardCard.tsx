@@ -14,6 +14,9 @@ import { useEffect, useState } from 'react';
 import type { PinnedChart } from '../../services/charts.service';
 import { ChartRenderer } from '../insights/ChartRenderer';
 
+type ChartSize = 'small' | 'medium' | 'large';
+type DensityOption = 'comfortable' | 'compact' | 'dense';
+
 interface Annotation {
   id: string;
   userId: string;
@@ -30,18 +33,21 @@ interface CurrentUser {
 }
 
 interface DashboardCardProps {
-  chart: PinnedChart & { size?: 'small' | 'medium' | 'large' };
+  chart: PinnedChart & { size?: ChartSize };
   onUnpin: (id: string) => void;
-  onResize: (id: string, size: 'small' | 'medium' | 'large') => void;
+  onResize: (id: string, size: ChartSize) => void;
   onExpand: (id: string) => void;
   onRefresh?: (id: string) => void;
   onDrillDown?: (chart: PinnedChart) => void;
   currentUser: CurrentUser;
-  density?: 'comfortable' | 'compact' | 'dense';
+  density?: DensityOption;
 }
 
 // Density-based chart heights
-function getChartHeight(size: string | undefined, density: string): number {
+function getChartHeight(
+  size: ChartSize | undefined,
+  density: DensityOption,
+): number {
   const heights = {
     comfortable: { small: 320, medium: 420, large: 550 },
     compact: { small: 240, medium: 320, large: 420 },
@@ -55,7 +61,7 @@ function getChartHeight(size: string | undefined, density: string): number {
 }
 
 // Density-based padding classes
-function getPaddingClasses(density: string) {
+function getPaddingClasses(density: DensityOption) {
   const padding = {
     comfortable: {
       header: 'p-4',
@@ -80,7 +86,7 @@ function getPaddingClasses(density: string) {
 }
 
 // Density-based text sizes
-function getTextClasses(density: string) {
+function getTextClasses(density: DensityOption) {
   const sizes = {
     comfortable: { title: 'text-base', body: 'text-sm', label: 'text-xs' },
     compact: { title: 'text-sm', body: 'text-xs', label: 'text-xs' },
@@ -90,7 +96,7 @@ function getTextClasses(density: string) {
 }
 
 // Density-based icon sizes
-function getIconSize(density: string): string {
+function getIconSize(density: DensityOption): string {
   const sizes = {
     comfortable: 'w-4 h-4',
     compact: 'w-3.5 h-3.5',
@@ -100,7 +106,7 @@ function getIconSize(density: string): string {
 }
 
 // Density-based button padding
-function getButtonPadding(density: string): string {
+function getButtonPadding(density: DensityOption): string {
   const padding = { comfortable: 'p-2', compact: 'p-1.5', dense: 'p-1' };
   return padding[density as keyof typeof padding] || padding.compact;
 }
@@ -276,7 +282,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   // Delete annotation handler
   const handleDeleteAnnotation = (annotationId: string) => {
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       'Delete this note? This cannot be undone.',
     );
     if (!confirmed) return;
@@ -321,6 +327,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
         <div className="flex items-center gap-0.5 ml-2">
           {/* Add Note Button */}
           <button
+            type="button"
             onClick={() => setIsAddingAnnotation(!isAddingAnnotation)}
             className={`${btnPadding} rounded-lg transition-colors ${
               isAddingAnnotation
@@ -335,6 +342,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           {/* Size menu */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setShowSizeMenu(!showSizeMenu)}
               className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
               title="Resize"
@@ -346,19 +354,29 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
             {showSizeMenu && (
               <>
-                <div
-                  className="fixed inset-0 z-10"
+                <button
+                  type="button"
+                  aria-label="Close resize menu"
+                  className="fixed inset-0 z-10 bg-transparent border-none p-0 m-0"
                   onClick={() => setShowSizeMenu(false)}
+                  onKeyDown={(event) => {
+                    if (
+                      event.key === 'Escape' ||
+                      event.key === 'Enter' ||
+                      event.key === ' '
+                    ) {
+                      setShowSizeMenu(false);
+                      event.preventDefault();
+                    }
+                  }}
                 />
                 <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-20 min-w-[100px] py-0.5">
                   {['small', 'medium', 'large'].map((size) => (
                     <button
                       key={size}
+                      type="button"
                       onClick={() => {
-                        onResize(
-                          chart.id,
-                          size as 'small' | 'medium' | 'large',
-                        );
+                        onResize(chart.id, size as ChartSize);
                         setShowSizeMenu(false);
                       }}
                       className={`w-full px-3 py-1.5 text-left ${text.body} transition-colors ${
@@ -378,6 +396,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
           {/* Refresh */}
           <button
+            type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
             className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
@@ -390,6 +409,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
           {/* Expand */}
           <button
+            type="button"
             onClick={() => onExpand(chart.id)}
             className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
             title="View in Ask Vizier"
@@ -401,6 +421,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
           {/* Unpin */}
           <button
+            type="button"
             onClick={() => onUnpin(chart.id)}
             className={`${btnPadding} hover:bg-red-500/10 rounded-lg transition-colors`}
             title="Remove from dashboard"
@@ -453,12 +474,14 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
             </div>
             <div className="flex gap-1.5">
               <button
+                type="button"
                 onClick={() => setIsAddingAnnotation(false)}
                 className={`px-2 py-1 ${text.label} text-gray-400 hover:text-white transition-colors`}
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleAddAnnotation}
                 disabled={!annotationText.trim()}
                 className={`px-2 py-1 bg-white hover:bg-gray-100 disabled:bg-gray-600 disabled:text-gray-400 text-black ${text.label} font-medium rounded transition-colors`}
@@ -501,10 +524,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                       }}
                       className={`w-full px-2 py-1.5 bg-gray-800 border border-gray-600 rounded-lg text-white ${text.label} resize-none focus:outline-none focus:border-white`}
                       rows={2}
-                      autoFocus
                     />
                     <div className="flex items-center gap-2 mt-1.5">
                       <button
+                        type="button"
                         onClick={handleSaveEdit}
                         disabled={!editText.trim()}
                         className={`px-2.5 py-1 bg-white hover:bg-gray-100 disabled:bg-gray-600 disabled:text-gray-400 text-black ${text.label} font-medium rounded-lg transition-colors`}
@@ -512,6 +535,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                         Save
                       </button>
                       <button
+                        type="button"
                         onClick={handleCancelEdit}
                         className={`px-2 py-1 ${text.label} text-gray-400 hover:text-white transition-colors`}
                       >
@@ -561,6 +585,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                   {annotation.userId === currentUser.id && (
                     <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <button
+                        type="button"
                         onClick={() => handleEditAnnotation(annotation)}
                         className="p-1 hover:bg-gray-700 rounded transition-colors"
                         title="Edit note"
@@ -568,6 +593,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                         <Edit2 className="w-3 h-3 text-gray-400 hover:text-white" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDeleteAnnotation(annotation.id)}
                         className="p-1 hover:bg-red-500/10 rounded transition-colors"
                         title="Delete note"
@@ -584,15 +610,22 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
       )}
 
       {/* Chart - Clickable for drill-down */}
-      <div
-        className={`flex-1 ${padding.chart} min-h-0 bg-white cursor-pointer hover:bg-gray-50 transition-colors`}
+      <button
+        type="button"
         onClick={() => onDrillDown?.(chart)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onDrillDown?.(chart);
+          }
+        }}
+        className={`flex-1 ${padding.chart} min-h-0 bg-white cursor-pointer hover:bg-gray-50 transition-colors`}
         title="Click for detailed drill-down report"
       >
         <div style={{ height: chartHeight }}>
           {chart.chart_data && chart.chart_type ? (
             <ChartRenderer
-              type={chart.chart_type as any}
+              type={chart.chart_type}
               data={chart.chart_data}
               height={chartHeight}
             />
@@ -604,7 +637,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </button>
 
       {/* Explanations - Three Sections */}
       <div

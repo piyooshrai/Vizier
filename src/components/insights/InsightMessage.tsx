@@ -5,7 +5,7 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { Message } from '../../pages/Insights';
 import { chartsService } from '../../services/charts.service';
-import type { ChartType } from '../../utils/chartRecommendation';
+import type { ChartType } from '../../types';
 import { ChartRenderer } from './ChartRenderer';
 import { ChartTypeSelector } from './ChartTypeSelector';
 

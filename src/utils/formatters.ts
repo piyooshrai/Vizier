@@ -99,3 +99,36 @@ export function snakeToTitle(text: string): string {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 }
+
+/**
+ * Safely coerce any value to a string, handling objects and arrays gracefully.
+ * This avoids [object Object] output and linter warnings.
+ */
+export function coerceToString(value: unknown): string {
+  if (value === undefined || value === null) {
+    return '';
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (
+    typeof value === 'number' ||
+    typeof value === 'boolean' ||
+    typeof value === 'bigint' ||
+    typeof value === 'symbol'
+  ) {
+    return String(value);
+  }
+
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return Object.prototype.toString.call(value);
+    }
+  }
+
+  return String(value as string | number | boolean | symbol | bigint);
+}

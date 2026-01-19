@@ -193,6 +193,7 @@ const Upload: React.FC = () => {
             {selectedFiles.length > 0 && (
               <div className="mt-8 flex justify-center">
                 <button
+                  type="button"
                   onClick={handleUpload}
                   className="px-8 py-4 bg-white hover:bg-gray-100 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl text-lg"
                 >
@@ -217,7 +218,10 @@ const Upload: React.FC = () => {
               className="w-10 h-10 text-black animate-pulse"
               fill="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-labelledby="upload-progress-title"
             >
+              <title id="upload-progress-title">Uploading Progress</title>
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
             </svg>
           </div>
@@ -264,7 +268,10 @@ const Upload: React.FC = () => {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            role="img"
+            aria-labelledby="upload-error-title"
           >
+            <title id="upload-error-title">Upload Error</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -280,6 +287,7 @@ const Upload: React.FC = () => {
         <p className="text-gray-400 mb-8">{error}</p>
 
         <button
+          type="button"
           onClick={() => {
             setUploadState('initial');
             setError('');

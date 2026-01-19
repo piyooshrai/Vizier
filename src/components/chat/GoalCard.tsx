@@ -47,8 +47,14 @@ export const GoalCard: React.FC<GoalCardProps> = ({
           className="w-4 h-4 text-white"
           fill="currentColor"
           viewBox="0 0 24 24"
+          role="img"
+          aria-labelledby={`goal-icon-title-${title.replaceAll(' ', '-').toLowerCase()}`}
         >
-          <title>{title}</title>
+          <title
+            id={`goal-icon-title-${title.replaceAll(' ', '-').toLowerCase()}`}
+          >
+            {title}
+          </title>
           {icons[icon]}
         </svg>
       </div>

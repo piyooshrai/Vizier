@@ -13,8 +13,9 @@ export const UpgradePrompt: React.FC = () => {
     if (!isDemoMode) return;
 
     // Track interactions
-    const interactions = parseInt(
+    const interactions = Number.parseInt(
       sessionStorage.getItem('demo_interactions') || '0',
+      10,
     );
 
     // Show after 3 interactions (questions asked, insights saved, etc.)
@@ -34,6 +35,7 @@ export const UpgradePrompt: React.FC = () => {
     <div className="fixed bottom-6 right-6 z-40 max-w-md animate-slide-up">
       <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-white/20 rounded-2xl p-6 shadow-2xl">
         <button
+          type="button"
           onClick={handleDismiss}
           className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
         >

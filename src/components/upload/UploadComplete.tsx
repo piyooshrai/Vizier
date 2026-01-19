@@ -34,6 +34,7 @@ export const UploadComplete: React.FC = () => {
         </p>
 
         <button
+          type="button"
           onClick={() => navigate('/insights')}
           className="inline-flex items-center gap-3 px-8 py-4 bg-white hover:bg-gray-100 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-2xl text-lg"
         >
@@ -51,9 +52,9 @@ export const UploadComplete: React.FC = () => {
               'Show me readmission rates by condition',
               'Which patients have the highest costs?',
               'What is my average length of stay?',
-            ].map((question, i) => (
+            ].map((question) => (
               <div
-                key={i}
+                key={`question-${question.replaceAll(/\s+/g, '-').toLowerCase()}`}
                 className="flex items-start gap-3 text-gray-700 hover:text-gray-900 transition-colors"
               >
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0" />

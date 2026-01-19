@@ -127,7 +127,10 @@ export const DataManagement: React.FC<DataManagementProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
+            <label
+              htmlFor="delete-confirm-input"
+              className="block text-sm font-medium text-neutral-700 mb-2"
+            >
               Type{' '}
               <span className="font-mono bg-neutral-100 px-1 rounded">
                 DELETE
@@ -135,6 +138,7 @@ export const DataManagement: React.FC<DataManagementProps> = ({
               to confirm
             </label>
             <input
+              id="delete-confirm-input"
               type="text"
               value={deleteConfirmText}
               onChange={(e) => setDeleteConfirmText(e.target.value)}

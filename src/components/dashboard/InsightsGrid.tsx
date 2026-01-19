@@ -1,12 +1,13 @@
 import type React from 'react';
 import { useState } from 'react';
+import type { ChartType } from '../../types';
 import { InsightCard } from './InsightCard';
 
 interface Insight {
   id: string;
   question: string;
   answer: string;
-  chartType: string;
+  chartType: ChartType;
   chartData: Record<string, unknown>[];
   explanation: string;
   timestamp: Date;
@@ -34,9 +35,8 @@ export const InsightsGrid: React.FC<InsightsGridProps> = ({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            aria-labelledby="svg-title"
+            aria-hidden="true"
           >
-            <title id="svg-title">No insights illustration</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

@@ -79,8 +79,10 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onMenuToggle }) => {
 
         {/* More menu button */}
         <button
+          type="button"
           onClick={onMenuToggle}
           className="flex flex-col items-center justify-center flex-1 h-full text-neutral-400 hover:text-neutral-600"
+          aria-label="Toggle Menu"
         >
           <div className="p-1.5">
             <Menu className="w-5 h-5" />
