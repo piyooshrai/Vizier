@@ -50,9 +50,9 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
           .map((col) => {
             const value = row[col];
             // Escape quotes and wrap in quotes if contains comma
-            const stringValue = String(value ?? '');
+            const stringValue = value != null ? String(value) : '';
             if (stringValue.includes(',') || stringValue.includes('"')) {
-              return `"${stringValue.replace(/"/g, '""')}"`;
+              return `"${stringValue.replaceAll('"', '""')}"`;
             }
             return stringValue;
           })
@@ -87,6 +87,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
       <div className="flex items-center gap-2">
         {/* Show SQL toggle */}
         <button
+          type="button"
           onClick={() => setShowSql(!showSql)}
           className={`
             flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
@@ -105,6 +106,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         {/* Export CSV */}
         {data.results && data.results.length > 0 && (
           <button
+            type="button"
             onClick={handleExportCsv}
             className="
               flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
@@ -127,6 +129,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             </span>
           ) : (
             <button
+              type="button"
               onClick={handleSave}
               className="
                 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
@@ -152,6 +155,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
           </pre>
 
           <button
+            type="button"
             onClick={handleCopySql}
             className="
               absolute top-2 right-2 p-2 rounded-lg

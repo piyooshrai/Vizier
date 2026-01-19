@@ -54,7 +54,10 @@ export const Settings: React.FC = () => {
         </h3>
         <div className="space-y-4">
           <div>
-            <label htmlFor="org-name" className="block text-sm font-medium text-gray-400 mb-1">
+            <label
+              htmlFor="org-name"
+              className="block text-sm font-medium text-gray-400 mb-1"
+            >
               Organization Name
             </label>
             <input
@@ -67,7 +70,10 @@ export const Settings: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="org-type" className="block text-sm font-medium text-gray-400 mb-1">
+            <label
+              htmlFor="org-type"
+              className="block text-sm font-medium text-gray-400 mb-1"
+            >
               Organization Type
             </label>
             <select
@@ -136,7 +142,10 @@ export const Settings: React.FC = () => {
 
       {!isDemoMode && (
         <div className="flex justify-end">
-          <button type="button" className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg">
+          <button
+            type="button"
+            className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg"
+          >
             Save Changes
           </button>
         </div>
@@ -184,7 +193,10 @@ export const Settings: React.FC = () => {
                 <p className="font-medium text-white">Professional Plan</p>
                 <p className="text-sm text-gray-500">$199/month</p>
               </div>
-              <button type="button" className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
+              <button
+                type="button"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all"
+              >
                 Change Plan
               </button>
             </div>
@@ -193,7 +205,10 @@ export const Settings: React.FC = () => {
                 <p className="font-medium text-white">Payment Method</p>
                 <p className="text-sm text-gray-500">**** **** **** 4242</p>
               </div>
-              <button type="button" className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
+              <button
+                type="button"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all"
+              >
                 Update
               </button>
             </div>
@@ -453,9 +468,7 @@ export const Settings: React.FC = () => {
                   >
                     {section.icon}
                   </div>
-                  <p className="font-medium text-white">
-                    {section.label}
-                  </p>
+                  <p className="font-medium text-white">{section.label}</p>
                   <p className="text-xs text-gray-500 mt-1">
                     {section.description}
                   </p>

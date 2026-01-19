@@ -1,5 +1,3 @@
-// src/pages/Dashboard.tsx
-
 import {
   BarChart3,
   Grid3X3,
@@ -24,11 +22,43 @@ import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
 import { useAuth } from '../contexts/AuthContext';
 import { chartsService, type PinnedChart } from '../services/charts.service';
 
+// --- Types ---
+
 type ChartSize = 'small' | 'medium' | 'large';
+type DensityMode = 'comfortable' | 'compact' | 'dense';
 
 interface ChartWithSize extends PinnedChart {
   size: ChartSize;
 }
+
+// --- Components ---
+
+// Empty state when no charts are pinned
+const EmptyPinnedState = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="text-center py-16 bg-gray-800/30 rounded-2xl border border-gray-700">
+      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
+        <BarChart3 className="w-10 h-10 text-gray-600" />
+      </div>
+      <h3 className="text-xl font-bold text-white mb-3">
+        Your Dashboard is Empty
+      </h3>
+      <p className="text-gray-400 mb-6 max-w-md mx-auto">
+        Start by asking Vizier questions about your data. Pin your favorite
+        insights to build your personalized dashboard.
+      </p>
+      <button
+        type="button"
+        onClick={() => navigate('/insights')}
+        className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2 shadow-lg"
+      >
+        <MessageSquare className="w-5 h-5" />
+        Ask Vizier
+      </button>
+    </div>
+  );
+};
 
 // Sub-component for Pinned Charts Section
 const PinnedChartsSection = ({
@@ -53,13 +83,11 @@ const PinnedChartsSection = ({
   onExpand: (id: string) => void;
   onRefresh: (id: string) => void;
   onDrillDown: (chart: PinnedChart) => void;
-  user: any; // Using any here to simplify prop drilling for now, or use AuthUser type if available
+  user: { id?: string | number; first_name?: string } | null;
   getColSpan: (size: string) => string;
   getGridPadding: () => string;
   getGridGap: () => string;
 }) => {
-  const navigate = useNavigate();
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -108,6 +136,8 @@ const PinnedChartsSection = ({
   );
 };
 
+// --- Main Component ---
+
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isDemoMode } = useAuth();
@@ -116,13 +146,18 @@ export const Dashboard: React.FC = () => {
   const [showTour, setShowTour] = useState(false);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [density, setDensity] = useState<DensityMode>('compact');
-  // ... state ...
   const [drillDownData, setDrillDownData] = useState<ReturnType<
     typeof generateDrillDownData
   > | null>(null);
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
 
-  // ... effects ...
+  // Load density preference from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('dashboard_density');
+    if (saved && ['comfortable', 'compact', 'dense'].includes(saved)) {
+      setDensity(saved as DensityMode);
+    }
+  }, []);
 
   // Save density preference
   const handleDensityChange = (newDensity: DensityMode) => {
@@ -157,13 +192,6 @@ export const Dashboard: React.FC = () => {
       console.error('Failed to load charts:', error);
     } finally {
       setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('dashboard_density');
-    if (saved && ['comfortable', 'compact', 'dense'].includes(saved)) {
-      setDensity(saved as DensityMode);
     }
   }, []);
 
@@ -251,6 +279,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="h-full overflow-y-auto bg-black">
+      {/* Header */}
       <div className="px-6 py-5 border-b border-gray-800">
         <div className="flex items-center justify-between">
           <div>
@@ -264,6 +293,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Density toggle - only show when charts exist */}
             {pinnedCharts.length > 0 && (
               <div className="flex items-center bg-gray-800 rounded-lg p-0.5">
                 <button
@@ -305,6 +335,7 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
 
+            {/* Layout toggle */}
             {pinnedCharts.length > 0 && (
               <div className="flex items-center bg-gray-800 rounded-lg p-0.5">
                 <button
@@ -334,6 +365,7 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
 
+            {/* Refresh button */}
             {pinnedCharts.length > 0 && (
               <button
                 type="button"
@@ -348,6 +380,7 @@ export const Dashboard: React.FC = () => {
               </button>
             )}
 
+            {/* Add Chart / Ask Vizier button */}
             <button
               type="button"
               data-tour="ask-vizier"
@@ -436,48 +469,16 @@ function generateDrillDownData(chart: PinnedChart) {
 
   // Synthetic patient data
   const FIRST_NAMES = [
-    'John',
-    'Mary',
-    'Robert',
-    'Patricia',
-    'Michael',
-    'Jennifer',
-    'William',
-    'Linda',
-    'David',
-    'Elizabeth',
-    'Richard',
-    'Barbara',
-    'Joseph',
-    'Susan',
-    'Thomas',
-    'Jessica',
-    'Charles',
-    'Sarah',
-    'Christopher',
-    'Karen',
+    'John', 'Mary', 'Robert', 'Patricia', 'Michael', 'Jennifer',
+    'William', 'Linda', 'David', 'Elizabeth', 'Richard', 'Barbara',
+    'Joseph', 'Susan', 'Thomas', 'Jessica', 'Charles', 'Sarah',
+    'Christopher', 'Karen',
   ];
   const LAST_NAMES = [
-    'Smith',
-    'Johnson',
-    'Williams',
-    'Brown',
-    'Jones',
-    'Garcia',
-    'Miller',
-    'Davis',
-    'Rodriguez',
-    'Martinez',
-    'Hernandez',
-    'Lopez',
-    'Gonzalez',
-    'Wilson',
-    'Anderson',
-    'Thomas',
-    'Taylor',
-    'Moore',
-    'Jackson',
-    'Martin',
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia',
+    'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez',
+    'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore',
+    'Jackson', 'Martin',
   ];
 
   // Helper for risk score

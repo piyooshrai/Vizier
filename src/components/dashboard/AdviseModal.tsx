@@ -96,6 +96,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={handleClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
             disabled={isSubmitting}
@@ -127,13 +128,14 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
 
               {/* Category Selection */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <p className="block text-sm font-medium text-gray-400 mb-2">
                   Category
-                </label>
+                </p>
                 <div className="grid grid-cols-2 gap-3">
                   {categoryOptions.map((option) => (
                     <button
                       key={option.value}
+                      type="button"
                       onClick={() => setCategory(option.value)}
                       className={`p-3 rounded-lg border text-left transition-all ${
                         category === option.value
@@ -160,10 +162,14 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
 
               {/* Message Input */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label
+                  htmlFor="suggestion"
+                  className="block text-sm font-medium text-gray-400 mb-2"
+                >
                   Your Suggestion
                 </label>
                 <textarea
+                  id="suggestion"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="What would you like to see in Vizier? Be as specific as possible..."
@@ -177,6 +183,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
 
               {/* Submit Button */}
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={!message.trim() || isSubmitting}
                 className="w-full px-6 py-3 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"

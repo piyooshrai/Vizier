@@ -18,6 +18,7 @@ export const QuickActions: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Upload Data */}
           <button
+            type="button"
             onClick={() => navigate('/upload')}
             className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700 hover:border-white transition-all text-center group"
           >
@@ -30,6 +31,7 @@ export const QuickActions: React.FC = () => {
 
           {/* Ask Vizier */}
           <button
+            type="button"
             onClick={() => navigate('/insights')}
             className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700 hover:border-white transition-all text-center group"
           >
@@ -48,6 +50,7 @@ export const QuickActions: React.FC = () => {
 
           {/* Alert Me When */}
           <button
+            type="button"
             onClick={() => setShowAlertModal(true)}
             className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700 hover:border-white transition-all text-center group"
           >
@@ -60,6 +63,7 @@ export const QuickActions: React.FC = () => {
 
           {/* Advise! */}
           <button
+            type="button"
             onClick={() => setShowAdviseModal(true)}
             className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700 hover:border-white transition-all text-center group"
           >
