@@ -36,13 +36,15 @@ export function formatPercent(value: number | string, decimals = 1): string {
 /**
  * Format a date for display
  */
+const DEFAULT_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
+
 export function formatDate(
   date: Date | string,
-  options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  },
+  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_OPTIONS,
 ): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   return d.toLocaleDateString('en-US', options);

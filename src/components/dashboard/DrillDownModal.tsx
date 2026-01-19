@@ -95,6 +95,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
             <p className="text-gray-400 text-sm">{data.subtitle}</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0 ml-4"
           >
@@ -283,6 +284,7 @@ export const DrillDownModal: React.FC<DrillDownModalProps> = ({
               High-Risk Patients
             </h3>
             <button
+              type="button"
               onClick={() => setShowPatientList(!showPatientList)}
               className="px-3 py-1.5 bg-white hover:bg-gray-100 text-black font-semibold rounded-lg transition-colors text-xs"
             >

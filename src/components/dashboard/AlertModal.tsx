@@ -127,7 +127,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
 
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
-                <label htmlFor="metric" className="block text-xs text-gray-400 mb-1">
+                <label
+                  htmlFor="metric"
+                  className="block text-xs text-gray-400 mb-1"
+                >
                   Metric
                 </label>
                 <select
@@ -147,7 +150,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div>
-                <label htmlFor="condition" className="block text-xs text-gray-400 mb-1">
+                <label
+                  htmlFor="condition"
+                  className="block text-xs text-gray-400 mb-1"
+                >
                   Condition
                 </label>
                 <select
@@ -167,7 +173,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div>
-                <label htmlFor="value" className="block text-xs text-gray-400 mb-1">
+                <label
+                  htmlFor="value"
+                  className="block text-xs text-gray-400 mb-1"
+                >
                   Value{' '}
                   {getMetricUnit(newAlert.metric) &&
                     `(${getMetricUnit(newAlert.metric)})`}
@@ -194,7 +203,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                     setNewAlert({ ...newAlert, email: e.target.checked })
                   }
                   className="rounded border-gray-600 bg-gray-700"
-                />
+                />{' '}
                 Email notification
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
@@ -205,7 +214,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                     setNewAlert({ ...newAlert, sms: e.target.checked })
                   }
                   className="rounded border-gray-600 bg-gray-700"
-                />
+                />{' '}
                 SMS notification
               </label>
             </div>
