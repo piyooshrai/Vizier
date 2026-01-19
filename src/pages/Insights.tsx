@@ -85,6 +85,7 @@ const Insights: React.FC = () => {
       };
       setMessages((prev) => [...prev, vizierMessage]);
     } catch (error) {
+      console.error('Error processing question:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'vizier',
@@ -106,7 +107,7 @@ const Insights: React.FC = () => {
     handleSendMessage(question);
 
     // Track interaction for upgrade prompt
-    const interactions = parseInt(sessionStorage.getItem('demo_interactions') || '0');
+    const interactions = Number.parseInt(sessionStorage.getItem('demo_interactions') || '0', 10);
     sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
   };
 
@@ -135,7 +136,7 @@ const Insights: React.FC = () => {
     localStorage.setItem('saved_insights', JSON.stringify(savedInsights));
 
     // Track interaction for upgrade prompt
-    const interactions = parseInt(sessionStorage.getItem('demo_interactions') || '0');
+    const interactions = Number.parseInt(sessionStorage.getItem('demo_interactions') || '0', 10);
     sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
 
     alert('Insight saved to dashboard!');
@@ -148,12 +149,12 @@ const Insights: React.FC = () => {
     // Convert to CSV
     const csv = convertToCSV(message.chartData);
     const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
+    const url = globalThis.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `vizier-export-${Date.now()}.csv`;
     a.click();
-    window.URL.revokeObjectURL(url);
+    globalThis.URL.revokeObjectURL(url);
   };
 
   // Convert data array to CSV string
@@ -166,7 +167,7 @@ const Insights: React.FC = () => {
         const value = row[header];
         // Escape commas and quotes in values
         if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-          return `"${value.replace(/"/g, '""')}"`;
+          return `"${value.replaceAll('"', '""')}"`;
         }
         return value;
       }).join(',')

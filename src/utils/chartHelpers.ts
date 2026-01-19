@@ -58,12 +58,12 @@ export function suggestChartType(data: Record<string, unknown>[]): ChartType {
 
   const keys = Object.keys(data[0]);
   const numericKeys = keys.filter((key) =>
-    data.every((row) => typeof row[key] === 'number' || !isNaN(Number(row[key])))
+    data.every((row) => typeof row[key] === 'number' || !Number.isNaN(Number(row[key])))
   );
   const dateKeys = keys.filter((key) =>
     data.every((row) => {
       const val = row[key];
-      return typeof val === 'string' && !isNaN(Date.parse(val as string));
+      return typeof val === 'string' && !Number.isNaN(Date.parse(val));
     })
   );
 
@@ -106,7 +106,7 @@ export function formatChartData(
       return data.map((item, index) => {
         const keys = Object.keys(item);
         const numericKey = keys.find(
-          (k) => typeof item[k] === 'number' || !isNaN(Number(item[k]))
+          (k) => typeof item[k] === 'number' || !Number.isNaN(Number(item[k]))
         );
         const labelKey = keys.find((k) => k !== numericKey);
 
@@ -121,7 +121,7 @@ export function formatChartData(
       // Return just the first numeric value
       const firstItem = data[0];
       const numKey = Object.keys(firstItem).find(
-        (k) => typeof firstItem[k] === 'number' || !isNaN(Number(firstItem[k]))
+        (k) => typeof firstItem[k] === 'number' || !Number.isNaN(Number(firstItem[k]))
       );
       return [{ value: numKey ? Number(firstItem[numKey]) : 0 }];
     }
@@ -139,7 +139,7 @@ export function getAxisConfig(
 
   const keys = Object.keys(data[0]);
   const numericKey = keys.find((k) =>
-    data.every((row) => typeof row[k] === 'number' || !isNaN(Number(row[k])))
+    data.every((row) => typeof row[k] === 'number' || !Number.isNaN(Number(row[k])))
   );
   const labelKey = keys.find((k) => k !== numericKey);
 
@@ -242,7 +242,7 @@ export function exportDataAsCSV(
           if (typeof value === 'string' && value.includes(',')) {
             return `"${value}"`;
           }
-          return String(value ?? '');
+          return typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? '');
         })
         .join(',')
     ),

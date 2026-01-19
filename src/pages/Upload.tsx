@@ -192,7 +192,7 @@ const Upload: React.FC = () => {
                   className="px-8 py-4 bg-white hover:bg-gray-100 text-black font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl text-lg"
                 >
                   Continue with {selectedFiles.length} file
-                  {selectedFiles.length !== 1 ? 's' : ''}
+                  {selectedFiles.length === 1 ? '' : 's'}
                 </button>
               </div>
             )}

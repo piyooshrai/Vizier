@@ -30,13 +30,13 @@ export function recommendChartType(
   const rowCount = data.length;
 
   // Analyze column types
-  const hasDateColumn = columns.some((col) =>
-    col.match(/date|month|year|time|period|day|week/i)
-  );
+  const datePattern = /date|month|year|time|period|day|week/i;
+  const hasDateColumn = columns.some((col) => datePattern.exec(col) !== null);
 
+  const percentPattern = /percent|rate|ratio|proportion/i;
   const hasPercentage = columns.some(
     (col) =>
-      col.match(/percent|rate|ratio|proportion/i) ||
+      percentPattern.exec(col) !== null ||
       firstRow[col]?.toString().includes('%')
   );
 
@@ -65,9 +65,10 @@ export function recommendChartType(
   }
 
   // 3. Distribution/proportions
+  const distributionPattern = /distribution|breakdown|composition|percentage|proportion/i;
   if (
     hasPercentage ||
-    question.match(/distribution|breakdown|composition|percentage|proportion/i)
+    distributionPattern.exec(question) !== null
   ) {
     if (rowCount <= 6) {
       return {
@@ -85,7 +86,8 @@ export function recommendChartType(
   }
 
   // 4. Rankings and top/bottom lists
-  if (question.match(/top|bottom|highest|lowest|best|worst/i)) {
+  const rankingPattern = /top|bottom|highest|lowest|best|worst/i;
+  if (rankingPattern.exec(question) !== null) {
     if (rowCount <= 15) {
       return {
         type: 'horizontal_bar_chart',
