@@ -26,6 +26,7 @@ export const DemoCard: React.FC = () => {
 
   return (
     <button
+      type="button"
       onClick={handleDemoClick}
       disabled={isLoading}
       className="

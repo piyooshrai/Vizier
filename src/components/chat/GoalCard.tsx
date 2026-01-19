@@ -36,6 +36,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
   return (
     <button
+      type="button"
       onClick={onClick}
       className="group p-4 text-left bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-400 rounded-xl transition-all shadow-sm hover:shadow-md"
     >
@@ -47,6 +48,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
           fill="currentColor"
           viewBox="0 0 24 24"
         >
+          <title>{title}</title>
           {icons[icon]}
         </svg>
       </div>

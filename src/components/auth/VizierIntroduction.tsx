@@ -18,6 +18,7 @@ export const VizierIntroduction: React.FC = () => {
             fill="currentColor"
             viewBox="0 0 24 24"
           >
+            <title>Vizier Logo</title>
             <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
           </svg>
         </div>
@@ -34,7 +35,7 @@ export const VizierIntroduction: React.FC = () => {
           </div>
 
           <h1 className="text-4xl xl:text-5xl font-bold leading-tight">
-            Your data has answers.
+            Your data has answers.{' '}
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
               Just ask.
             </span>
@@ -72,8 +73,8 @@ export const VizierIntroduction: React.FC = () => {
                     { name: 'Essential Hypertension', code: 'I10', pct: 23 },
                     { name: 'Type 2 Diabetes', code: 'E11.9', pct: 18 },
                     { name: 'Hyperlipidemia', code: 'E78.5', pct: 14 },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                  ].map((item) => (
+                    <div key={item.code} className="flex items-center gap-3">
                       <div className="flex-1">
                         <div className="flex items-center justify-between text-xs mb-1">
                           <span className="text-slate-300">{item.name}</span>
@@ -103,9 +104,9 @@ export const VizierIntroduction: React.FC = () => {
             { icon: MessageSquare, label: 'Natural language queries' },
             { icon: TrendingUp, label: 'Real-time insights' },
             { icon: Shield, label: 'HIPAA compliant' },
-          ].map(({ icon: Icon, label }, i) => (
+          ].map(({ icon: Icon, label }) => (
             <div
-              key={i}
+              key={label}
               className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10"
             >
               <Icon className="w-4 h-4 text-blue-400" />
@@ -127,7 +128,7 @@ export const VizierIntroduction: React.FC = () => {
                 'bg-amber-500',
               ].map((color, i) => (
                 <div
-                  key={i}
+                  key={color}
                   className={`w-8 h-8 rounded-full ${color} border-2 border-slate-900 flex items-center justify-center text-xs font-medium`}
                 >
                   {['JD', 'SM', 'AR', 'KL'][i]}

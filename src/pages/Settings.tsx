@@ -54,10 +54,11 @@ export const Settings: React.FC = () => {
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label htmlFor="org-name" className="block text-sm font-medium text-gray-400 mb-1">
               Organization Name
             </label>
             <input
+              id="org-name"
               type="text"
               defaultValue={isDemoMode ? 'Demo Healthcare System' : ''}
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
@@ -66,10 +67,11 @@ export const Settings: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label htmlFor="org-type" className="block text-sm font-medium text-gray-400 mb-1">
               Organization Type
             </label>
             <select
+              id="org-type"
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
               defaultValue={isDemoMode ? 'hospital_system' : ''}
               disabled={isDemoMode}
@@ -103,6 +105,7 @@ export const Settings: React.FC = () => {
                 className="sr-only peer"
                 defaultChecked
                 disabled={isDemoMode}
+                aria-label="Toggle Email Notifications"
               />
               <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-white/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
             </label>
@@ -133,7 +136,7 @@ export const Settings: React.FC = () => {
 
       {!isDemoMode && (
         <div className="flex justify-end">
-          <button className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg">
+          <button type="button" className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg">
             Save Changes
           </button>
         </div>
@@ -167,6 +170,7 @@ export const Settings: React.FC = () => {
               functionality.
             </p>
             <button
+              type="button"
               onClick={() => setShowAuthModal(true)}
               className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg"
             >
@@ -180,7 +184,7 @@ export const Settings: React.FC = () => {
                 <p className="font-medium text-white">Professional Plan</p>
                 <p className="text-sm text-gray-500">$199/month</p>
               </div>
-              <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
+              <button type="button" className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
                 Change Plan
               </button>
             </div>
@@ -189,7 +193,7 @@ export const Settings: React.FC = () => {
                 <p className="font-medium text-white">Payment Method</p>
                 <p className="text-sm text-gray-500">**** **** **** 4242</p>
               </div>
-              <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
+              <button type="button" className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all">
                 Update
               </button>
             </div>
@@ -266,6 +270,7 @@ export const Settings: React.FC = () => {
               </p>
             </div>
             <button
+              type="button"
               className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isDemoMode}
             >
@@ -357,6 +362,7 @@ export const Settings: React.FC = () => {
               </div>
               {integration.status === 'available' ? (
                 <button
+                  type="button"
                   className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isDemoMode}
                 >
@@ -380,6 +386,7 @@ export const Settings: React.FC = () => {
             learn more.
           </p>
           <button
+            type="button"
             className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isDemoMode}
           >
@@ -426,6 +433,7 @@ export const Settings: React.FC = () => {
             <div className="grid md:grid-cols-4 gap-4">
               {settingsSections.map((section) => (
                 <button
+                  type="button"
                   key={section.id}
                   onClick={() => setActiveTab(section.id)}
                   className={`
@@ -445,9 +453,7 @@ export const Settings: React.FC = () => {
                   >
                     {section.icon}
                   </div>
-                  <p
-                    className={`font-medium ${activeTab === section.id ? 'text-white' : 'text-white'}`}
-                  >
+                  <p className="font-medium text-white">
                     {section.label}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">

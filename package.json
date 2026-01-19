@@ -10,8 +10,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "lint": "biome lint src",
-    "lint:fix": "biome check --write .",
+    "lint": "biome check src",
+    "lint:fix": "biome check src --write",
     "format": "biome format src --write",
     "check": "biome check src"
   },
