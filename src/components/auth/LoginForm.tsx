@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import type React from 'react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
-import { useAuth } from '../../contexts/AuthContext';
+import { useLoginMutation } from '../../hooks/useAuthMutations';
+import { getErrorMessage } from '../../services';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -15,10 +15,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm: React.FC = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const loginMutation = useLoginMutation();
 
   const {
     register,
@@ -28,19 +25,11 @@ export const LoginForm: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      setIsSubmitting(true);
-      setError('');
-      await login(data.email, data.password);
-      navigate('/dashboard');
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '';
-      setError(errorMessage || 'Invalid email or password');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data);
   };
+
+  const error = loginMutation.error ? getErrorMessage(loginMutation.error) : '';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -119,7 +108,7 @@ export const LoginForm: React.FC = () => {
       {/* Submit button */}
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={loginMutation.isPending}
         className="
           w-full py-2.5 px-4
           bg-blue-600 hover:bg-blue-700
@@ -129,8 +118,10 @@ export const LoginForm: React.FC = () => {
           flex items-center justify-center gap-2
         "
       >
-        {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-        {isSubmitting ? 'Signing in...' : 'Sign in'}
+        {loginMutation.isPending && (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        )}
+        {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
       </button>
     </form>
   );

@@ -4,6 +4,9 @@ export interface SignupData {
   last_name: string;
   password: string;
   role: string;
+  organization_name: string;
+  invite_token?: string;
+  is_active?: boolean;
 }
 
 export interface LoginData {

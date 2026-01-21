@@ -16,6 +16,8 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const ChatLanding = lazy(() => import('./pages/ChatLanding'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -89,9 +91,23 @@ const AppRoutes: React.FC = () => {
         }
       />
 
-      {/* Redirect old auth routes to landing */}
-      <Route path="/login" element={<Navigate to="/" replace />} />
-      <Route path="/signup" element={<Navigate to="/" replace />} />
+      {/* Auth routes */}
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <PublicRoute>
+            <Signup />
+          </PublicRoute>
+        }
+      />
 
       {/* Password recovery routes */}
       <Route

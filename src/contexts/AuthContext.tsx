@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { authService, getErrorMessage } from '../services';
@@ -19,6 +20,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isDemoMode: boolean;
   refreshUser: () => Promise<void>;
+  setSession: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -108,22 +110,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const setSession = useCallback((newUser: User) => {
+    setUser(newUser);
+    localStorage.setItem('user', JSON.stringify(newUser));
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      user,
+      loading,
+      login,
+      signup,
+      logout,
+      loginWithDemo,
+      isAuthenticated: !!user,
+      isDemoMode: localStorage.getItem('is_demo') === 'true',
+      refreshUser,
+      setSession,
+    }),
+    [
+      user,
+      loading,
+      login,
+      signup,
+      logout,
+      loginWithDemo,
+      refreshUser,
+      setSession,
+    ],
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        signup,
-        logout,
-        loginWithDemo,
-        isAuthenticated: !!user,
-        isDemoMode: localStorage.getItem('is_demo') === 'true',
-        refreshUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 

@@ -1,21 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import type React from 'react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { useAuth } from '../../contexts/AuthContext';
+import { useSignupMutation } from '../../hooks/useAuthMutations';
+import { getErrorMessage } from '../../services';
 
 const signupSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   first_name: z.string().min(1, 'First name is required').max(50),
   last_name: z.string().min(1, 'Last name is required').max(50),
+  organization_name: z
+    .string()
+    .min(1, 'Organization name is required')
+    .max(100),
   password: z
     .string()
     .min(8, 'At least 8 characters')
     .max(128)
-    .regex(/[0-9]/, 'Include a number')
+    .regex(/\d/, 'Include a number')
     .regex(/[^A-Za-z0-9\s]/, 'Include a special character'),
   role: z.string().min(1, 'Please select your role'),
 });
@@ -24,18 +27,21 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 const roleOptions = [
   { value: '', label: 'Select your role' },
-  { value: 'hospital_administrator', label: 'Hospital Administrator' },
-  { value: 'clinical_director', label: 'Clinical Director' },
-  { value: 'quality_manager', label: 'Quality Manager' },
-  { value: 'data_analyst', label: 'Data Analyst' },
-  { value: 'organization_administrator', label: 'Organization Admin' },
+  { value: 'Platform Administrator', label: 'Platform Administrator' },
+  { value: 'Organization Owner', label: 'Organization Owner' },
+  { value: 'Organization Administrator', label: 'Organization Administrator' },
+  { value: 'Executive', label: 'Executive' },
+  { value: 'Department Director', label: 'Department Director' },
+  { value: 'Clinician/Provider', label: 'Clinician/Provider' },
+  { value: 'Clinical Manager', label: 'Clinical Manager' },
+  { value: 'Quality/Compliance Officer', label: 'Quality/Compliance Officer' },
+  { value: 'Data Analyst', label: 'Data Analyst' },
+  { value: 'Revenue Cycle Director', label: 'Revenue Cycle Director' },
+  { value: 'Billing Manager', label: 'Billing Manager' },
 ];
 
 export const SignupForm: React.FC = () => {
-  const navigate = useNavigate();
-  const { signup } = useAuth();
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const signupMutation = useSignupMutation();
 
   const {
     register,
@@ -46,21 +52,13 @@ export const SignupForm: React.FC = () => {
     defaultValues: { role: '' },
   });
 
-  const onSubmit = async (data: SignupFormData) => {
-    try {
-      setIsSubmitting(true);
-      setError('');
-      await signup(data);
-      navigate('/upload');
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '';
-      setError(
-        errorMessage || 'Could not create account. Email may already exist.',
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = (data: SignupFormData) => {
+    signupMutation.mutate(data);
   };
+
+  const error = signupMutation.error
+    ? getErrorMessage(signupMutation.error)
+    : '';
 
   const inputClass = (hasError: boolean) => `
     w-full px-3 py-2.5
@@ -124,6 +122,29 @@ export const SignupForm: React.FC = () => {
             </p>
           )}
         </div>
+      </div>
+
+      {/* Organization Name */}
+      <div>
+        <label
+          htmlFor="organization_name"
+          className="block text-sm font-medium text-slate-700 mb-1.5"
+        >
+          Organization name
+        </label>
+        <input
+          id="organization_name"
+          type="text"
+          placeholder="Your company or hospital name"
+          autoComplete="organization"
+          className={inputClass(!!errors.organization_name)}
+          {...register('organization_name')}
+        />
+        {errors.organization_name && (
+          <p className="mt-1.5 text-sm text-red-600">
+            {errors.organization_name.message}
+          </p>
+        )}
       </div>
 
       {/* Email */}
@@ -200,7 +221,7 @@ export const SignupForm: React.FC = () => {
       {/* Submit button */}
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={signupMutation.isPending}
         className="
           w-full py-2.5 px-4
           bg-blue-600 hover:bg-blue-700
@@ -210,8 +231,10 @@ export const SignupForm: React.FC = () => {
           flex items-center justify-center gap-2
         "
       >
-        {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-        {isSubmitting ? 'Creating account...' : 'Create account'}
+        {signupMutation.isPending && (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        )}
+        {signupMutation.isPending ? 'Creating account...' : 'Create account'}
       </button>
 
       <p className="text-xs text-center text-slate-400">
