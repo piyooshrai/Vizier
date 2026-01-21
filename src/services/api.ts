@@ -59,10 +59,10 @@ const ERROR_MAP: Record<string, string> = {
 };
 
 // Extract messages from FastAPI validation error array
-function parseValidationErrors(
-  detail: Array<{ msg?: string }>,
-): string {
-  const messages = detail.map((err) => err.msg || 'Validation error').join(', ');
+function parseValidationErrors(detail: Array<{ msg?: string }>): string {
+  const messages = detail
+    .map((err) => err.msg || 'Validation error')
+    .join(', ');
   return messages || 'Validation failed';
 }
 
@@ -80,7 +80,9 @@ function matchErrorMessage(message: string): string | null {
 // Helper function to transform technical errors into user-friendly messages
 export function getErrorMessage(error: unknown): string {
   if (!axios.isAxiosError(error)) {
-    return error instanceof Error ? error.message : 'An unexpected error occurred.';
+    return error instanceof Error
+      ? error.message
+      : 'An unexpected error occurred.';
   }
 
   const apiError = error.response?.data as ApiError | undefined;

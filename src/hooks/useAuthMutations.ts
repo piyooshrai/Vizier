@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService, getErrorMessage } from '../services';
-import type { LoginData, SignupData } from '../types';
+import type { LoginData, PasswordChangeData, SignupData } from '../types';
 
 /**
  * Hook for login mutation using TanStack Query
@@ -70,6 +70,18 @@ export const useLogoutMutation = () => {
       console.error('Logout failed:', getErrorMessage(error));
       // Still navigate even if logout API fails
       navigate('/');
+    },
+  });
+};
+
+/**
+ * Hook for change password mutation using TanStack Query
+ */
+export const useChangePasswordMutation = () => {
+  return useMutation({
+    mutationFn: (data: PasswordChangeData) => authService.changePassword(data),
+    onError: (error) => {
+      console.error('Change password failed:', getErrorMessage(error));
     },
   });
 };

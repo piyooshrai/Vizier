@@ -2,7 +2,7 @@
 
 import { FileText, Upload } from 'lucide-react';
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 interface FileDropZoneProps {
   onFilesSelected: (files: File[]) => void;
@@ -53,31 +53,40 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
-    <label
+    <button
+      type="button"
       aria-label="File upload dropzone"
+      onClick={handleClick}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={`
-        relative border-2 border-dashed rounded-3xl p-12 text-center
-        transition-all duration-300 cursor-pointer
+        w-full block relative border border-gray-700/50 rounded-3xl p-12 text-center
+        transition-all duration-300 cursor-pointer overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary-500
         ${
           isDragging
             ? 'border-white bg-white/5 scale-[1.02]'
-            : 'border-gray-700 bg-gray-800/30 hover:border-gray-500 hover:bg-gray-800/50'
+            : 'hover:border-gray-500 bg-gray-900/50 hover:bg-gray-800/50'
         }
       `}
     >
       <input
+        ref={fileInputRef}
         type="file"
         multiple
         accept=".csv,.xlsx,.xls"
         onChange={handleFileInput}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        className="hidden"
       />
 
-      <div className="pointer-events-none">
+      <div className="pointer-events-none relative z-10">
         <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mx-auto mb-6 shadow-lg">
           <Upload className="w-10 h-10 text-black" />
         </div>
@@ -97,7 +106,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           Your data is encrypted in transit and at rest
         </p>
       </div>
-    </label>
+    </button>
   );
 };
 

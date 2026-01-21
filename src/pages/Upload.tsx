@@ -8,6 +8,7 @@ import { FileList } from '../components/upload/FileList';
 import { ProcessingAnimation } from '../components/upload/ProcessingAnimation';
 import { UploadComplete } from '../components/upload/UploadComplete';
 import { useAuth } from '../hooks/useAuth';
+import { getErrorMessage } from '../services/api';
 import { pipelineService } from '../services/pipeline.service';
 
 type UploadState =
@@ -62,10 +63,15 @@ const Upload: React.FC = () => {
       setUploadState('processing');
       await pollPipelineStatus(response.upload_run_id);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Upload failed. Please try again.';
-      const axiosError = err as { response?: { data?: { detail?: string } } };
-      setError(axiosError.response?.data?.detail || message);
+      console.error('Upload failed:', err);
+      // Log the full response for debugging
+      const axiosError = err as { response?: { data?: unknown; status?: number } };
+      if (axiosError.response) {
+        console.error('Response status:', axiosError.response.status);
+        console.error('Response data:', JSON.stringify(axiosError.response.data, null, 2));
+      }
+      const message = getErrorMessage(err);
+      setError(message);
       setUploadState('error');
     }
   };
@@ -113,47 +119,35 @@ const Upload: React.FC = () => {
   };
 
   const pollPipelineStatus = async (runId: string) => {
-    const maxAttempts = 60;
-    let attempts = 0;
+    try {
+      await pipelineService.pollStatus(
+        runId,
+        (status) => {
+          const steps = status.completed_steps.map((name) => ({
+            name,
+            completed: true,
+          }));
+          setProcessingSteps(steps);
+          setProcessingProgress(status.progress_percent);
+        },
+        3000,
+      );
 
-    const poll = setInterval(async () => {
-      try {
-        const status = await pipelineService.getStatus(runId);
-
-        const steps = status.completed_steps.map((name) => ({
-          name,
-          completed: true,
-        }));
-        setProcessingSteps(steps);
-        setProcessingProgress(status.progress_percent);
-
-        if (status.status === 'completed') {
-          clearInterval(poll);
-          setUploadState('complete');
-          setTimeout(() => navigate('/insights'), 2000);
-        } else if (status.status === 'failed') {
-          clearInterval(poll);
-          setError(status.error_message || 'Processing failed');
-          setUploadState('error');
-        }
-
-        attempts++;
-        if (attempts >= maxAttempts) {
-          clearInterval(poll);
-          setError('Processing timeout. Please check your data.');
-          setUploadState('error');
-        }
-      } catch (err) {
-        console.error('Status check failed:', err);
-      }
-    }, 5000);
+      setUploadState('complete');
+      setTimeout(() => navigate('/insights'), 2000);
+    } catch (err: unknown) {
+      console.error('Status check failed:', err);
+      const message = getErrorMessage(err);
+      setError(message);
+      setUploadState('error');
+    }
   };
 
   // Initial state
   if (uploadState === 'initial') {
     return (
-      <div className="h-full overflow-y-auto">
-        <div className="p-8">
+      <div className="h-full overflow-hidden">
+        <div className="h-full overflow-y-auto p-8">
           <div className="max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
@@ -218,10 +212,9 @@ const Upload: React.FC = () => {
               className="w-10 h-10 text-black animate-pulse"
               fill="currentColor"
               viewBox="0 0 24 24"
-              role="img"
-              aria-labelledby="upload-progress-title"
+              focusable="false"
             >
-              <title id="upload-progress-title">Uploading Progress</title>
+              <title>Uploading Progress</title>
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
             </svg>
           </div>
@@ -268,10 +261,9 @@ const Upload: React.FC = () => {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            role="img"
-            aria-labelledby="upload-error-title"
+            focusable="false"
           >
-            <title id="upload-error-title">Upload Error</title>
+            <title>Upload Error</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

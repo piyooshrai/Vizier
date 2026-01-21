@@ -81,8 +81,9 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
       <input
         type="email"
         placeholder="you@hospital.com"
-        className={`w-full px-4 py-3 bg-white border-2 ${errors.email ? 'border-red-300' : 'border-gray-200'
-          } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
+        className={`w-full px-4 py-3 bg-white border-2 ${
+          errors.email ? 'border-red-300' : 'border-gray-200'
+        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('email')}
       />
       {errors.email && (
@@ -92,8 +93,9 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
       <input
         type="password"
         placeholder="Create a password (min 8 characters)"
-        className={`w-full px-4 py-3 bg-white border-2 ${errors.password ? 'border-red-300' : 'border-gray-200'
-          } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
+        className={`w-full px-4 py-3 bg-white border-2 ${
+          errors.password ? 'border-red-300' : 'border-gray-200'
+        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('password')}
       />
       {errors.password && (

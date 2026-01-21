@@ -3,7 +3,8 @@ import { Check, Lock } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { authService, getErrorMessage } from '../../services';
+import { useChangePasswordMutation } from '../../hooks/useAuthMutations';
+import { getErrorMessage } from '../../services';
 import {
   type PasswordChangeFormData,
   passwordChangeSchema,
@@ -13,30 +14,36 @@ import { Button, Card, Input } from '../common';
 export const PasswordChangeForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const changePasswordMutation = useChangePasswordMutation();
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<PasswordChangeFormData>({
     resolver: zodResolver(passwordChangeSchema),
   });
 
-  const onSubmit = async (data: PasswordChangeFormData) => {
+  const onSubmit = (data: PasswordChangeFormData) => {
     setError(null);
     setSuccess(false);
 
-    try {
-      await authService.changePassword({
+    changePasswordMutation.mutate(
+      {
         current_password: data.current_password,
         new_password: data.new_password,
-      });
-      setSuccess(true);
-      reset();
-    } catch (err) {
-      setError(getErrorMessage(err));
-    }
+      },
+      {
+        onSuccess: () => {
+          setSuccess(true);
+          reset();
+        },
+        onError: (err) => {
+          setError(getErrorMessage(err));
+        },
+      },
+    );
   };
 
   return (
@@ -93,7 +100,7 @@ export const PasswordChangeForm: React.FC = () => {
         />
 
         <div className="pt-2">
-          <Button type="submit" loading={isSubmitting}>
+          <Button type="submit" loading={changePasswordMutation.isPending}>
             Update password
           </Button>
         </div>

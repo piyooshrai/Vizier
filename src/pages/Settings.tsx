@@ -3,6 +3,7 @@ import { Bell, Building2, CreditCard, Globe, Plug, Shield } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { AuthModal } from '../components/auth/AuthModal';
+import { PasswordChangeForm } from '../components/auth/PasswordChangeForm';
 import { useAuth } from '../contexts/AuthContext';
 
 type SettingsTab = 'organization' | 'billing' | 'security' | 'integrations';
@@ -328,6 +329,15 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Change Password Section */}
+      {!isDemoMode && (
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+          <div className="max-w-md">
+            <PasswordChangeForm />
+          </div>
+        </div>
+      )}
     </div>
   );
 

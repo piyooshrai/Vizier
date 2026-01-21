@@ -18,12 +18,13 @@ export const pipelineService = {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': undefined,
         },
         onUploadProgress: (progressEvent) => {
-          if (onProgress && progressEvent.total) {
+          if (onProgress) {
+            const total = progressEvent.total || progressEvent.estimated || 100;
             const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total,
+              (progressEvent.loaded * 100) / total,
             );
             onProgress(percentCompleted);
           }
@@ -34,19 +35,12 @@ export const pipelineService = {
     return response.data;
   },
 
-  // Get pipeline status - PLACEHOLDER implementation
-  // Will be connected to real endpoint when available
+  // Get pipeline status
   getStatus: async (uploadRunId: string): Promise<PipelineStatus> => {
-    try {
-      const response = await api.get<PipelineStatus>(
-        `/pipeline/status/${uploadRunId}`,
-      );
-      return response.data;
-    } catch {
-      // Return mock data for now - will be replaced when endpoint is ready
-      console.warn('Pipeline status endpoint not available, using mock data');
-      return getMockStatus(uploadRunId);
-    }
+    const response = await api.get<PipelineStatus>(
+      `/pipeline/status/${uploadRunId}`,
+    );
+    return response.data;
   },
 
   // Poll for status updates
@@ -85,73 +79,5 @@ export const pipelineService = {
     });
   },
 };
-
-// Mock status for development - will be removed when real endpoint is available
-const mockSteps = [
-  { name: 'discover_files', label: 'Discovering file structure' },
-  { name: 'validate_files', label: 'Validating healthcare data formats' },
-  { name: 'create_schema', label: 'Identifying data relationships' },
-  { name: 'load_staging', label: 'Processing patient records' },
-  { name: 'analyze_quality', label: 'Analyzing data quality' },
-  { name: 'build_analytics', label: 'Building analytics views' },
-  { name: 'generate_insights', label: 'Generating initial insights' },
-];
-
-function getMockStatus(uploadRunId: string): PipelineStatus {
-  // Simulate progress based on time
-  const startTime = parseInt(
-    localStorage.getItem(`pipeline_start_${uploadRunId}`) || '0',
-    10,
-  );
-  if (!startTime) {
-    localStorage.setItem(
-      `pipeline_start_${uploadRunId}`,
-      Date.now().toString(),
-    );
-    return {
-      status: 'running',
-      upload_run_id: uploadRunId,
-      completed_steps: [],
-      current_step: mockSteps[0].name,
-      progress_percent: 0,
-    };
-  }
-
-  const elapsed = Date.now() - startTime;
-  const stepDuration = 3000; // 3 seconds per step for demo
-  const currentStepIndex = Math.min(
-    Math.floor(elapsed / stepDuration),
-    mockSteps.length - 1,
-  );
-  const progressInStep = (elapsed % stepDuration) / stepDuration;
-  const overallProgress = Math.min(
-    ((currentStepIndex + progressInStep) / mockSteps.length) * 100,
-    100,
-  );
-
-  if (overallProgress >= 100) {
-    localStorage.removeItem(`pipeline_start_${uploadRunId}`);
-    return {
-      status: 'completed',
-      upload_run_id: uploadRunId,
-      completed_steps: mockSteps.map((s) => s.name),
-      current_step: null,
-      progress_percent: 100,
-      insights_summary: {
-        total_patients: 12847,
-        total_encounters: 47293,
-        date_range: 'Jan 2023 - Dec 2024',
-      },
-    };
-  }
-
-  return {
-    status: 'running',
-    upload_run_id: uploadRunId,
-    completed_steps: mockSteps.slice(0, currentStepIndex).map((s) => s.name),
-    current_step: mockSteps[currentStepIndex].name,
-    progress_percent: Math.round(overallProgress),
-  };
-}
 
 export default pipelineService;
