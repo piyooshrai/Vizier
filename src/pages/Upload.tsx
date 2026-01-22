@@ -61,7 +61,7 @@ const Upload: React.FC = () => {
       );
 
       setUploadState('processing');
-      await pollPipelineStatus(response.upload_run_id);
+      await pollPipelineStatus(response.airflow_run_id);
     } catch (err: unknown) {
       console.error('Upload failed:', err);
       // Log the full response for debugging
@@ -128,12 +128,12 @@ const Upload: React.FC = () => {
       const finalStatus = await pipelineService.pollStatus(
         runId,
         (status) => {
-          const steps = status.completed_steps.map((name) => ({
+          const steps = (status.completed_steps || []).map((name) => ({
             name,
             completed: true,
           }));
           setProcessingSteps(steps);
-          setProcessingProgress(status.progress_percent);
+          setProcessingProgress(status.progress_percent || 0);
         },
         3000,
       );

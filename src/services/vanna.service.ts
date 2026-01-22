@@ -22,7 +22,20 @@ export const vannaService = {
 
     // Real API call for non-demo users
     const response = await api.post<VannaResponse>('/vanna/ask', { question });
-    return response.data;
+    const data = response.data;
+    
+    // Normalize the response to handle both old and new API formats
+    const normalizedData: VannaResponse = {
+      ...data,
+      // Use 'result' if 'results' is not present
+      results: data.results || data.result || [],
+      // Use charts.primary_chart if chart_type is not present
+      chart_type: data.chart_type || data.charts?.primary_chart || 'table',
+      // Use generated_title as chart_title if not present
+      chart_title: data.chart_title || data.generated_title,
+    };
+    
+    return normalizedData;
   },
 
   // Get suggested questions based on the current data

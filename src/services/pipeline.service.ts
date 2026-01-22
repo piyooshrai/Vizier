@@ -58,7 +58,13 @@ export const pipelineService = {
           const status = await pipelineService.getStatus(uploadRunId);
           onUpdate(status);
 
-          if (status.status === 'completed' || status.status === 'failed') {
+          if (
+            status.status === 'completed' ||
+            status.status === 'complete' ||
+            status.status === 'success' ||
+            status.status === 'failed' ||
+            status.status === 'not_found'
+          ) {
             resolve(status);
             return;
           }

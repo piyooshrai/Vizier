@@ -19,6 +19,10 @@ export interface Message {
   chartData?: Record<string, unknown>[];
   explanation?: string;
   chartReason?: string;
+  /** For vizier messages, stores the original user question that prompted this response */
+  originalQuestion?: string;
+  /** For vizier messages, stores the SQL query that was generated */
+  sqlQuery?: string;
 }
 
 const Insights: React.FC = () => {
@@ -85,6 +89,8 @@ const Insights: React.FC = () => {
           ? `You might also want to explore: ${response.follow_up_questions.slice(0, 2).join(', ')}`
           : undefined,
         chartReason: chartReason,
+        originalQuestion: text, // Store the original user question for this response
+        sqlQuery: response.sql, // Store the SQL query for saving to dashboard
       };
       setMessages((prev) => [...prev, vizierMessage]);
     } catch (error) {

@@ -53,12 +53,15 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
 
     setIsPinning(true);
     try {
+      // Use the original question if available, otherwise fall back to content
+      const queryText = message.originalQuestion || message.content;
       await chartsService.saveChart({
-        query_text: message.content,
+        query_text: queryText,
+        sql_query: message.sqlQuery || '', // Include the SQL query (required by backend)
         chart_type: activeChartType || 'bar_chart',
         chart_data: message.chartData ?? [],
         explanation: message.explanation,
-        title: message.content.substring(0, 100),
+        title: queryText.substring(0, 100),
       });
       setIsPinned(true);
     } catch (error) {

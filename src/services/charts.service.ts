@@ -16,7 +16,7 @@ export interface PinnedChart {
 
 export interface SaveChartRequest {
   query_text: string;
-  sql_query?: string;
+  sql_query: string;
   chart_type: ChartType;
   chart_data: Record<string, unknown>[];
   title?: string;
@@ -48,13 +48,32 @@ export const chartsService = {
    * Save a chart to the dashboard
    */
   async saveChart(chart: SaveChartRequest): Promise<PinnedChart> {
+    // Normalize chart type - backend may not support all types
+    const normalizedChartType = (() => {
+      switch (chart.chart_type) {
+        case 'histogram':
+          return 'bar_chart';
+        case 'box_plot':
+          return 'bar_chart';
+        case 'gauge_chart':
+          return 'big_number';
+        default:
+          return chart.chart_type;
+      }
+    })();
+
+    const normalizedChart = {
+      ...chart,
+      chart_type: normalizedChartType,
+    };
+
     if (isDemoMode()) {
       // Demo: Save to localStorage
       const saved = JSON.parse(localStorage.getItem('pinned_charts') || '[]');
 
       const newChart: PinnedChart = {
         id: `chart-${Date.now()}`,
-        ...chart,
+        ...normalizedChart,
         created_at: new Date().toISOString(),
         size: 'medium',
       };
@@ -66,7 +85,7 @@ export const chartsService = {
     }
 
     // Production: Save to backend
-    const response = await api.post<PinnedChart>('/charts/', chart);
+    const response = await api.post<PinnedChart>('/charts/', normalizedChart);
     return response.data;
   },
 

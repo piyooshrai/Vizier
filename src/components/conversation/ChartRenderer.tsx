@@ -149,6 +149,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
   const renderChart = () => {
     switch (type) {
       case 'bar_chart':
+      case 'histogram':
         return (
           <ResponsiveContainer width="100%" height={height}>
             <BarChart
