@@ -80,11 +80,33 @@ export const Settings: React.FC = () => {
   const [inviteExpiresAt, setInviteExpiresAt] = useState('');
   const [inviteError, setInviteError] = useState('');
   const [isInviting, setIsInviting] = useState(false);
-  const [updatingMemberId, setUpdatingMemberId] = useState<string | null>(null);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
   const [billingError, setBillingError] = useState('');
   const [billingLoading, setBillingLoading] = useState(false);
   const [securityMessage, setSecurityMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
+
+  // Form State
+  const [orgName, setOrgName] = useState('');
+  const [orgType, setOrgType] = useState('hospital_system');
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [timezone, setTimezone] = useState('America/New_York');
+  const [pendingRoleUpdates, setPendingRoleUpdates] = useState<
+    Record<string, string>
+  >({});
+
+  useEffect(() => {
+    if (isDemoMode) {
+      setOrgName('Demo Healthcare System');
+      return;
+    }
+    // Initialize form with defaults (in a real app, load from user/org profile)
+    setOrgName('');
+  }, [isDemoMode]);
 
   useEffect(() => {
     if (isDemoMode || activeTab !== 'organization') return;
@@ -135,18 +157,63 @@ export const Settings: React.FC = () => {
     }
   };
 
-  const handleRoleChange = async (userId: string, role: string) => {
+  const handleRoleChange = (userId: string, role: string) => {
+    // Stage the change locally
+    setPendingRoleUpdates((prev) => ({
+      ...prev,
+      [userId]: role,
+    }));
+
+    // Optimostically update the UI list
+    setMembers((prev) =>
+      prev.map((member) =>
+        member.id === userId ? { ...member, role } : member,
+      ),
+    );
+  };
+
+  const handleSaveChanges = async () => {
+    setIsSaving(true);
+    setSaveMessage(null);
     setMembersError('');
-    setUpdatingMemberId(userId);
+
     try {
-      const updated = await organizationsService.updateMemberRole(userId, role);
-      setMembers((prev) =>
-        prev.map((member) => (member.id === userId ? updated : member)),
+      // 1. Process Role Updates
+      const updatePromises = Object.entries(pendingRoleUpdates).map(
+        ([userId, role]) => organizationsService.updateMemberRole(userId, role),
       );
+
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+        setPendingRoleUpdates({});
+      }
+
+      // 2. Note about other fields
+      // The current API only supports role updates. Org Name/Timezone are local state only for now.
+      if (
+        (orgName && orgName !== 'Demo Healthcare System') ||
+        timezone !== 'America/New_York'
+      ) {
+        console.warn(
+          'Organization details and preferences are not yet supported by the backend API.',
+        );
+      }
+
+      setSaveMessage({
+        type: 'success',
+        text: 'Changes saved successfully',
+      });
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
+      setSaveMessage({
+        type: 'error',
+        text: 'Failed to save changes. Please try again.',
+      });
       setMembersError(getErrorMessage(error));
     } finally {
-      setUpdatingMemberId(null);
+      setIsSaving(false);
     }
   };
 
@@ -161,6 +228,11 @@ export const Settings: React.FC = () => {
     try {
       await organizationsService.removeMember(userId);
       setMembers((prev) => prev.filter((member) => member.id !== userId));
+      // Remove from pending updates if present
+      if (pendingRoleUpdates[userId]) {
+        const { [userId]: _, ...rest } = pendingRoleUpdates;
+        setPendingRoleUpdates(rest);
+      }
     } catch (error) {
       setMembersError(getErrorMessage(error));
     } finally {
@@ -216,7 +288,8 @@ export const Settings: React.FC = () => {
             <input
               id="org-name"
               type="text"
-              defaultValue={isDemoMode ? 'Demo Healthcare System' : ''}
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
               placeholder="Your organization name"
               disabled={isDemoMode}
@@ -231,8 +304,9 @@ export const Settings: React.FC = () => {
             </label>
             <select
               id="org-type"
+              value={orgType}
+              onChange={(e) => setOrgType(e.target.value)}
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
-              defaultValue={isDemoMode ? 'hospital_system' : ''}
               disabled={isDemoMode}
             >
               <option value="hospital_system">Hospital System</option>
@@ -262,7 +336,8 @@ export const Settings: React.FC = () => {
               <input
                 type="checkbox"
                 className="sr-only peer"
-                defaultChecked
+                checked={emailNotifications}
+                onChange={(e) => setEmailNotifications(e.target.checked)}
                 disabled={isDemoMode}
                 aria-label="Toggle Email Notifications"
               />
@@ -280,8 +355,9 @@ export const Settings: React.FC = () => {
               </div>
             </div>
             <select
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
               className="px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/50"
-              defaultValue="America/New_York"
               disabled={isDemoMode}
             >
               <option value="America/New_York">Eastern Time</option>
@@ -378,8 +454,11 @@ export const Settings: React.FC = () => {
                       onChange={(event) =>
                         handleRoleChange(member.id, event.target.value)
                       }
-                      disabled={updatingMemberId === member.id}
-                      className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                      className={`px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 ${
+                        pendingRoleUpdates[member.id]
+                          ? 'border-amber-500/50 bg-amber-500/10'
+                          : ''
+                      }`}
                     >
                       {memberRoleOptions.map((role) => (
                         <option key={role} value={role}>
@@ -387,6 +466,11 @@ export const Settings: React.FC = () => {
                         </option>
                       ))}
                     </select>
+                    {pendingRoleUpdates[member.id] && (
+                      <span className="text-xs text-amber-400 font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                        Modified
+                      </span>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleRemoveMember(member.id)}
@@ -409,12 +493,37 @@ export const Settings: React.FC = () => {
       )}
 
       {!isDemoMode && (
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-3 sticky bottom-0 py-4 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent">
+          {saveMessage && (
+            <div
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                saveMessage.type === 'success'
+                  ? 'bg-green-500/10 text-green-400'
+                  : 'bg-red-500/10 text-red-400'
+              }`}
+            >
+              {saveMessage.text}
+            </div>
+          )}
           <button
             type="button"
-            className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded-xl transition-all shadow-lg"
+            onClick={handleSaveChanges}
+            disabled={
+              isSaving ||
+              (Object.keys(pendingRoleUpdates).length === 0 &&
+                !orgName &&
+                !emailNotifications)
+            }
+            className="px-6 py-3 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-xl transition-all shadow-lg"
           >
-            Save Changes
+            {isSaving ? (
+              <span className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-gray-600 border-t-gray-900 rounded-full animate-spin" />
+                Saving...
+              </span>
+            ) : (
+              'Save Changes'
+            )}
           </button>
         </div>
       )}

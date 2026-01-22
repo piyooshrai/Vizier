@@ -25,6 +25,39 @@ export interface Message {
   sqlQuery?: string;
 }
 
+const INSIGHTS_CONVERSATION_STORAGE_KEY = 'vizier_insights_conversation_v1';
+
+type StoredMessage = Omit<Message, 'timestamp'> & { timestamp: string };
+
+const loadStoredMessages = (): Message[] | null => {
+  const stored = sessionStorage.getItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
+  if (!stored) return null;
+
+  try {
+    const parsed = JSON.parse(stored) as StoredMessage[];
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+
+    return parsed.map((message) => ({
+      ...message,
+      timestamp: new Date(message.timestamp),
+    }));
+  } catch {
+    sessionStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
+    return null;
+  }
+};
+
+const persistMessages = (messages: Message[]) => {
+  const stored: StoredMessage[] = messages.map((message) => ({
+    ...message,
+    timestamp: message.timestamp.toISOString(),
+  }));
+  sessionStorage.setItem(
+    INSIGHTS_CONVERSATION_STORAGE_KEY,
+    JSON.stringify(stored),
+  );
+};
+
 const Insights: React.FC = () => {
   // Initialize with greeting message directly
   const [messages, setMessages] = useState<Message[]>([
@@ -39,6 +72,17 @@ const Insights: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const storedMessages = loadStoredMessages();
+    if (storedMessages) {
+      setMessages(storedMessages);
+    }
+  }, []);
+
+  useEffect(() => {
+    persistMessages(messages);
+  }, [messages]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Scrolling should trigger whenever messages or processing state changes
   useEffect(() => {
@@ -65,11 +109,15 @@ const Insights: React.FC = () => {
     try {
       const response = await vannaService.ask(text);
 
+      const hasResults = Boolean(
+        response.results && response.results.length > 0,
+      );
+
       // Use chart recommendation engine if results exist
       let chartType = response.chart_type;
       let chartReason = '';
 
-      if (response.results && response.results.length > 0) {
+      if (hasResults) {
         const recommendation = recommendChartType(response.results, text);
         // Use service chart type if specified, otherwise use recommendation
         if (!chartType || chartType === 'table') {
@@ -78,17 +126,24 @@ const Insights: React.FC = () => {
         chartReason = recommendation.reason;
       }
 
+      const noDataMessage =
+        response.summary ||
+        "I couldn't find any data for that question. Try asking about a different metric or time range.";
+
       const vizierMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'vizier',
-        content: response.summary || "Here's what I found:",
+        content: hasResults
+          ? response.summary || "Here's what I found:"
+          : noDataMessage,
         timestamp: new Date(),
-        chartType: chartType,
-        chartData: response.results,
-        explanation: response.follow_up_questions?.length
-          ? `You might also want to explore: ${response.follow_up_questions.slice(0, 2).join(', ')}`
-          : undefined,
-        chartReason: chartReason,
+        chartType: hasResults ? chartType : undefined,
+        chartData: hasResults ? response.results : undefined,
+        explanation:
+          hasResults && response.follow_up_questions?.length
+            ? `You might also want to explore: ${response.follow_up_questions.slice(0, 2).join(', ')}`
+            : undefined,
+        chartReason: hasResults ? chartReason : undefined,
         originalQuestion: text, // Store the original user question for this response
         sqlQuery: response.sql, // Store the SQL query for saving to dashboard
       };

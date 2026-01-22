@@ -21,7 +21,14 @@ export interface UploadResponse {
 }
 
 export interface PipelineStatus {
-  status: 'pending' | 'running' | 'completed' | 'complete' | 'failed' | 'not_found' | 'success';
+  status:
+    | 'pending'
+    | 'running'
+    | 'completed'
+    | 'complete'
+    | 'failed'
+    | 'not_found'
+    | 'success';
   airflow_run_id: string;
   started_at?: string;
   completed_steps?: string[];

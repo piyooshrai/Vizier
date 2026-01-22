@@ -23,7 +23,7 @@ export const vannaService = {
     // Real API call for non-demo users
     const response = await api.post<VannaResponse>('/vanna/ask', { question });
     const data = response.data;
-    
+
     // Normalize the response to handle both old and new API formats
     const normalizedData: VannaResponse = {
       ...data,
@@ -34,7 +34,7 @@ export const vannaService = {
       // Use generated_title as chart_title if not present
       chart_title: data.chart_title || data.generated_title,
     };
-    
+
     return normalizedData;
   },
 
