@@ -22,7 +22,7 @@ export interface UserPreferences {
 
 // Check if demo mode is enabled
 const isDemoMode = (): boolean => {
-  return localStorage.getItem('demo_mode') === 'true';
+  return localStorage.getItem('is_demo') === 'true';
 };
 
 // Get demo user data
@@ -55,7 +55,7 @@ const userService = {
       throw new Error('No user found');
     }
 
-    const response = await api.get<User>('/api/users/me');
+    const response = await api.get<User>('/users/me');
     return response.data;
   },
 
@@ -77,7 +77,11 @@ const userService = {
       return updatedUser;
     }
 
-    const response = await api.patch<User>('/api/users/me', data);
+    const updatePayload = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+    };
+    const response = await api.patch<User>('/users/me', updatePayload);
 
     // Update local storage
     localStorage.setItem('user', JSON.stringify(response.data));
@@ -96,7 +100,7 @@ const userService = {
       return;
     }
 
-    await api.post('/api/users/change-password', data);
+    await api.post('/auth/change-password', data);
   },
 
   /**
@@ -108,7 +112,7 @@ const userService = {
       return;
     }
 
-    await api.post('/api/users/forgot-password', { email });
+    await api.post('/auth/forgot-password', { email });
   },
 
   /**
@@ -120,7 +124,7 @@ const userService = {
       return;
     }
 
-    await api.post('/api/users/reset-password', {
+    await api.post('/auth/reset-password', {
       token,
       new_password: newPassword,
     });
@@ -135,12 +139,7 @@ const userService = {
       return stored ? JSON.parse(stored) : getDefaultPreferences();
     }
 
-    try {
-      const response = await api.get<UserPreferences>('/api/users/preferences');
-      return response.data;
-    } catch {
-      return getDefaultPreferences();
-    }
+    return getDefaultPreferences();
   },
 
   /**
@@ -156,11 +155,7 @@ const userService = {
       return updated;
     }
 
-    const response = await api.patch<UserPreferences>(
-      '/api/users/preferences',
-      preferences,
-    );
-    return response.data;
+    throw new Error('User preferences are not supported by this API.');
   },
 
   /**
@@ -180,10 +175,7 @@ const userService = {
       });
     }
 
-    const response = await api.get('/api/users/export', {
-      responseType: 'blob',
-    });
-    return response.data;
+    throw new Error('Data export is not supported by this API.');
   },
 
   /**
@@ -197,7 +189,7 @@ const userService = {
       return;
     }
 
-    await api.post('/api/users/delete-account');
+    throw new Error('Account deletion is not supported by this API.');
   },
 
   /**
@@ -214,20 +206,7 @@ const userService = {
       });
     }
 
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    const response = await api.post<{ avatar_url: string }>(
-      '/api/users/avatar',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      },
-    );
-
-    return response.data.avatar_url;
+    throw new Error('Avatar upload is not supported by this API.');
   },
 
   /**
@@ -238,7 +217,7 @@ const userService = {
       return;
     }
 
-    await api.delete('/api/users/avatar');
+    throw new Error('Avatar deletion is not supported by this API.');
   },
 };
 

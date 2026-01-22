@@ -1,6 +1,6 @@
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 import compression from 'vite-plugin-compression';
 
@@ -18,12 +18,12 @@ export default defineConfig({
       ext: '.br',
     }),
     // Bundle analyzer - generates stats.html after build
-    visualizer({
-      filename: 'stats.html',
-      open: false,
-      gzipSize: true,
-      brotliSize: true,
-    }),
+    // visualizer({
+    //   filename: 'stats.html',
+    //   open: false,
+    //   gzipSize: true,
+    //   brotliSize: true,
+    // }),
   ],
   resolve: {
     alias: {

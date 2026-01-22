@@ -65,10 +65,15 @@ const Upload: React.FC = () => {
     } catch (err: unknown) {
       console.error('Upload failed:', err);
       // Log the full response for debugging
-      const axiosError = err as { response?: { data?: unknown; status?: number } };
+      const axiosError = err as {
+        response?: { data?: unknown; status?: number };
+      };
       if (axiosError.response) {
         console.error('Response status:', axiosError.response.status);
-        console.error('Response data:', JSON.stringify(axiosError.response.data, null, 2));
+        console.error(
+          'Response data:',
+          JSON.stringify(axiosError.response.data, null, 2),
+        );
       }
       const message = getErrorMessage(err);
       setError(message);
@@ -120,7 +125,7 @@ const Upload: React.FC = () => {
 
   const pollPipelineStatus = async (runId: string) => {
     try {
-      await pipelineService.pollStatus(
+      const finalStatus = await pipelineService.pollStatus(
         runId,
         (status) => {
           const steps = status.completed_steps.map((name) => ({
@@ -133,6 +138,13 @@ const Upload: React.FC = () => {
         3000,
       );
 
+      if (finalStatus.insights_summary) {
+        localStorage.setItem(
+          'vizier_insights_summary',
+          JSON.stringify(finalStatus.insights_summary),
+        );
+      }
+      localStorage.setItem('vizier_has_data', 'true');
       setUploadState('complete');
       setTimeout(() => navigate('/insights'), 2000);
     } catch (err: unknown) {

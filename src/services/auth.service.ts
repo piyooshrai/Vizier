@@ -70,6 +70,10 @@ export const authService = {
       new_password: newPassword,
     });
   },
+
+  revokeAllSessions: async (): Promise<void> => {
+    await api.post('/auth/revoke-all-sessions');
+  },
 };
 
 export default authService;

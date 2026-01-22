@@ -11,7 +11,9 @@ import {
 } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { annotationsService, getErrorMessage } from '../../services';
 import type { PinnedChart } from '../../services/charts.service';
+import type { NotePublic, VisibilityScope } from '../../types';
 import { ChartRenderer } from '../insights/ChartRenderer';
 
 type ChartSize = 'small' | 'medium' | 'large';
@@ -207,19 +209,62 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     null,
   );
   const [editText, setEditText] = useState('');
+  const [annotationsError, setAnnotationsError] = useState('');
+  const [isSavingAnnotation, setIsSavingAnnotation] = useState(false);
+  const [isDeletingAnnotationId, setIsDeletingAnnotationId] = useState<
+    string | null
+  >(null);
+  const isDemoMode = localStorage.getItem('is_demo') === 'true';
 
   // Load annotations from localStorage
   useEffect(() => {
-    const key = `annotations_${chart.id}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        setAnnotations(JSON.parse(saved));
-      } catch {
-        setAnnotations([]);
+    let isMounted = true;
+
+    const mapNoteToAnnotation = (note: NotePublic): Annotation => ({
+      id: note.id,
+      userId: note.user_id,
+      userName: note.author_name,
+      text: note.note_content,
+      isPublic: note.visibility_scope !== 'Private',
+      timestamp: note.created_at,
+    });
+
+    const loadAnnotations = async () => {
+      setAnnotationsError('');
+      if (isDemoMode) {
+        const key = `annotations_${chart.id}`;
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved) as Annotation[];
+            if (isMounted) setAnnotations(parsed);
+          } catch {
+            if (isMounted) setAnnotations([]);
+          }
+        } else if (isMounted) {
+          setAnnotations([]);
+        }
+        return;
       }
-    }
-  }, [chart.id]);
+
+      try {
+        const response = await annotationsService.getAnnotations(chart.id);
+        if (isMounted) {
+          setAnnotations(response.map(mapNoteToAnnotation));
+        }
+      } catch (error) {
+        if (isMounted) {
+          setAnnotationsError(getErrorMessage(error));
+        }
+      }
+    };
+
+    loadAnnotations();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [chart.id, isDemoMode]);
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
@@ -228,25 +273,59 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
-  const handleAddAnnotation = () => {
+  const handleAddAnnotation = async () => {
     if (!annotationText.trim()) return;
-    const newAnnotation: Annotation = {
-      id: Date.now().toString(),
-      userId: currentUser.id,
-      userName: currentUser.name,
-      text: annotationText.trim(),
-      isPublic: annotationPublic,
-      timestamp: new Date().toISOString(),
-    };
-    const updated = [...annotations, newAnnotation];
-    setAnnotations(updated);
-    localStorage.setItem(`annotations_${chart.id}`, JSON.stringify(updated));
-    setAnnotationText('');
-    setIsAddingAnnotation(false);
+    setAnnotationsError('');
+    setIsSavingAnnotation(true);
+
+    try {
+      if (isDemoMode) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          userId: currentUser.id,
+          userName: currentUser.name,
+          text: annotationText.trim(),
+          isPublic: annotationPublic,
+          timestamp: new Date().toISOString(),
+        };
+        const updated = [...annotations, newAnnotation];
+        setAnnotations(updated);
+        localStorage.setItem(
+          `annotations_${chart.id}`,
+          JSON.stringify(updated),
+        );
+      } else {
+        const visibility: VisibilityScope = annotationPublic
+          ? 'Public'
+          : 'Private';
+        const created = await annotationsService.createAnnotation({
+          note_content: annotationText.trim(),
+          saved_chart_id: chart.id,
+          visibility_scope: visibility,
+        });
+        const newAnnotation: Annotation = {
+          id: created.id,
+          userId: created.user_id,
+          userName: created.author_name,
+          text: created.note_content,
+          isPublic: created.visibility_scope !== 'Private',
+          timestamp: created.created_at,
+        };
+        setAnnotations((prev) => [...prev, newAnnotation]);
+      }
+
+      setAnnotationText('');
+      setIsAddingAnnotation(false);
+    } catch (error) {
+      setAnnotationsError(getErrorMessage(error));
+    } finally {
+      setIsSavingAnnotation(false);
+    }
   };
 
   // Edit annotation handler
   const handleEditAnnotation = (annotation: Annotation) => {
+    if (!isDemoMode) return;
     setEditingAnnotationId(annotation.id);
     setEditText(annotation.text);
     setIsAddingAnnotation(false); // Close add form if open
@@ -254,6 +333,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   // Save edit handler
   const handleSaveEdit = () => {
+    if (!isDemoMode) return;
     if (!editText.trim()) return;
 
     const updated = annotations.map((ann) =>
@@ -276,20 +356,39 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   // Cancel edit handler
   const handleCancelEdit = () => {
+    if (!isDemoMode) return;
     setEditingAnnotationId(null);
     setEditText('');
   };
 
   // Delete annotation handler
-  const handleDeleteAnnotation = (annotationId: string) => {
+  const handleDeleteAnnotation = async (annotationId: string) => {
     const confirmed = globalThis.confirm(
       'Delete this note? This cannot be undone.',
     );
     if (!confirmed) return;
 
-    const updated = annotations.filter((ann) => ann.id !== annotationId);
-    setAnnotations(updated);
-    localStorage.setItem(`annotations_${chart.id}`, JSON.stringify(updated));
+    setAnnotationsError('');
+    setIsDeletingAnnotationId(annotationId);
+    try {
+      if (isDemoMode) {
+        const updated = annotations.filter((ann) => ann.id !== annotationId);
+        setAnnotations(updated);
+        localStorage.setItem(
+          `annotations_${chart.id}`,
+          JSON.stringify(updated),
+        );
+      } else {
+        await annotationsService.deleteAnnotation(annotationId);
+        setAnnotations((prev) =>
+          prev.filter((annotation) => annotation.id !== annotationId),
+        );
+      }
+    } catch (error) {
+      setAnnotationsError(getErrorMessage(error));
+    } finally {
+      setIsDeletingAnnotationId(null);
+    }
   };
 
   const visibleAnnotations = annotations.filter(
@@ -483,13 +582,16 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
               <button
                 type="button"
                 onClick={handleAddAnnotation}
-                disabled={!annotationText.trim()}
+                disabled={!annotationText.trim() || isSavingAnnotation}
                 className={`px-2 py-1 bg-white hover:bg-gray-100 disabled:bg-gray-600 disabled:text-gray-400 text-black ${text.label} font-medium rounded transition-colors`}
               >
-                Add
+                {isSavingAnnotation ? 'Saving...' : 'Add'}
               </button>
             </div>
           </div>
+          {annotationsError && (
+            <p className="mt-2 text-xs text-red-400">{annotationsError}</p>
+          )}
         </div>
       )}
 
@@ -584,19 +686,25 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                   {/* Edit/Delete buttons - only for current user's annotations */}
                   {annotation.userId === currentUser.id && (
                     <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => handleEditAnnotation(annotation)}
-                        className="p-1 hover:bg-gray-700 rounded transition-colors"
-                        title="Edit note"
-                      >
-                        <Edit2 className="w-3 h-3 text-gray-400 hover:text-white" />
-                      </button>
+                      {isDemoMode && (
+                        <button
+                          type="button"
+                          onClick={() => handleEditAnnotation(annotation)}
+                          className="p-1 hover:bg-gray-700 rounded transition-colors"
+                          title="Edit note"
+                        >
+                          <Edit2 className="w-3 h-3 text-gray-400 hover:text-white" />
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleDeleteAnnotation(annotation.id)}
-                        className="p-1 hover:bg-red-500/10 rounded transition-colors"
+                        className="p-1 hover:bg-red-500/10 rounded transition-colors disabled:opacity-50"
                         title="Delete note"
+                        disabled={
+                          isDeletingAnnotationId === annotation.id ||
+                          isSavingAnnotation
+                        }
                       >
                         <Trash2 className="w-3 h-3 text-gray-400 hover:text-red-400" />
                       </button>

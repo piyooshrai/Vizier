@@ -1,7 +1,8 @@
 import { Globe, Lock, Maximize2, MessageSquare, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import type { ChartType } from '../../types';
+import { annotationsService, getErrorMessage } from '../../services';
+import type { ChartType, NotePublic, VisibilityScope } from '../../types';
 import { ChartRenderer } from '../insights/ChartRenderer';
 
 interface Annotation {
@@ -10,7 +11,7 @@ interface Annotation {
   userName: string;
   text: string;
   isPublic: boolean;
-  timestamp: Date;
+  timestamp: string;
 }
 
 interface InsightCardProps {
@@ -43,39 +44,130 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   const [isAddingAnnotation, setIsAddingAnnotation] = useState(false);
   const [annotationText, setAnnotationText] = useState('');
   const [annotationPublic, setAnnotationPublic] = useState(true);
+  const [annotationsError, setAnnotationsError] = useState('');
+  const [isSavingAnnotation, setIsSavingAnnotation] = useState(false);
+  const [isDeletingAnnotationId, setIsDeletingAnnotationId] = useState<
+    string | null
+  >(null);
+  const isDemoMode = localStorage.getItem('is_demo') === 'true';
 
   // Load annotations from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem(`annotations_${insight.id}`);
-    if (saved) {
-      setAnnotations(JSON.parse(saved));
-    }
-  }, [insight.id]);
+    let isMounted = true;
 
-  const handleAddAnnotation = () => {
-    if (!annotationText.trim()) return;
+    const mapNoteToAnnotation = (note: NotePublic): Annotation => ({
+      id: note.id,
+      userId: note.user_id,
+      userName: note.author_name,
+      text: note.note_content,
+      isPublic: note.visibility_scope !== 'Private',
+      timestamp: note.created_at,
+    });
 
-    const newAnnotation: Annotation = {
-      id: Date.now().toString(),
-      userId: currentUser.id,
-      userName: currentUser.name,
-      text: annotationText,
-      isPublic: annotationPublic,
-      timestamp: new Date(),
+    const loadAnnotations = async () => {
+      setAnnotationsError('');
+      if (isDemoMode) {
+        const saved = localStorage.getItem(`annotations_${insight.id}`);
+        if (saved) {
+          setAnnotations(JSON.parse(saved));
+        } else {
+          setAnnotations([]);
+        }
+        return;
+      }
+
+      try {
+        const response = await annotationsService.getAnnotations(insight.id);
+        if (isMounted) {
+          setAnnotations(response.map(mapNoteToAnnotation));
+        }
+      } catch (error) {
+        if (isMounted) {
+          setAnnotationsError(getErrorMessage(error));
+        }
+      }
     };
 
-    const updated = [...annotations, newAnnotation];
-    setAnnotations(updated);
-    localStorage.setItem(`annotations_${insight.id}`, JSON.stringify(updated));
+    loadAnnotations();
 
-    setAnnotationText('');
-    setIsAddingAnnotation(false);
+    return () => {
+      isMounted = false;
+    };
+  }, [insight.id, isDemoMode]);
+
+  const handleAddAnnotation = async () => {
+    if (!annotationText.trim()) return;
+
+    setAnnotationsError('');
+    setIsSavingAnnotation(true);
+    try {
+      if (isDemoMode) {
+        const newAnnotation: Annotation = {
+          id: Date.now().toString(),
+          userId: currentUser.id,
+          userName: currentUser.name,
+          text: annotationText,
+          isPublic: annotationPublic,
+          timestamp: new Date().toISOString(),
+        };
+
+        const updated = [...annotations, newAnnotation];
+        setAnnotations(updated);
+        localStorage.setItem(
+          `annotations_${insight.id}`,
+          JSON.stringify(updated),
+        );
+      } else {
+        const visibility: VisibilityScope = annotationPublic
+          ? 'Public'
+          : 'Private';
+        const created = await annotationsService.createAnnotation({
+          note_content: annotationText.trim(),
+          saved_chart_id: insight.id,
+          visibility_scope: visibility,
+        });
+        const newAnnotation: Annotation = {
+          id: created.id,
+          userId: created.user_id,
+          userName: created.author_name,
+          text: created.note_content,
+          isPublic: created.visibility_scope !== 'Private',
+          timestamp: created.created_at,
+        };
+        setAnnotations((prev) => [...prev, newAnnotation]);
+      }
+
+      setAnnotationText('');
+      setIsAddingAnnotation(false);
+    } catch (error) {
+      setAnnotationsError(getErrorMessage(error));
+    } finally {
+      setIsSavingAnnotation(false);
+    }
   };
 
-  const handleDeleteAnnotation = (annotationId: string) => {
-    const updated = annotations.filter((a) => a.id !== annotationId);
-    setAnnotations(updated);
-    localStorage.setItem(`annotations_${insight.id}`, JSON.stringify(updated));
+  const handleDeleteAnnotation = async (annotationId: string) => {
+    setAnnotationsError('');
+    setIsDeletingAnnotationId(annotationId);
+    try {
+      if (isDemoMode) {
+        const updated = annotations.filter((a) => a.id !== annotationId);
+        setAnnotations(updated);
+        localStorage.setItem(
+          `annotations_${insight.id}`,
+          JSON.stringify(updated),
+        );
+      } else {
+        await annotationsService.deleteAnnotation(annotationId);
+        setAnnotations((prev) =>
+          prev.filter((annotation) => annotation.id !== annotationId),
+        );
+      }
+    } catch (error) {
+      setAnnotationsError(getErrorMessage(error));
+    } finally {
+      setIsDeletingAnnotationId(null);
+    }
   };
 
   const visibleAnnotations = annotations.filter(
@@ -185,12 +277,16 @@ export const InsightCard: React.FC<InsightCardProps> = ({
               <button
                 type="button"
                 onClick={handleAddAnnotation}
-                className="px-3 py-1.5 bg-white hover:bg-gray-100 text-black text-sm font-medium rounded-lg transition-colors"
+                disabled={!annotationText.trim() || isSavingAnnotation}
+                className="px-3 py-1.5 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black text-sm font-medium rounded-lg transition-colors"
               >
-                Add Note
+                {isSavingAnnotation ? 'Saving...' : 'Add Note'}
               </button>
             </div>
           </div>
+          {annotationsError && (
+            <p className="mt-2 text-xs text-red-400">{annotationsError}</p>
+          )}
         </div>
       )}
 
@@ -226,7 +322,8 @@ export const InsightCard: React.FC<InsightCardProps> = ({
                 <button
                   type="button"
                   onClick={() => handleDeleteAnnotation(annotation.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/10 rounded transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/10 rounded transition-all disabled:opacity-50"
+                  disabled={isDeletingAnnotationId === annotation.id}
                 >
                   <Trash2 className="w-3 h-3 text-red-400" />
                 </button>

@@ -70,7 +70,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           password: formData.password,
           first_name: formData.firstName,
           last_name: formData.lastName,
-          role: 'hospital_administrator',
+          role: 'Organization Owner',
+          organization_name: formData.organizationName,
         });
         onClose();
         navigate('/upload');

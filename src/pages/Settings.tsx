@@ -1,10 +1,17 @@
 import { motion } from 'framer-motion';
 import { Bell, Building2, CreditCard, Globe, Plug, Shield } from 'lucide-react';
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthModal } from '../components/auth/AuthModal';
 import { PasswordChangeForm } from '../components/auth/PasswordChangeForm';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  authService,
+  getErrorMessage,
+  organizationsService,
+  paymentService,
+} from '../services';
+import type { User } from '../types';
 
 type SettingsTab = 'organization' | 'billing' | 'security' | 'integrations';
 
@@ -42,10 +49,155 @@ const settingsSections: SettingsSection[] = [
   },
 ];
 
+const memberRoleOptions = [
+  'Platform Administrator',
+  'Support Administrator',
+  'Organization Owner',
+  'Organization Administrator',
+  'Executive',
+  'Department Director',
+  'Clinician/Provider',
+  'Clinical Manager',
+  'Quality/Compliance Officer',
+  'Data Analyst',
+  'Read-Only Analyst',
+  'Revenue Cycle Director',
+  'Billing Manager',
+  'Auditor (External)',
+  'Board Member',
+];
+
 export const Settings: React.FC = () => {
   const { isDemoMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>('organization');
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [members, setMembers] = useState<User[]>([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [membersError, setMembersError] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('Data Analyst');
+  const [inviteToken, setInviteToken] = useState('');
+  const [inviteExpiresAt, setInviteExpiresAt] = useState('');
+  const [inviteError, setInviteError] = useState('');
+  const [isInviting, setIsInviting] = useState(false);
+  const [updatingMemberId, setUpdatingMemberId] = useState<string | null>(null);
+  const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
+  const [billingError, setBillingError] = useState('');
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [securityMessage, setSecurityMessage] = useState('');
+
+  useEffect(() => {
+    if (isDemoMode || activeTab !== 'organization') return;
+
+    let isMounted = true;
+    const loadMembers = async () => {
+      setMembersLoading(true);
+      setMembersError('');
+      try {
+        const response = await organizationsService.listMembers();
+        if (isMounted) {
+          setMembers(response);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setMembersError(getErrorMessage(error));
+        }
+      } finally {
+        if (isMounted) {
+          setMembersLoading(false);
+        }
+      }
+    };
+
+    loadMembers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTab, isDemoMode]);
+
+  const handleInvite = async () => {
+    if (!inviteEmail) return;
+    setInviteError('');
+    setIsInviting(true);
+    try {
+      const response = await organizationsService.inviteMember(
+        inviteEmail,
+        inviteRole,
+      );
+      setInviteToken(response.token);
+      setInviteExpiresAt(response.expires_at);
+      setInviteEmail('');
+    } catch (error) {
+      setInviteError(getErrorMessage(error));
+    } finally {
+      setIsInviting(false);
+    }
+  };
+
+  const handleRoleChange = async (userId: string, role: string) => {
+    setMembersError('');
+    setUpdatingMemberId(userId);
+    try {
+      const updated = await organizationsService.updateMemberRole(userId, role);
+      setMembers((prev) =>
+        prev.map((member) => (member.id === userId ? updated : member)),
+      );
+    } catch (error) {
+      setMembersError(getErrorMessage(error));
+    } finally {
+      setUpdatingMemberId(null);
+    }
+  };
+
+  const handleRemoveMember = async (userId: string) => {
+    const confirmed = globalThis.confirm(
+      'Remove this member? This will delete their account.',
+    );
+    if (!confirmed) return;
+
+    setMembersError('');
+    setRemovingMemberId(userId);
+    try {
+      await organizationsService.removeMember(userId);
+      setMembers((prev) => prev.filter((member) => member.id !== userId));
+    } catch (error) {
+      setMembersError(getErrorMessage(error));
+    } finally {
+      setRemovingMemberId(null);
+    }
+  };
+
+  const handleCheckout = async () => {
+    setBillingError('');
+    setBillingLoading(true);
+    try {
+      const response = await paymentService.createCheckoutSession();
+      const redirectUrl =
+        response.url || response.checkout_url || response.session_url;
+      if (redirectUrl) {
+        globalThis.location.href = redirectUrl;
+        return;
+      }
+      setBillingError(
+        'Checkout session created, but no redirect URL returned.',
+      );
+    } catch (error) {
+      setBillingError(getErrorMessage(error));
+    } finally {
+      setBillingLoading(false);
+    }
+  };
+
+  const handleRevokeAllSessions = async () => {
+    setSecurityMessage('');
+    try {
+      await authService.revokeAllSessions();
+      setSecurityMessage('All other sessions have been revoked.');
+    } catch (error) {
+      setSecurityMessage(getErrorMessage(error));
+    }
+  };
 
   const renderOrganizationSettings = () => (
     <div className="space-y-6">
@@ -142,6 +294,121 @@ export const Settings: React.FC = () => {
       </div>
 
       {!isDemoMode && (
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Team Members</h3>
+              <p className="text-sm text-gray-400">
+                Invite teammates and manage roles
+              </p>
+            </div>
+          </div>
+
+          <div className="mb-6 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(event) => setInviteEmail(event.target.value)}
+                placeholder="email@organization.com"
+                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+              />
+              <select
+                value={inviteRole}
+                onChange={(event) => setInviteRole(event.target.value)}
+                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+              >
+                {memberRoleOptions.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleInvite}
+                disabled={!inviteEmail || isInviting}
+                className="px-6 py-3 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-xl transition-all shadow-lg"
+              >
+                {isInviting ? 'Generating...' : 'Generate Invite'}
+              </button>
+            </div>
+
+            {inviteToken && (
+              <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-4">
+                <p className="text-sm text-gray-400">Invite token</p>
+                <p className="text-white font-mono break-all mt-1">
+                  {inviteToken}
+                </p>
+                {inviteExpiresAt && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Expires {new Date(inviteExpiresAt).toLocaleString()}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {inviteError && (
+              <p className="text-sm text-red-400">{inviteError}</p>
+            )}
+          </div>
+
+          {membersError && (
+            <div className="mb-4 text-sm text-red-400">{membersError}</div>
+          )}
+
+          {membersLoading ? (
+            <div className="text-gray-400 text-sm">Loading members...</div>
+          ) : (
+            <div className="space-y-3">
+              {members.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-gray-900/50 border border-gray-700 rounded-xl p-4"
+                >
+                  <div>
+                    <p className="text-white font-medium">
+                      {member.first_name} {member.last_name}
+                    </p>
+                    <p className="text-sm text-gray-400">{member.email}</p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <select
+                      value={member.role}
+                      onChange={(event) =>
+                        handleRoleChange(member.id, event.target.value)
+                      }
+                      disabled={updatingMemberId === member.id}
+                      className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                    >
+                      {memberRoleOptions.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveMember(member.id)}
+                      disabled={removingMemberId === member.id}
+                      className="px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {members.length === 0 && (
+                <p className="text-sm text-gray-400">
+                  No members found in your organization.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isDemoMode && (
         <div className="flex justify-end">
           <button
             type="button"
@@ -196,9 +463,11 @@ export const Settings: React.FC = () => {
               </div>
               <button
                 type="button"
+                onClick={handleCheckout}
+                disabled={billingLoading}
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all"
               >
-                Change Plan
+                {billingLoading ? 'Processing...' : 'Change Plan'}
               </button>
             </div>
             <div className="flex items-center justify-between py-3">
@@ -208,11 +477,16 @@ export const Settings: React.FC = () => {
               </div>
               <button
                 type="button"
+                onClick={handleCheckout}
+                disabled={billingLoading}
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all"
               >
-                Update
+                {billingLoading ? 'Processing...' : 'Update'}
               </button>
             </div>
+            {billingError && (
+              <p className="text-sm text-red-400">{billingError}</p>
+            )}
           </div>
         )}
       </div>
@@ -289,11 +563,15 @@ export const Settings: React.FC = () => {
               type="button"
               className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isDemoMode}
+              onClick={handleRevokeAllSessions}
             >
-              View Sessions
+              Sign Out All Sessions
             </button>
           </div>
         </div>
+        {securityMessage && (
+          <p className="mt-3 text-sm text-gray-400">{securityMessage}</p>
+        )}
       </div>
 
       <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">

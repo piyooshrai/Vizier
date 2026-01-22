@@ -1,6 +1,8 @@
 import { CheckCircle, Lightbulb, Send, X } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
+import { feedbackService, getErrorMessage } from '../../services';
+import type { FeedbackCategory } from '../../types';
 
 interface AdviseModalProps {
   isOpen: boolean;
@@ -9,18 +11,18 @@ interface AdviseModalProps {
 
 const categoryOptions = [
   {
-    value: 'feature_request',
+    value: 'Feature Request',
     label: 'Feature Request',
     description: 'Suggest a new feature',
   },
   {
-    value: 'improvement',
+    value: 'Improvement Suggestion',
     label: 'Improvement Suggestion',
     description: 'Make something better',
   },
-  { value: 'bug_report', label: 'Bug Report', description: 'Report an issue' },
+  { value: 'Bug Report', label: 'Bug Report', description: 'Report an issue' },
   {
-    value: 'general_feedback',
+    value: 'General Feedback',
     label: 'General Feedback',
     description: 'Share your thoughts',
   },
@@ -30,10 +32,12 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [category, setCategory] = useState('feature_request');
+  const [category, setCategory] = useState<FeedbackCategory>('Feature Request');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const isDemoMode = localStorage.getItem('is_demo') === 'true';
 
   if (!isOpen) return null;
 
@@ -41,25 +45,35 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
     if (!message.trim()) return;
 
     setIsSubmitting(true);
+    setError('');
 
-    // Simulate API call (will be connected to backend later)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      if (isDemoMode) {
+        const feedback = {
+          id: Date.now().toString(),
+          category,
+          suggestion: message,
+          timestamp: new Date().toISOString(),
+        };
 
-    // Save to localStorage for now
-    const feedback = {
-      id: Date.now().toString(),
-      category,
-      message,
-      timestamp: new Date().toISOString(),
-    };
-
-    const existingFeedback = JSON.parse(
-      localStorage.getItem('vizier_feedback') || '[]',
-    );
-    localStorage.setItem(
-      'vizier_feedback',
-      JSON.stringify([...existingFeedback, feedback]),
-    );
+        const existingFeedback = JSON.parse(
+          localStorage.getItem('vizier_feedback') || '[]',
+        );
+        localStorage.setItem(
+          'vizier_feedback',
+          JSON.stringify([...existingFeedback, feedback]),
+        );
+      } else {
+        await feedbackService.submitFeedback({
+          category,
+          suggestion: message,
+        });
+      }
+    } catch (err) {
+      setError(getErrorMessage(err));
+      setIsSubmitting(false);
+      return;
+    }
 
     setIsSubmitting(false);
     setSubmitted(true);
@@ -67,7 +81,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
     setTimeout(() => {
       setSubmitted(false);
       setMessage('');
-      setCategory('feature_request');
+      setCategory('Feature Request');
       onClose();
     }, 2000);
   };
@@ -76,7 +90,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
     if (!isSubmitting) {
       setSubmitted(false);
       setMessage('');
-      setCategory('feature_request');
+      setCategory('Feature Request');
       onClose();
     }
   };
@@ -136,7 +150,9 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() => setCategory(option.value)}
+                      onClick={() =>
+                        setCategory(option.value as FeedbackCategory)
+                      }
                       className={`p-3 rounded-lg border text-left transition-all ${
                         category === option.value
                           ? 'border-white bg-white/10'
@@ -200,6 +216,7 @@ export const AdviseModal: React.FC<AdviseModalProps> = ({
                   </>
                 )}
               </button>
+              {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
             </>
           )}
         </div>

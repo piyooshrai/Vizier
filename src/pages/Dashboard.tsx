@@ -150,6 +150,12 @@ export const Dashboard: React.FC = () => {
     typeof generateDrillDownData
   > | null>(null);
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
+  const [stats, setStats] = useState({
+    totalPatients: 0,
+    totalEncounters: 0,
+    readmissionRate: 0,
+    avgCost: 0,
+  });
 
   // Load density preference from localStorage
   useEffect(() => {
@@ -165,13 +171,36 @@ export const Dashboard: React.FC = () => {
     localStorage.setItem('dashboard_density', newDensity);
   };
 
-  // Demo stats
   const demoStats = {
     totalPatients: 12847,
     totalEncounters: 47293,
     readmissionRate: 12.3,
     avgCost: 4250,
   };
+
+  useEffect(() => {
+    if (isDemoMode) {
+      setStats(demoStats);
+      return;
+    }
+
+    const stored = localStorage.getItem('vizier_insights_summary');
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as {
+        total_patients?: number;
+        total_encounters?: number;
+      };
+      setStats((prev) => ({
+        ...prev,
+        totalPatients: parsed.total_patients ?? prev.totalPatients,
+        totalEncounters: parsed.total_encounters ?? prev.totalEncounters,
+      }));
+    } catch (error) {
+      console.error('Failed to parse insights summary:', error);
+    }
+  }, [isDemoMode]);
 
   const loadCharts = useCallback(async () => {
     setIsLoading(true);
@@ -410,7 +439,7 @@ export const Dashboard: React.FC = () => {
       {hasData ? (
         <>
           <div className="px-3 py-3" data-tour="stats">
-            <StatsOverview stats={demoStats} />
+            <StatsOverview stats={stats} />
           </div>
 
           <div data-tour="saved-insights">
