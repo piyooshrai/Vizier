@@ -77,13 +77,15 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
       className="space-y-4"
     >
       {/* Chart/Table */}
-      <div className="bg-neutral-50 rounded-lg p-4">
-        <ChartRenderer
-          type={data.chart_type}
-          data={data.results}
-          title={data.chart_title}
-        />
-      </div>
+      {data.results && (
+        <div className="bg-neutral-50 rounded-lg p-4">
+          <ChartRenderer
+            type={data.chart_type ?? 'table'}
+            data={data.results}
+            title={data.chart_title}
+          />
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex items-center gap-2">

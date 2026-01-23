@@ -118,7 +118,7 @@ const Insights: React.FC = () => {
       let chartReason = '';
 
       if (hasResults) {
-        const recommendation = recommendChartType(response.results, text);
+        const recommendation = recommendChartType(response.results!, text);
         // Use service chart type if specified, otherwise use recommendation
         if (!chartType || chartType === 'table') {
           chartType = recommendation.type;

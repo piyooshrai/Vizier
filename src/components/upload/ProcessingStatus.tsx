@@ -193,7 +193,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
         <div className="space-y-3">
           {PROCESSING_STEPS.map((step, index) => {
             const isCompleted =
-              status?.completed_steps.includes(step.id) || false;
+              status?.completed_steps?.includes(step.id) || false;
             const isCurrent = status?.current_step === step.id;
             const isPending = index > currentStepIndex;
 

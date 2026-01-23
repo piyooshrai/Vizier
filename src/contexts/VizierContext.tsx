@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { mockHealthcareData } from '../data/mockData';
@@ -70,7 +71,7 @@ function generateConversationalResponse(data: VannaResponse): string {
   };
 
   return (
-    responses[data.chart_type] || `I found ${count} results for your question:`
+    (data.chart_type && responses[data.chart_type]) || `I found ${count} results for your question:`
   );
 }
 
@@ -161,18 +162,21 @@ export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      messages,
+      isLoading,
+      error,
+      suggestions,
+      askQuestion,
+      clearMessages,
+      loadSuggestions,
+    }),
+    [messages, isLoading, error, suggestions, askQuestion, clearMessages, loadSuggestions]
+  );
+
   return (
-    <VizierContext.Provider
-      value={{
-        messages,
-        isLoading,
-        error,
-        suggestions,
-        askQuestion,
-        clearMessages,
-        loadSuggestions,
-      }}
-    >
+    <VizierContext.Provider value={contextValue}>
       {children}
     </VizierContext.Provider>
   );

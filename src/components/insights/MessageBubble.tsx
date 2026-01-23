@@ -143,7 +143,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {!isLoading && data?.results && data.results.length > 0 && (
             <div className="mt-4 bg-neutral-50 rounded-lg p-4">
               <ChartRenderer
-                type={data.chart_type}
+                type={data.chart_type ?? 'table'}
                 data={data.results}
                 title={data.chart_title}
               />
