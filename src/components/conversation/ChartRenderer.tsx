@@ -219,7 +219,12 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
             <BarChart
               data={data}
               layout="vertical"
-              margin={{ top: 20, right: 30, left: yAxisLabelWidth + 10, bottom: 20 }}
+              margin={{
+                top: 20,
+                right: 30,
+                left: yAxisLabelWidth + 10,
+                bottom: 20,
+              }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" tick={{ fontSize: 12, fill: '#6b7280' }} />

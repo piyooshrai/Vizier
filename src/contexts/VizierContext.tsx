@@ -71,7 +71,8 @@ function generateConversationalResponse(data: VannaResponse): string {
   };
 
   return (
-    (data.chart_type && responses[data.chart_type]) || `I found ${count} results for your question:`
+    (data.chart_type && responses[data.chart_type]) ||
+    `I found ${count} results for your question:`
   );
 }
 
@@ -172,7 +173,15 @@ export const VizierProvider: React.FC<{ children: React.ReactNode }> = ({
       clearMessages,
       loadSuggestions,
     }),
-    [messages, isLoading, error, suggestions, askQuestion, clearMessages, loadSuggestions]
+    [
+      messages,
+      isLoading,
+      error,
+      suggestions,
+      askQuestion,
+      clearMessages,
+      loadSuggestions,
+    ],
   );
 
   return (

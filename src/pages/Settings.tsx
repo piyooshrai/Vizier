@@ -1,11 +1,23 @@
 import { motion } from 'framer-motion';
-import { Bell, Building2, CreditCard, Globe, Plug, Shield } from 'lucide-react';
+import {
+  Bell,
+  Building2,
+  CreditCard,
+  Download,
+  FileText,
+  Globe,
+  Plug,
+  RefreshCw,
+  Shield,
+} from 'lucide-react';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { AuthModal } from '../components/auth/AuthModal';
 import { PasswordChangeForm } from '../components/auth/PasswordChangeForm';
 import { useAuth } from '../contexts/AuthContext';
+import type { AuditLog } from '../services';
 import {
+  auditService,
   authService,
   getErrorMessage,
   organizationsService,
@@ -13,7 +25,12 @@ import {
 } from '../services';
 import type { User } from '../types';
 
-type SettingsTab = 'organization' | 'billing' | 'security' | 'integrations';
+type SettingsTab =
+  | 'organization'
+  | 'billing'
+  | 'security'
+  | 'integrations'
+  | 'audit';
 
 interface SettingsSection {
   id: SettingsTab;
@@ -46,6 +63,12 @@ const settingsSections: SettingsSection[] = [
     label: 'Integrations',
     icon: <Plug className="w-5 h-5" />,
     description: 'Connect external systems and data sources',
+  },
+  {
+    id: 'audit',
+    label: 'Audit Logs',
+    icon: <FileText className="w-5 h-5" />,
+    description: 'Review system activity for compliance',
   },
 ];
 
@@ -89,6 +112,12 @@ export const Settings: React.FC = () => {
     type: 'success' | 'error';
     text: string;
   } | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState('');
+  const [auditLimit, setAuditLimit] = useState(50);
+  const [expandedAuditId, setExpandedAuditId] = useState<string | null>(null);
+  const [auditSearch, setAuditSearch] = useState('');
 
   // Form State
   const [orgName, setOrgName] = useState('');
@@ -137,6 +166,36 @@ export const Settings: React.FC = () => {
       isMounted = false;
     };
   }, [activeTab, isDemoMode]);
+
+  useEffect(() => {
+    if (activeTab !== 'audit' || isDemoMode) return;
+    let isMounted = true;
+
+    const loadAuditLogs = async () => {
+      setAuditLoading(true);
+      setAuditError('');
+      try {
+        const response = await auditService.getLogs(auditLimit);
+        if (isMounted) {
+          setAuditLogs(response);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setAuditError(getErrorMessage(error));
+        }
+      } finally {
+        if (isMounted) {
+          setAuditLoading(false);
+        }
+      }
+    };
+
+    loadAuditLogs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTab, auditLimit, isDemoMode]);
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
@@ -271,6 +330,37 @@ export const Settings: React.FC = () => {
     }
   };
 
+  const handleRefreshAuditLogs = async () => {
+    if (auditLoading) return;
+    setAuditError('');
+    setAuditLoading(true);
+    try {
+      const response = await auditService.getLogs(auditLimit);
+      setAuditLogs(response);
+    } catch (error) {
+      setAuditError(getErrorMessage(error));
+    } finally {
+      setAuditLoading(false);
+    }
+  };
+
+  const handleDownloadAuditLogs = async () => {
+    setAuditError('');
+    try {
+      const blob = await auditService.downloadCsv();
+      const url = globalThis.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vizier-audit-logs-${new Date()
+        .toISOString()
+        .slice(0, 10)}.csv`;
+      a.click();
+      globalThis.URL.revokeObjectURL(url);
+    } catch (error) {
+      setAuditError(getErrorMessage(error));
+    }
+  };
+
   const renderOrganizationSettings = () => (
     <div className="space-y-6">
       <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
@@ -341,7 +431,12 @@ export const Settings: React.FC = () => {
                 disabled={isDemoMode}
                 aria-label="Toggle Email Notifications"
               />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-white/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
+              <div className="w-12 h-6 bg-gray-700 rounded-full border border-gray-600 transition-all peer-focus:ring-2 peer-focus:ring-amber-400/40 peer-checked:bg-gradient-to-r peer-checked:from-amber-400 peer-checked:via-amber-300 peer-checked:to-yellow-300 peer-checked:border-amber-300/70 shadow-inner">
+                <span className="absolute top-[2px] left-[2px] h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200 ease-in-out peer-checked:translate-x-6 peer-checked:shadow-md" />
+                <span className="absolute inset-0 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity">
+                  <span className="absolute inset-0 rounded-full bg-amber-400/20 blur-sm" />
+                </span>
+              </div>
             </label>
           </div>
           <div className="flex items-center justify-between py-3">
@@ -809,6 +904,284 @@ export const Settings: React.FC = () => {
     </div>
   );
 
+  const renderAuditSettings = () => {
+    const demoAuditLogs: AuditLog[] = [
+      {
+        id: 'demo-1',
+        user_id: 'demo-user',
+        user_email: 'demo@vizier.health',
+        action: 'LOGIN_SUCCESS',
+        endpoint: '/auth/login',
+        status_code: 200,
+        execution_time_ms: 123,
+        user_agent: 'Chrome 120 / Windows',
+        ip_address: '10.12.45.88',
+        details: { method: 'password' },
+        created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+      },
+      {
+        id: 'demo-2',
+        user_id: 'demo-user',
+        user_email: 'demo@vizier.health',
+        action: 'QUERY_EXECUTED',
+        endpoint: '/vanna/ask',
+        status_code: 200,
+        execution_time_ms: 842,
+        user_agent: 'Chrome 120 / Windows',
+        ip_address: '10.12.45.88',
+        details: { question: 'Show me patient age distribution' },
+        created_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+      },
+      {
+        id: 'demo-3',
+        user_id: 'demo-user',
+        user_email: 'demo@vizier.health',
+        action: 'CHART_PINNED',
+        endpoint: '/charts/',
+        status_code: 201,
+        execution_time_ms: 215,
+        user_agent: 'Chrome 120 / Windows',
+        ip_address: '10.12.45.88',
+        details: { chart_type: 'bar_chart' },
+        created_at: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+      },
+    ];
+
+    const logs = isDemoMode ? demoAuditLogs : auditLogs;
+    const searchTerm = auditSearch.trim().toLowerCase();
+    const filteredLogs = searchTerm
+      ? logs.filter((log) => {
+          const detailsText = log.details
+            ? JSON.stringify(log.details).toLowerCase()
+            : '';
+          return (
+            log.action.toLowerCase().includes(searchTerm) ||
+            log.endpoint.toLowerCase().includes(searchTerm) ||
+            (log.user_email || '').toLowerCase().includes(searchTerm) ||
+            (log.user_agent || '').toLowerCase().includes(searchTerm) ||
+            (log.ip_address || '').toLowerCase().includes(searchTerm) ||
+            detailsText.includes(searchTerm)
+          );
+        })
+      : logs;
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Audit Logs</h3>
+              <p className="text-sm text-gray-400">
+                Track access, security events, and key actions across the
+                platform.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label htmlFor="audit-search" className="text-xs text-gray-400">
+                  Search
+                </label>
+                <input
+                  id="audit-search"
+                  type="text"
+                  value={auditSearch}
+                  onChange={(event) => setAuditSearch(event.target.value)}
+                  placeholder="Action, user, endpoint…"
+                  className="w-44 md:w-56 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="audit-limit" className="text-xs text-gray-400">
+                  Show
+                </label>
+                <select
+                  id="audit-limit"
+                  value={auditLimit}
+                  onChange={(event) =>
+                    setAuditLimit(Number(event.target.value))
+                  }
+                  className="px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                  disabled={isDemoMode}
+                >
+                  {[25, 50, 100, 200].map((limit) => (
+                    <option key={limit} value={limit}>
+                      {limit}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={handleRefreshAuditLogs}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={auditLoading || isDemoMode}
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${auditLoading ? 'animate-spin' : ''}`}
+                />
+                Refresh
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadAuditLogs}
+                className="px-4 py-2 bg-white hover:bg-gray-100 text-black text-sm font-semibold rounded-lg transition-all inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isDemoMode}
+              >
+                <Download className="w-4 h-4" />
+                Download CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700 p-6">
+          {auditError && (
+            <div className="mb-4 text-sm text-red-400">{auditError}</div>
+          )}
+
+          {auditLoading && !isDemoMode ? (
+            <div className="text-gray-400 text-sm">Loading audit logs...</div>
+          ) : filteredLogs.length === 0 ? (
+            <div className="text-gray-400 text-sm">
+              No audit logs match your search.
+            </div>
+          ) : (
+            <div className="overflow-x-auto max-h-[60vh] lg:max-h-[70vh] overflow-y-auto pr-1">
+              <table className="min-w-[860px] w-full text-sm text-left border-separate border-spacing-y-2">
+                <thead className="text-xs uppercase tracking-wide text-gray-400">
+                  <tr>
+                    <th className="px-4 py-2">Action</th>
+                    <th className="px-4 py-2 hidden md:table-cell">Endpoint</th>
+                    <th className="px-4 py-2 hidden lg:table-cell">Status</th>
+                    <th className="px-4 py-2 hidden lg:table-cell">Duration</th>
+                    <th className="px-4 py-2 hidden xl:table-cell">User</th>
+                    <th className="px-4 py-2 hidden xl:table-cell">IP</th>
+                    <th className="px-4 py-2 text-right">Time</th>
+                    <th className="px-4 py-2 text-right">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLogs.map((log) => (
+                    <Fragment key={log.id}>
+                      <tr className="bg-gray-900/40 border border-gray-700 rounded-xl">
+                        <td className="px-4 py-3 font-medium text-white">
+                          {log.action.replaceAll('_', ' ')}
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 hidden md:table-cell">
+                          {log.endpoint}
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">
+                          {log.status_code ?? '—'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">
+                          {log.execution_time_ms
+                            ? `${log.execution_time_ms} ms`
+                            : '—'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 hidden xl:table-cell">
+                          {log.user_email || 'Unknown user'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 hidden xl:table-cell">
+                          {log.ip_address || 'Unknown IP'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300 text-right whitespace-nowrap">
+                          {new Date(log.created_at).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          {(log.details || log.user_agent) && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExpandedAuditId(
+                                  expandedAuditId === log.id ? null : log.id,
+                                )
+                              }
+                              className="text-xs text-amber-300 hover:text-amber-200 transition-colors"
+                            >
+                              {expandedAuditId === log.id ? 'Hide' : 'View'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                      {expandedAuditId === log.id && (
+                        <tr>
+                          <td
+                            colSpan={8}
+                            className="px-4 pb-4 pt-0 text-xs text-gray-300"
+                          >
+                            <div className="rounded-xl border border-gray-700 bg-gray-900/60 p-4 space-y-3">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-gray-400">
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                                    Endpoint
+                                  </p>
+                                  <p className="text-gray-300">
+                                    {log.endpoint}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                                    Status
+                                  </p>
+                                  <p className="text-gray-300">
+                                    {log.status_code ?? '—'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                                    Duration
+                                  </p>
+                                  <p className="text-gray-300">
+                                    {log.execution_time_ms
+                                      ? `${log.execution_time_ms} ms`
+                                      : '—'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                                    User
+                                  </p>
+                                  <p className="text-gray-300">
+                                    {log.user_email || 'Unknown user'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                                    IP Address
+                                  </p>
+                                  <p className="text-gray-300">
+                                    {log.ip_address || 'Unknown IP'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-gray-500">
+                                    User Agent
+                                  </p>
+                                  <p className="text-gray-300">
+                                    {log.user_agent || '—'}
+                                  </p>
+                                </div>
+                              </div>
+                              {log.details && (
+                                <pre className="text-xs text-gray-300 bg-gray-900/70 border border-gray-700 rounded-lg p-3 overflow-x-auto">
+                                  {JSON.stringify(log.details, null, 2)}
+                                </pre>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'organization':
@@ -819,6 +1192,8 @@ export const Settings: React.FC = () => {
         return renderSecuritySettings();
       case 'integrations':
         return renderIntegrationsSettings();
+      case 'audit':
+        return renderAuditSettings();
       default:
         return null;
     }
@@ -827,7 +1202,7 @@ export const Settings: React.FC = () => {
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -842,7 +1217,7 @@ export const Settings: React.FC = () => {
             </div>
 
             {/* Settings Navigation */}
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               {settingsSections.map((section) => (
                 <button
                   type="button"

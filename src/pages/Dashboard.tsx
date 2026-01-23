@@ -34,16 +34,18 @@ interface ChartWithSize extends PinnedChart {
 
 const sanitizeSheetName = (name: string, index: number) => {
   const fallback = `Insight ${index + 1}`;
-  const base = (name || fallback).replace(/[\\/?*:[\]]/g, '').trim();
+  const base = (name || fallback).replaceAll(/[\\/?*:[\]]/g, '').trim();
   const trimmed = base.length > 0 ? base.slice(0, 31) : fallback;
   return trimmed;
 };
 
 const buildSheetColumns = (rows: Record<string, unknown>[]) => {
   const columns = new Set<string>();
-  rows.forEach((row) => {
-    Object.keys(row || {}).forEach((key) => columns.add(key));
-  });
+  for (const row of rows) {
+    for (const key of Object.keys(row || {})) {
+      columns.add(key);
+    }
+  }
   return Array.from(columns);
 };
 
@@ -57,7 +59,15 @@ const applyColumnWidths = (
     const headerLength = col.length;
     const maxCell = rows.reduce((max, row) => {
       const value = row?.[col];
-      const text = value === null || value === undefined ? '' : String(value);
+      let text = '';
+      if (value !== null && value !== undefined) {
+        if (typeof value === 'object') {
+          text = JSON.stringify(value);
+        } else {
+          // NOSONAR: value is guaranteed to be a primitive here due to the typeof check above
+          text = String(value);
+        }
+      }
       return Math.max(max, text.length);
     }, 0);
     return { wch: Math.min(Math.max(headerLength, maxCell, minimum), 48) };
@@ -65,7 +75,7 @@ const applyColumnWidths = (
   worksheet['!cols'] = widths;
 };
 
-const exportPinnedInsights = (pinnedCharts: ChartWithSize[]) => {
+const exportPinnedInsights = (pinnedCharts: PinnedChart[]) => {
   const workbook = XLSX.utils.book_new();
 
   const summaryRows = pinnedCharts.map((chart, index) => ({
@@ -196,7 +206,7 @@ const PinnedChartsSection = ({
   onExpand: (id: string) => void;
   onRefresh: (id: string) => void;
   onDrillDown: (chart: PinnedChart) => void;
-  onDownload: (chart: ChartWithSize) => void;
+  onDownload: (chart: PinnedChart) => void;
   user: { id?: string | number; first_name?: string } | null;
   getColSpan: (size: string) => string;
   getGridPadding: () => string;

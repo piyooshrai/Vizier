@@ -1,10 +1,10 @@
 import {
+  Download,
   Edit2,
   ExternalLink,
   Globe,
   Lock,
   MessageSquare,
-  Download,
   RefreshCw,
   Trash2,
   X,

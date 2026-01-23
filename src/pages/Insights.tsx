@@ -30,7 +30,7 @@ const INSIGHTS_CONVERSATION_STORAGE_KEY = 'vizier_insights_conversation_v1';
 type StoredMessage = Omit<Message, 'timestamp'> & { timestamp: string };
 
 const loadStoredMessages = (): Message[] | null => {
-  if (typeof globalThis.window === 'undefined') return null;
+  if (globalThis.window === undefined) return null;
   const stored = globalThis.localStorage.getItem(
     INSIGHTS_CONVERSATION_STORAGE_KEY,
   );
@@ -52,7 +52,7 @@ const loadStoredMessages = (): Message[] | null => {
 };
 
 const persistMessages = (messages: Message[]) => {
-  if (typeof globalThis.window === 'undefined') return;
+  if (globalThis.window === undefined) return;
   const stored: StoredMessage[] = messages.map((message) => ({
     ...message,
     timestamp: message.timestamp.toISOString(),
@@ -68,7 +68,7 @@ const persistMessages = (messages: Message[]) => {
 };
 
 const clearStoredMessages = () => {
-  if (typeof globalThis.window === 'undefined') return;
+  if (globalThis.window === undefined) return;
   globalThis.localStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
 };
 

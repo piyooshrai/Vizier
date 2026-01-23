@@ -1,6 +1,8 @@
 export { default as alertsService } from './alerts.service';
 export { default as annotationsService } from './annotations.service';
 export { default as api, getErrorMessage } from './api';
+export type { AuditLog } from './audit.service';
+export { default as auditService } from './audit.service';
 export { default as authService } from './auth.service';
 export type { PinnedChart, SaveChartRequest } from './charts.service';
 export { default as chartsService } from './charts.service';
