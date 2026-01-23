@@ -60,6 +60,32 @@ function getLabelKey(data: Record<string, unknown>[]): string {
   return Object.keys(firstItem)[0] || 'name';
 }
 
+const getLabelMeta = (data: Record<string, unknown>[], labelKey: string) => {
+  const labels = data
+    .map((row) => coerceToString(row[labelKey]))
+    .filter(Boolean);
+  const maxLength = labels.reduce(
+    (max, label) => Math.max(max, label.length),
+    0,
+  );
+  return { count: data.length, maxLength };
+};
+
+const getXAxisLayout = (data: Record<string, unknown>[], labelKey: string) => {
+  const { count, maxLength } = getLabelMeta(data, labelKey);
+  const shouldRotate = count > 8 || maxLength > 10;
+  const angle = shouldRotate ? -35 : 0;
+  const height = shouldRotate ? 55 : 30;
+  const interval = count > 12 ? Math.ceil(count / 8) - 1 : 0;
+  return { angle, height, interval };
+};
+
+const formatAxisLabel = (value: unknown) => {
+  const text = coerceToString(value);
+  if (text.length <= 14) return text;
+  return `${text.slice(0, 12)}…`;
+};
+
 interface TooltipPayloadItem {
   name: string;
   value: number;
@@ -145,6 +171,11 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
 
   const valueKey = getValueKey(data);
   const labelKey = getLabelKey(data);
+  const xAxisLayout = getXAxisLayout(data, labelKey);
+  const yAxisLabelWidth = Math.min(
+    Math.max(getLabelMeta(data, labelKey).maxLength * 7, 90),
+    180,
+  );
 
   const renderChart = () => {
     switch (type) {
@@ -154,15 +185,23 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
           <ResponsiveContainer width="100%" height={height}>
             <BarChart
               data={data}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: xAxisLayout.height,
+              }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey={labelKey}
                 tick={{ fontSize: 12, fill: '#6b7280' }}
-                angle={-45}
-                textAnchor="end"
-                height={60}
+                angle={xAxisLayout.angle}
+                textAnchor={xAxisLayout.angle ? 'end' : 'middle'}
+                height={xAxisLayout.height}
+                interval={xAxisLayout.interval}
+                tickFormatter={formatAxisLabel}
+                minTickGap={12}
               />
               <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} />
               <Tooltip content={<CustomTooltip />} />
@@ -180,7 +219,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
             <BarChart
               data={data}
               layout="vertical"
-              margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
+              margin={{ top: 20, right: 30, left: yAxisLabelWidth + 10, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" tick={{ fontSize: 12, fill: '#6b7280' }} />
@@ -188,7 +227,8 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                 type="category"
                 dataKey={labelKey}
                 tick={{ fontSize: 12, fill: '#6b7280' }}
-                width={90}
+                width={yAxisLabelWidth}
+                tickFormatter={formatAxisLabel}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey={valueKey} fill="#F59E0B" radius={[0, 8, 8, 0]} />
@@ -201,15 +241,23 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
           <ResponsiveContainer width="100%" height={height}>
             <LineChart
               data={data}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: xAxisLayout.height,
+              }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey={labelKey}
                 tick={{ fontSize: 12, fill: '#6b7280' }}
-                angle={-45}
-                textAnchor="end"
-                height={60}
+                angle={xAxisLayout.angle}
+                textAnchor={xAxisLayout.angle ? 'end' : 'middle'}
+                height={xAxisLayout.height}
+                interval={xAxisLayout.interval}
+                tickFormatter={formatAxisLabel}
+                minTickGap={12}
               />
               <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} />
               <Tooltip content={<CustomTooltip />} />

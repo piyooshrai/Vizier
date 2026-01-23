@@ -12,6 +12,7 @@ import {
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import { DashboardCard } from '../components/dashboard/DashboardCard';
 import { DrillDownModal } from '../components/dashboard/DrillDownModal';
 import { QuickActions } from '../components/dashboard/QuickActions';
@@ -30,6 +31,117 @@ type DensityMode = 'comfortable' | 'compact' | 'dense';
 interface ChartWithSize extends PinnedChart {
   size: ChartSize;
 }
+
+const sanitizeSheetName = (name: string, index: number) => {
+  const fallback = `Insight ${index + 1}`;
+  const base = (name || fallback).replace(/[\\/?*:[\]]/g, '').trim();
+  const trimmed = base.length > 0 ? base.slice(0, 31) : fallback;
+  return trimmed;
+};
+
+const buildSheetColumns = (rows: Record<string, unknown>[]) => {
+  const columns = new Set<string>();
+  rows.forEach((row) => {
+    Object.keys(row || {}).forEach((key) => columns.add(key));
+  });
+  return Array.from(columns);
+};
+
+const applyColumnWidths = (
+  worksheet: XLSX.WorkSheet,
+  columns: string[],
+  rows: Record<string, unknown>[],
+  minimum = 12,
+) => {
+  const widths = columns.map((col) => {
+    const headerLength = col.length;
+    const maxCell = rows.reduce((max, row) => {
+      const value = row?.[col];
+      const text = value === null || value === undefined ? '' : String(value);
+      return Math.max(max, text.length);
+    }, 0);
+    return { wch: Math.min(Math.max(headerLength, maxCell, minimum), 48) };
+  });
+  worksheet['!cols'] = widths;
+};
+
+const exportPinnedInsights = (pinnedCharts: ChartWithSize[]) => {
+  const workbook = XLSX.utils.book_new();
+
+  const summaryRows = pinnedCharts.map((chart, index) => ({
+    Index: index + 1,
+    Title: chart.title || chart.query_text || `Insight ${index + 1}`,
+    Question: chart.query_text,
+    ChartType: chart.chart_type,
+    Rows: Array.isArray(chart.chart_data) ? chart.chart_data.length : 0,
+    CreatedAt: chart.created_at ? new Date(chart.created_at) : '',
+  }));
+
+  const summaryTitle = 'Vizier Pinned Insights';
+  const generatedOn = new Date();
+  const summaryHeader = [
+    [summaryTitle],
+    ['Generated On', generatedOn],
+    ['Total Insights', pinnedCharts.length],
+    [],
+  ];
+  const summaryColumns = buildSheetColumns(summaryRows);
+  const summarySheet = XLSX.utils.aoa_to_sheet(summaryHeader);
+  XLSX.utils.sheet_add_json(summarySheet, summaryRows, {
+    header: summaryColumns,
+    origin: { r: summaryHeader.length, c: 0 },
+  });
+  if (summaryColumns.length > 0) {
+    summarySheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: summaryColumns.length - 1 } },
+    ];
+  }
+  applyColumnWidths(summarySheet, summaryColumns, summaryRows, 14);
+  XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+
+  pinnedCharts.forEach((chart, index) => {
+    const chartRows = Array.isArray(chart.chart_data) ? chart.chart_data : [];
+    const sheetName = sanitizeSheetName(
+      chart.title || chart.query_text || `Insight ${index + 1}`,
+      index,
+    );
+    const rows =
+      chartRows.length > 0
+        ? chartRows
+        : [{ Note: 'No data returned for this insight.' }];
+    const columns = buildSheetColumns(rows);
+    const title = chart.title || chart.query_text || `Insight ${index + 1}`;
+    const headerRows = [
+      [title],
+      ['Question', chart.query_text || ''],
+      ['Chart Type', chart.chart_type],
+      ['Created At', chart.created_at ? new Date(chart.created_at) : ''],
+      ['Rows', rows.length],
+      [],
+    ];
+    const worksheet = XLSX.utils.aoa_to_sheet(headerRows);
+    XLSX.utils.sheet_add_json(worksheet, rows, {
+      header: columns,
+      origin: { r: headerRows.length, c: 0 },
+    });
+    if (columns.length > 0) {
+      worksheet['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: columns.length - 1 } },
+      ];
+    }
+    applyColumnWidths(worksheet, columns, rows);
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+  });
+
+  const date = new Date();
+  const stamp = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+  XLSX.writeFile(workbook, `vizier-pinned-insights-${stamp}.xlsx`, {
+    compression: true,
+    cellDates: true,
+  });
+};
 
 // --- Components ---
 
@@ -70,6 +182,7 @@ const PinnedChartsSection = ({
   onExpand,
   onRefresh,
   onDrillDown,
+  onDownload,
   user,
   getColSpan,
   getGridPadding,
@@ -83,6 +196,7 @@ const PinnedChartsSection = ({
   onExpand: (id: string) => void;
   onRefresh: (id: string) => void;
   onDrillDown: (chart: PinnedChart) => void;
+  onDownload: (chart: ChartWithSize) => void;
   user: { id?: string | number; first_name?: string } | null;
   getColSpan: (size: string) => string;
   getGridPadding: () => string;
@@ -119,6 +233,7 @@ const PinnedChartsSection = ({
                   onUnpin={onUnpin}
                   onResize={onResize}
                   onExpand={onExpand}
+                  onDownload={onDownload}
                   onRefresh={onRefresh}
                   onDrillDown={onDrillDown}
                   currentUser={{
@@ -294,12 +409,16 @@ export const Dashboard: React.FC = () => {
   };
 
   const getGridGap = () => {
-    const gaps = { comfortable: 'gap-4', compact: 'gap-3', dense: 'gap-2' };
+    const gaps = { comfortable: 'gap-6', compact: 'gap-4', dense: 'gap-3' };
     return gaps[density];
   };
 
   const getGridPadding = () => {
-    const padding = { comfortable: 'px-4', compact: 'px-3', dense: 'px-2' };
+    const padding = {
+      comfortable: 'px-6 py-4',
+      compact: 'px-5 py-3',
+      dense: 'px-4 py-2',
+    };
     return padding[density];
   };
 
@@ -452,6 +571,7 @@ export const Dashboard: React.FC = () => {
               onExpand={handleExpand}
               onRefresh={handleRefresh}
               onDrillDown={handleDrillDown}
+              onDownload={(chart) => exportPinnedInsights([chart])}
               user={user}
               getColSpan={getColSpan}
               getGridPadding={getGridPadding}

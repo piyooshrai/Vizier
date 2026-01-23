@@ -7,6 +7,7 @@ interface QueryInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
+  onClear?: () => void;
   disabled?: boolean;
 }
 
@@ -14,6 +15,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
   value,
   onChange,
   onSend,
+  onClear,
   disabled,
 }) => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -24,7 +26,7 @@ export const QueryInput: React.FC<QueryInputProps> = ({
   };
 
   return (
-    <div className="flex gap-3 items-end">
+    <div className="flex gap-3 items-center">
       <div className="flex-1">
         <textarea
           value={value}
@@ -36,6 +38,16 @@ export const QueryInput: React.FC<QueryInputProps> = ({
           className="w-full px-5 py-3.5 bg-gray-800 border-2 border-gray-700 rounded-2xl focus:border-white focus:outline-none focus:ring-2 focus:ring-white/20 resize-none text-white placeholder-gray-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
+      {onClear && (
+        <button
+          type="button"
+          onClick={onClear}
+          disabled={disabled}
+          className="px-4 py-3.5 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl transition-all border border-gray-700"
+        >
+          Clear
+        </button>
+      )}
       <button
         type="button"
         onClick={onSend}

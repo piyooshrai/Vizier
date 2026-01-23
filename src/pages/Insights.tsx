@@ -30,7 +30,10 @@ const INSIGHTS_CONVERSATION_STORAGE_KEY = 'vizier_insights_conversation_v1';
 type StoredMessage = Omit<Message, 'timestamp'> & { timestamp: string };
 
 const loadStoredMessages = (): Message[] | null => {
-  const stored = sessionStorage.getItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
+  if (typeof globalThis.window === 'undefined') return null;
+  const stored = globalThis.localStorage.getItem(
+    INSIGHTS_CONVERSATION_STORAGE_KEY,
+  );
   if (!stored) return null;
 
   try {
@@ -41,26 +44,36 @@ const loadStoredMessages = (): Message[] | null => {
       ...message,
       timestamp: new Date(message.timestamp),
     }));
-  } catch {
-    sessionStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to load saved Vizier conversation:', error);
+    globalThis.localStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
     return null;
   }
 };
 
 const persistMessages = (messages: Message[]) => {
+  if (typeof globalThis.window === 'undefined') return;
   const stored: StoredMessage[] = messages.map((message) => ({
     ...message,
     timestamp: message.timestamp.toISOString(),
   }));
-  sessionStorage.setItem(
-    INSIGHTS_CONVERSATION_STORAGE_KEY,
-    JSON.stringify(stored),
-  );
+  try {
+    globalThis.localStorage.setItem(
+      INSIGHTS_CONVERSATION_STORAGE_KEY,
+      JSON.stringify(stored),
+    );
+  } catch (error) {
+    console.warn('Failed to persist Vizier conversation:', error);
+  }
+};
+
+const clearStoredMessages = () => {
+  if (typeof globalThis.window === 'undefined') return;
+  globalThis.localStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
 };
 
 const Insights: React.FC = () => {
-  // Initialize with greeting message directly
-  const [messages, setMessages] = useState<Message[]>([
+  const defaultMessages: Message[] = [
     {
       id: '1',
       role: 'vizier',
@@ -68,17 +81,14 @@ const Insights: React.FC = () => {
         "Hi! I'm ready to answer questions about your healthcare data. What would you like to explore?",
       timestamp: new Date(),
     },
-  ]);
+  ];
+  // Initialize from storage to avoid wiping on route changes
+  const [messages, setMessages] = useState<Message[]>(
+    () => loadStoredMessages() ?? defaultMessages,
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const storedMessages = loadStoredMessages();
-    if (storedMessages) {
-      setMessages(storedMessages);
-    }
-  }, []);
 
   useEffect(() => {
     persistMessages(messages);
@@ -118,7 +128,7 @@ const Insights: React.FC = () => {
       let chartReason = '';
 
       if (hasResults) {
-        const recommendation = recommendChartType(response.results!, text);
+        const recommendation = recommendChartType(response.results ?? [], text);
         // Use service chart type if specified, otherwise use recommendation
         if (!chartType || chartType === 'table') {
           chartType = recommendation.type;
@@ -177,6 +187,11 @@ const Insights: React.FC = () => {
       10,
     );
     sessionStorage.setItem('demo_interactions', (interactions + 1).toString());
+  };
+
+  const handleClearChat = () => {
+    clearStoredMessages();
+    setMessages(defaultMessages);
   };
 
   // Handler for exporting data to CSV
@@ -268,6 +283,7 @@ const Insights: React.FC = () => {
             value={inputValue}
             onChange={setInputValue}
             onSend={() => handleSendMessage()}
+            onClear={handleClearChat}
             disabled={isProcessing}
           />
         </div>

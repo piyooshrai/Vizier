@@ -3,8 +3,8 @@ import {
   ExternalLink,
   Globe,
   Lock,
-  Maximize2,
   MessageSquare,
+  Download,
   RefreshCw,
   Trash2,
   X,
@@ -39,6 +39,7 @@ interface DashboardCardProps {
   onUnpin: (id: string) => void;
   onResize: (id: string, size: ChartSize) => void;
   onExpand: (id: string) => void;
+  onDownload?: (chart: PinnedChart) => void;
   onRefresh?: (id: string) => void;
   onDrillDown?: (chart: PinnedChart) => void;
   currentUser: CurrentUser;
@@ -194,12 +195,12 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   onUnpin,
   onResize,
   onExpand,
+  onDownload,
   onRefresh,
   onDrillDown,
   currentUser,
   density = 'compact',
 }) => {
-  const [showSizeMenu, setShowSizeMenu] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [isAddingAnnotation, setIsAddingAnnotation] = useState(false);
@@ -400,6 +401,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   const text = getTextClasses(density);
   const iconSize = getIconSize(density);
   const btnPadding = getButtonPadding(density);
+  const currentSize = chart.size || 'medium';
 
   return (
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden h-full flex flex-col">
@@ -438,60 +440,38 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
             <MessageSquare className={iconSize} />
           </button>
 
-          {/* Size menu */}
-          <div className="relative">
+          {/* Size toggle */}
+          <div className="flex items-center gap-0.5 bg-gray-800/70 border border-gray-700 rounded-lg p-0.5">
+            {(['small', 'medium', 'large'] as ChartSize[]).map((size) => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => onResize(chart.id, size)}
+                className={`${text.label} px-1.5 py-0.5 rounded transition-colors ${
+                  currentSize === size
+                    ? 'bg-white text-black'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                }`}
+                title={`Resize to ${size}`}
+              >
+                {size === 'small' ? 'S' : size === 'medium' ? 'M' : 'L'}
+              </button>
+            ))}
+          </div>
+
+          {/* Download */}
+          {onDownload && (
             <button
               type="button"
-              onClick={() => setShowSizeMenu(!showSizeMenu)}
+              onClick={() => onDownload(chart)}
               className={`${btnPadding} hover:bg-gray-700 rounded-lg transition-colors`}
-              title="Resize"
+              title="Download spreadsheet"
             >
-              <Maximize2
+              <Download
                 className={`${iconSize} text-gray-400 hover:text-white`}
               />
             </button>
-
-            {showSizeMenu && (
-              <>
-                <button
-                  type="button"
-                  aria-label="Close resize menu"
-                  className="fixed inset-0 z-10 bg-transparent border-none p-0 m-0"
-                  onClick={() => setShowSizeMenu(false)}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === 'Escape' ||
-                      event.key === 'Enter' ||
-                      event.key === ' '
-                    ) {
-                      setShowSizeMenu(false);
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-20 min-w-[100px] py-0.5">
-                  {['small', 'medium', 'large'].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => {
-                        onResize(chart.id, size as ChartSize);
-                        setShowSizeMenu(false);
-                      }}
-                      className={`w-full px-3 py-1.5 text-left ${text.body} transition-colors ${
-                        chart.size === size ||
-                        (!chart.size && size === 'medium')
-                          ? 'text-amber-400 bg-gray-700'
-                          : 'text-white hover:bg-gray-700'
-                      }`}
-                    >
-                      {size.charAt(0).toUpperCase() + size.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          )}
 
           {/* Refresh */}
           <button
