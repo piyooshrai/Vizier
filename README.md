@@ -50,7 +50,7 @@ The app will be available at `http://localhost:3000`
 Create a `.env.local` file based on `.env.example`:
 
 ```bash
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://146.190.215.215:8000
 VITE_ENV=development
 ```
 

@@ -54,13 +54,13 @@ Default dev server:
 ## 4. Environment Configuration
 
 The app expects Vite-style environment variables. See `./.env.example`:
-- `VITE_API_URL`: Base URL for backend API (default used in code is `http://localhost:8000`).
+- `VITE_API_URL`: Base URL for backend API (default used in code is `http://146.190.215.215:8000`).
 - `VITE_ENV`: Environment string (development, staging, production).
 
 Create a local file:
 ```
 .env.local
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://146.190.215.215:8000
 VITE_ENV=development
 ```
 
@@ -70,7 +70,7 @@ Vite (`vite.config.ts`):
 - React plugin enabled.
 - Alias `@` -> `./src`.
 - Dev server on port 3000.
-- Proxy for `/api` to `http://localhost:8000` with path rewrite.
+- Proxy for `/api` to `http://146.190.215.215:8000` with path rewrite.
   - Note: Most services use a full base URL in Axios. The proxy is only used if `VITE_API_URL` is set to a relative path or if requests are made to `/api` without a base URL.
 
 TypeScript (`tsconfig.json`, `tsconfig.node.json`):
@@ -181,7 +181,7 @@ Note: Demo mode flag uses both `is_demo` and `demo_mode` in different modules. A
 ## 9. API Layer
 
 ### 9.1 API client (`src/services/api.ts`)
-- Axios instance with base URL `VITE_API_URL` (default `http://localhost:8000`).
+- Axios instance with base URL `VITE_API_URL` (default `http://146.190.215.215:8000`).
 - Adds `Authorization: Bearer <token>` if token exists.
 - On 401, clears `access_token` and `user` and redirects to `/login`.
 - `getErrorMessage` maps API errors to user-friendly strings.
