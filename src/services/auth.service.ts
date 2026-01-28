@@ -5,6 +5,11 @@ import type {
   SignupData,
   User,
 } from '../types';
+import {
+  REFRESH_TOKEN_KEY,
+  TOKEN_STORAGE_KEY,
+  USER_STORAGE_KEY,
+} from '../utils/constants';
 import api from './api';
 
 export const authService = {
@@ -15,9 +20,12 @@ export const authService = {
 
   login: async (data: LoginData): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', data);
-    const { access_token, user } = response.data;
-    localStorage.setItem('access_token', access_token);
-    localStorage.setItem('user', JSON.stringify(user));
+    const { access_token, refresh_token, user } = response.data;
+    localStorage.setItem(TOKEN_STORAGE_KEY, access_token);
+    if (refresh_token) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, refresh_token);
+    }
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
     return response.data;
   },
 
@@ -27,8 +35,9 @@ export const authService = {
     } catch {
       // Ignore errors on logout
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.removeItem(USER_STORAGE_KEY);
     }
   },
 
@@ -43,12 +52,12 @@ export const authService = {
 
   // Helper to check if user is logged in
   isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('access_token');
+    return !!localStorage.getItem(TOKEN_STORAGE_KEY);
   },
 
   // Helper to get stored user
   getStoredUser: (): User | null => {
-    const userJson = localStorage.getItem('user');
+    const userJson = localStorage.getItem(USER_STORAGE_KEY);
     if (userJson) {
       try {
         return JSON.parse(userJson);

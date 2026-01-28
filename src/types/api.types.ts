@@ -54,6 +54,9 @@ export interface VannaCharts {
 
 export interface VannaResponse {
   status?: string;
+  message?: string;
+  chart_id?: string;
+  created_at?: string;
   question: string;
   generated_title?: string;
   sql: string;

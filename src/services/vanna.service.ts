@@ -1,6 +1,7 @@
 import { demoSuggestions, findMockResponse } from '../data/mockData';
 import type { VannaResponse } from '../types';
 import api from './api';
+import { chartsService } from './charts.service';
 
 // Check if user is in demo mode
 const isDemoMode = (): boolean => {
@@ -33,7 +34,36 @@ export const vannaService = {
       chart_type: data.chart_type || data.charts?.primary_chart || 'table',
       // Use generated_title as chart_title if not present
       chart_title: data.chart_title || data.generated_title,
+      // Ensure sql always exists for downstream usage
+      sql: data.sql || '',
     };
+
+    if (normalizedData.status === 'existing_chart' && normalizedData.chart_id) {
+      try {
+        const existingChart = await chartsService.getChartById(
+          normalizedData.chart_id,
+        );
+        if (existingChart) {
+          return {
+            ...normalizedData,
+            message:
+              normalizedData.message ||
+              'You have already saved a chart for this question.',
+            summary:
+              normalizedData.summary ||
+              normalizedData.message ||
+              'You have already saved a chart for this question.',
+            question: existingChart.query_text || normalizedData.question,
+            chart_title: existingChart.title || normalizedData.chart_title,
+            chart_type: existingChart.chart_type,
+            results: existingChart.chart_data ?? [],
+            sql: existingChart.sql_query || normalizedData.sql,
+          };
+        }
+      } catch {
+        // Fall through to normalized response if lookup fails
+      }
+    }
 
     return normalizedData;
   },

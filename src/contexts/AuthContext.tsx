@@ -9,6 +9,11 @@ import {
 } from 'react';
 import { authService, getErrorMessage } from '../services';
 import type { SignupData, User } from '../types';
+import {
+  REFRESH_TOKEN_KEY,
+  TOKEN_STORAGE_KEY,
+  USER_STORAGE_KEY,
+} from '../utils/constants';
 
 interface AuthContextType {
   user: User | null;
@@ -72,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       localStorage.removeItem('is_demo');
       localStorage.removeItem('demo_data_loaded');
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
       setUser(null);
     }
   }, []);
@@ -91,8 +97,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     // Store in localStorage
-    localStorage.setItem('user', JSON.stringify(demoUser));
-    localStorage.setItem('access_token', 'demo-token');
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(demoUser));
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'demo-token');
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.setItem('is_demo', 'true');
     localStorage.setItem('demo_data_loaded', 'true');
 
@@ -103,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
-      localStorage.setItem('user', JSON.stringify(currentUser));
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(currentUser));
     } catch (error) {
       // If refresh fails, user might need to re-login
       console.error('Failed to refresh user:', error);
@@ -112,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setSession = useCallback((newUser: User) => {
     setUser(newUser);
-    localStorage.setItem('user', JSON.stringify(newUser));
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(newUser));
   }, []);
 
   const contextValue = useMemo(

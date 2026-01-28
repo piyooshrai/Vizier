@@ -3,9 +3,17 @@
 import { AlertCircle, CheckCircle, Download, FileText } from 'lucide-react';
 import type React from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '../../utils/constants';
 
 export const UploadGuidanceCard: React.FC = () => {
   const { isDemoMode } = useAuth();
+  const acceptedTypesLabel = ACCEPTED_FILE_TYPES.map((ext) =>
+    ext.replace('.', '').toUpperCase(),
+  ).join(', ');
+  const readableLimit =
+    MAX_FILE_SIZE < 1024 * 1024
+      ? `${Math.round(MAX_FILE_SIZE / 1024)} KB`
+      : `${Math.round(MAX_FILE_SIZE / (1024 * 1024))} MB`;
 
   const handleDownloadTemplate = () => {
     // Generate a sample CSV template
@@ -62,8 +70,8 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
           <div>
             <p className="font-semibold text-gray-900">Supported Formats</p>
             <p className="text-sm text-gray-600">
-              CSV, XLSX, XLS files from Epic, Cerner, Allscripts, or most EHR
-              systems
+              {acceptedTypesLabel} files from Epic, Cerner, Allscripts, or most
+              EHR systems
             </p>
           </div>
         </div>
@@ -75,6 +83,16 @@ P005,E005,2024-01-19,I25.10,Coronary Artery Disease,68,M`;
             <p className="text-sm text-gray-600">
               patient_id, encounter_date, diagnosis_code, diagnosis_name, age,
               gender, encounter_type
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-gray-900">Upload Limits</p>
+            <p className="text-sm text-gray-600">
+              Keep each file under {readableLimit} for the fastest uploads.
             </p>
           </div>
         </div>

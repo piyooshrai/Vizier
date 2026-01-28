@@ -10,8 +10,8 @@ export const MAX_RETRY_ATTEMPTS = 3;
 export const RETRY_DELAY = 1000; // 1 second
 
 // File Upload
-export const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-export const MAX_FILES_PER_UPLOAD = 10;
+export const MAX_FILE_SIZE = 10000 * 1024 * 1024; // 10GB
+export const MAX_FILES_PER_UPLOAD = 100;
 export const ACCEPTED_FILE_TYPES = [
   '.csv',
   '.xlsx',

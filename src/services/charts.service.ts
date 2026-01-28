@@ -30,6 +30,19 @@ const isDemoMode = (): boolean => {
 
 export const chartsService = {
   /**
+   * Get a single pinned chart by id
+   */
+  async getChartById(chartId: string): Promise<PinnedChart | null> {
+    if (isDemoMode()) {
+      const saved = localStorage.getItem('pinned_charts');
+      const charts: PinnedChart[] = saved ? JSON.parse(saved) : [];
+      return charts.find((chart) => chart.id === chartId) ?? null;
+    }
+
+    const response = await api.get<PinnedChart[]>('/charts/');
+    return response.data.find((chart) => chart.id === chartId) ?? null;
+  },
+  /**
    * Get all pinned charts for the current user
    */
   async getCharts(): Promise<PinnedChart[]> {

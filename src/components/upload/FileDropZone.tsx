@@ -3,17 +3,97 @@
 import { FileText, Upload } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
+import {
+  ACCEPTED_FILE_TYPES,
+  ACCEPTED_MIME_TYPES,
+  MAX_FILE_SIZE,
+  MAX_FILES_PER_UPLOAD,
+} from '../../utils/constants';
 
 interface FileDropZoneProps {
   onFilesSelected: (files: File[]) => void;
+  onValidationError?: (message: string) => void;
   selectedFiles: File[];
 }
 
 export const FileDropZone: React.FC<FileDropZoneProps> = ({
   onFilesSelected,
+  onValidationError,
   selectedFiles,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
+
+  const acceptedTypesLabel = ACCEPTED_FILE_TYPES.map((ext) =>
+    ext.replace('.', '').toUpperCase(),
+  ).join(', ');
+
+  const validateAndMergeFiles = useCallback(
+    (incomingFiles: File[]) => {
+      if (incomingFiles.length === 0) return;
+
+      const formatFileSize = (bytes: number): string => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      };
+
+      const isAcceptedFile = (file: File) => {
+        const lowerName = file.name.toLowerCase();
+        return (
+          ACCEPTED_FILE_TYPES.some((ext) => lowerName.endsWith(ext)) ||
+          ACCEPTED_MIME_TYPES.includes(file.type)
+        );
+      };
+
+      const invalidTypeFiles = incomingFiles.filter(
+        (file) => !isAcceptedFile(file),
+      );
+      const typeFilteredFiles = incomingFiles.filter((file) =>
+        isAcceptedFile(file),
+      );
+
+      if (invalidTypeFiles.length > 0) {
+        const acceptedList = ACCEPTED_FILE_TYPES.join(', ');
+        onValidationError?.(
+          `Unsupported file type detected. Please upload one of: ${acceptedList}.`,
+        );
+      }
+
+      const oversizedFiles = typeFilteredFiles.filter(
+        (file) => file.size > MAX_FILE_SIZE,
+      );
+      const sizeFilteredFiles = typeFilteredFiles.filter(
+        (file) => file.size <= MAX_FILE_SIZE,
+      );
+
+      if (oversizedFiles.length > 0) {
+        const readableLimit = formatFileSize(MAX_FILE_SIZE);
+        onValidationError?.(
+          `Some files exceed the ${readableLimit} limit. Please upload smaller files.`,
+        );
+      }
+
+      const remainingSlots = MAX_FILES_PER_UPLOAD - selectedFiles.length;
+      if (remainingSlots <= 0) {
+        onValidationError?.(
+          `You can upload up to ${MAX_FILES_PER_UPLOAD} files per upload.`,
+        );
+        return;
+      }
+
+      const filesToAdd = sizeFilteredFiles.slice(0, remainingSlots);
+      if (sizeFilteredFiles.length > remainingSlots) {
+        onValidationError?.(
+          `Only ${MAX_FILES_PER_UPLOAD} files are allowed per upload.`,
+        );
+      }
+
+      if (filesToAdd.length > 0) {
+        onFilesSelected([...selectedFiles, ...filesToAdd]);
+      }
+    },
+    [selectedFiles, onFilesSelected, onValidationError],
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -29,28 +109,16 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
-
-      const files = Array.from(e.dataTransfer.files).filter(
-        (file) =>
-          file.type === 'text/csv' ||
-          file.name.endsWith('.csv') ||
-          file.type === 'application/vnd.ms-excel' ||
-          file.name.endsWith('.xlsx') ||
-          file.name.endsWith('.xls'),
-      );
-
-      if (files.length > 0) {
-        onFilesSelected([...selectedFiles, ...files]);
-      }
+      const files = Array.from(e.dataTransfer.files);
+      validateAndMergeFiles(files);
     },
-    [selectedFiles, onFilesSelected],
+    [validateAndMergeFiles],
   );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      onFilesSelected([...selectedFiles, ...files]);
-    }
+    validateAndMergeFiles(files);
+    e.target.value = '';
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,7 +149,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         ref={fileInputRef}
         type="file"
         multiple
-        accept=".csv,.xlsx,.xls"
+        accept={ACCEPTED_FILE_TYPES.join(',')}
         onChange={handleFileInput}
         className="hidden"
       />
@@ -99,7 +167,9 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
 
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 rounded-lg border border-gray-700">
           <FileText className="w-4 h-4 text-white" />
-          <span className="text-sm text-gray-300">CSV, XLSX, or XLS files</span>
+          <span className="text-sm text-gray-300">
+            {acceptedTypesLabel} files
+          </span>
         </div>
 
         <p className="text-xs text-gray-500 mt-6">

@@ -6,6 +6,7 @@ import { QueryInput } from '../components/insights/QueryInput';
 import { SuggestionChips } from '../components/insights/SuggestionChips';
 import { FirstInsightPrompt } from '../components/onboarding/FirstInsightPrompt';
 import { UpgradePrompt } from '../components/onboarding/UpgradePrompt';
+import { getErrorMessage } from '../services';
 import { vannaService } from '../services/vanna.service';
 import type { ChartType } from '../types';
 import { recommendChartType } from '../utils/chartRecommendation';
@@ -117,7 +118,7 @@ const Insights: React.FC = () => {
 
     // Call Vanna service for response
     try {
-      const response = await vannaService.ask(text);
+      const response = await vannaService.ask(text.trim());
 
       const hasResults = Boolean(
         response.results && response.results.length > 0,
@@ -159,12 +160,12 @@ const Insights: React.FC = () => {
       };
       setMessages((prev) => [...prev, vizierMessage]);
     } catch (error) {
-      console.error('Error processing question:', error);
+      const errorMessageText = getErrorMessage(error);
+      console.error('Error processing question:', errorMessageText);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'vizier',
-        content:
-          "I'm sorry, I encountered an error while processing your question. Please try again.",
+        content: errorMessageText,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);

@@ -179,6 +179,7 @@ const Upload: React.FC = () => {
             <FileDropZone
               onFilesSelected={handleFilesSelected}
               selectedFiles={selectedFiles}
+              onValidationError={setError}
             />
 
             {/* Selected Files */}
