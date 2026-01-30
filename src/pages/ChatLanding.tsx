@@ -176,7 +176,7 @@ const ChatLanding: React.FC = () => {
               )}
 
               {/* Inline Auth Form */}
-              {messages[messages.length - 1]?.showAuth && (
+              {messages.at(-1)?.showAuth && (
                 <div className="px-14">
                   <InlineAuth onComplete={() => navigate('/upload')} />
                 </div>
@@ -210,7 +210,6 @@ const ChatLanding: React.FC = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    role="img"
                     aria-labelledby="send-icon-title"
                   >
                     <title id="send-icon-title">Send Icon</title>
@@ -224,26 +223,40 @@ const ChatLanding: React.FC = () => {
                 </button>
               </div>
 
-              {/* Demo hint */}
-              <div className="mt-4 flex items-center justify-center gap-2 text-xs">
-                <span className="text-gray-400">Not ready to commit?</span>
-                <button
-                  type="button"
-                  onClick={handleDemo}
-                  className="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1 transition-colors"
-                >
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    role="img"
-                    aria-labelledby="demo-icon-title"
+              {/* Demo hint and Sign in */}
+              <div className="mt-4 flex flex-col items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-2 text-xs">
+                  <span className="text-gray-400">Not ready to commit?</span>
+                  <button
+                    type="button"
+                    onClick={handleDemo}
+                    className="text-gray-600 hover:text-gray-900 font-semibold flex items-center gap-1 transition-colors"
                   >
-                    <title id="demo-icon-title">Demo Icon</title>
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                  </svg>
-                  Try with sample data
-                </button>
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-labelledby="demo-icon-title"
+                    >
+                      <title id="demo-icon-title">Demo Icon</title>
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                    Try with sample data
+                  </button>
+                </div>
+
+                <div className="w-full max-w-[200px] border-t border-gray-100/50" />
+
+                <div className="text-xs text-gray-500">
+                  Already have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/login')}
+                    className="font-semibold text-gray-900 hover:text-gray-700 transition-colors"
+                  >
+                    Sign in
+                  </button>
+                </div>
               </div>
             </div>
           </div>

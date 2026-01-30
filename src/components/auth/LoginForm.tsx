@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import type React from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -16,6 +17,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm: React.FC = () => {
   const loginMutation = useLoginMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -83,21 +85,35 @@ export const LoginForm: React.FC = () => {
             Forgot?
           </Link>
         </div>
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          autoComplete="current-password"
-          className={`
-            w-full px-3 py-2.5
-            border rounded-lg
-            text-slate-900 placeholder-slate-400
-            ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-slate-300 focus:ring-blue-500'}
-            focus:outline-none focus:ring-2 focus:border-transparent
-            transition-shadow
-          `}
-          {...register('password')}
-        />
+        <div className="relative group">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            className={`
+              w-full px-3 py-2.5 pr-10
+              border rounded-lg
+              text-slate-900 placeholder-slate-400
+              ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-slate-300 focus:ring-blue-500'}
+              focus:outline-none focus:ring-2 focus:border-transparent
+              transition-shadow
+            `}
+            {...register('password')}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+          </button>
+        </div>
         {errors.password && (
           <p className="mt-1.5 text-sm text-red-600">
             {errors.password.message}

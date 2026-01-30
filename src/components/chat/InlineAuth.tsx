@@ -1,6 +1,7 @@
 // src/components/chat/InlineAuth.tsx
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -21,6 +22,7 @@ interface InlineAuthProps {
 export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
   const { signup } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
   const {
@@ -81,23 +83,35 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
       <input
         type="email"
         placeholder="you@hospital.com"
-        className={`w-full px-4 py-3 bg-white border-2 ${
-          errors.email ? 'border-red-300' : 'border-gray-200'
-        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
+        className={`w-full px-4 py-3 bg-white border-2 ${errors.email ? 'border-red-300' : 'border-gray-200'
+          } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
         {...register('email')}
       />
       {errors.email && (
         <p className="text-xs text-red-600">{errors.email.message}</p>
       )}
 
-      <input
-        type="password"
-        placeholder="Create a password (min 8 characters)"
-        className={`w-full px-4 py-3 bg-white border-2 ${
-          errors.password ? 'border-red-300' : 'border-gray-200'
-        } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
-        {...register('password')}
-      />
+      <div className="relative group">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Create a password (min 8 characters)"
+          className={`w-full px-4 py-3 pr-11 bg-white border-2 ${errors.password ? 'border-red-300' : 'border-gray-200'
+            } rounded-xl focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-gray-900 placeholder-gray-400 transition-all`}
+          {...register('password')}
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        >
+          {showPassword ? (
+            <EyeOff className="w-5 h-5" />
+          ) : (
+            <Eye className="w-5 h-5" />
+          )}
+        </button>
+      </div>
       {errors.password && (
         <p className="text-xs text-red-600">{errors.password.message}</p>
       )}
@@ -110,15 +124,6 @@ export const InlineAuth: React.FC<InlineAuthProps> = ({ onComplete }) => {
         {isSubmitting ? 'Creating account...' : 'Continue'}
       </button>
 
-      <p className="text-center text-sm text-gray-500">
-        Already have an account?{' '}
-        <a
-          href="/login"
-          className="font-medium text-gray-900 hover:text-gray-700"
-        >
-          Sign in
-        </a>
-      </p>
     </form>
   );
 };

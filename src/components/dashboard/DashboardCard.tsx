@@ -117,7 +117,7 @@ function getButtonPadding(density: DensityOption): string {
 // Generate Key Insight based on chart question
 function generateKeyInsight(chart: PinnedChart): string {
   if (chart.explanation) return chart.explanation;
-  const question = (chart.query_text || chart.title || '').toLowerCase();
+  const question = (chart.title || chart.query_text || '').toLowerCase();
 
   if (question.includes('diagnosis') || question.includes('diagnoses')) {
     return 'Your most common diagnosis is Essential Hypertension, affecting approximately 25% of your patient population.';
@@ -142,7 +142,7 @@ function generateKeyInsight(chart: PinnedChart): string {
 
 // Generate What This Means - Clinical significance
 function generateMeaning(chart: PinnedChart): string {
-  const question = (chart.query_text || chart.title || '').toLowerCase();
+  const question = (chart.title || chart.query_text || '').toLowerCase();
 
   if (question.includes('diagnosis') || question.includes('diagnoses')) {
     return 'This indicates effective screening processes. High hypertension prevalence suggests need for chronic disease management.';
@@ -167,7 +167,7 @@ function generateMeaning(chart: PinnedChart): string {
 
 // Generate Recommended Actions
 function generateRecommendations(chart: PinnedChart): string {
-  const question = (chart.query_text || chart.title || '').toLowerCase();
+  const question = (chart.title || chart.query_text || '').toLowerCase();
 
   if (question.includes('diagnosis') || question.includes('diagnoses')) {
     return 'Expand preventive care programs. Implement care coordination for comorbidities.';
@@ -340,11 +340,11 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     const updated = annotations.map((ann) =>
       ann.id === editingAnnotationId
         ? {
-            ...ann,
-            text: editText.trim(),
-            timestamp: new Date().toISOString(),
-            edited: true,
-          }
+          ...ann,
+          text: editText.trim(),
+          timestamp: new Date().toISOString(),
+          edited: true,
+        }
         : ann,
     );
 
@@ -413,7 +413,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           <h3
             className={`text-white font-semibold ${text.title} mb-0.5 line-clamp-2`}
           >
-            {chart.query_text || chart.title}
+            {chart.title || chart.query_text}
           </h3>
           <p className={`${text.label} text-gray-400`}>
             {new Date(chart.created_at).toLocaleDateString('en-US', {
@@ -430,11 +430,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           <button
             type="button"
             onClick={() => setIsAddingAnnotation(!isAddingAnnotation)}
-            className={`${btnPadding} rounded-lg transition-colors ${
-              isAddingAnnotation
+            className={`${btnPadding} rounded-lg transition-colors ${isAddingAnnotation
                 ? 'bg-amber-500/20 text-amber-400'
                 : 'hover:bg-gray-700 text-gray-400 hover:text-white'
-            }`}
+              }`}
             title="Add note"
           >
             <MessageSquare className={iconSize} />
@@ -447,11 +446,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                 key={size}
                 type="button"
                 onClick={() => onResize(chart.id, size)}
-                className={`${text.label} px-1.5 py-0.5 rounded transition-colors ${
-                  currentSize === size
+                className={`${text.label} px-1.5 py-0.5 rounded transition-colors ${currentSize === size
                     ? 'bg-white text-black'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                }`}
+                  }`}
                 title={`Resize to ${size}`}
               >
                 {size === 'small' ? 'S' : size === 'medium' ? 'M' : 'L'}

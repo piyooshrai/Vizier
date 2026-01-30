@@ -24,6 +24,8 @@ export interface Message {
   originalQuestion?: string;
   /** For vizier messages, stores the SQL query that was generated */
   sqlQuery?: string;
+  /** Suggested title for the chart/result */
+  title?: string;
 }
 
 const INSIGHTS_CONVERSATION_STORAGE_KEY = 'vizier_insights_conversation_v1';
@@ -157,6 +159,7 @@ const Insights: React.FC = () => {
         chartReason: hasResults ? chartReason : undefined,
         originalQuestion: text, // Store the original user question for this response
         sqlQuery: response.sql, // Store the SQL query for saving to dashboard
+        title: response.chart_title, // Store the suggested title
       };
       setMessages((prev) => [...prev, vizierMessage]);
     } catch (error) {

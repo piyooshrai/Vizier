@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import type React from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useSignupMutation } from '../../hooks/useAuthMutations';
@@ -42,6 +43,7 @@ const roleOptions = [
 
 export const SignupForm: React.FC = () => {
   const signupMutation = useSignupMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -200,14 +202,28 @@ export const SignupForm: React.FC = () => {
         >
           Password
         </label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Create a password"
-          autoComplete="new-password"
-          className={inputClass(!!errors.password)}
-          {...register('password')}
-        />
+        <div className="relative group">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Create a password"
+            autoComplete="new-password"
+            className={`${inputClass(!!errors.password)} pr-10`}
+            {...register('password')}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+          </button>
+        </div>
         {errors.password && (
           <p className="mt-1.5 text-sm text-red-600">
             {errors.password.message}

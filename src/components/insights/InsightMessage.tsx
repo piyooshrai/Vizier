@@ -61,7 +61,7 @@ export const InsightMessage: React.FC<InsightMessageProps> = ({
         chart_type: activeChartType || 'bar_chart',
         chart_data: message.chartData ?? [],
         explanation: message.explanation,
-        title: queryText.substring(0, 100),
+        title: message.title || queryText.substring(0, 100),
       });
       setIsPinned(true);
     } catch (error) {
