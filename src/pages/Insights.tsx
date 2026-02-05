@@ -1,6 +1,7 @@
 // src/pages/Insights.tsx
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { ConversationView } from '../components/insights/ConversationView';
 import { QueryInput } from '../components/insights/QueryInput';
 import { SuggestionChips } from '../components/insights/SuggestionChips';
@@ -32,11 +33,9 @@ const INSIGHTS_CONVERSATION_STORAGE_KEY = 'vizier_insights_conversation_v1';
 
 type StoredMessage = Omit<Message, 'timestamp'> & { timestamp: string };
 
-const loadStoredMessages = (): Message[] | null => {
+const loadStoredMessages = (key: string): Message[] | null => {
   if (globalThis.window === undefined) return null;
-  const stored = globalThis.localStorage.getItem(
-    INSIGHTS_CONVERSATION_STORAGE_KEY,
-  );
+  const stored = globalThis.localStorage.getItem(key);
   if (!stored) return null;
 
   try {
@@ -49,12 +48,12 @@ const loadStoredMessages = (): Message[] | null => {
     }));
   } catch (error) {
     console.warn('Failed to load saved Vizier conversation:', error);
-    globalThis.localStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
+    globalThis.localStorage.removeItem(key);
     return null;
   }
 };
 
-const persistMessages = (messages: Message[]) => {
+const persistMessages = (messages: Message[], key: string) => {
   if (globalThis.window === undefined) return;
   const stored: StoredMessage[] = messages.map((message) => ({
     ...message,
@@ -62,7 +61,7 @@ const persistMessages = (messages: Message[]) => {
   }));
   try {
     globalThis.localStorage.setItem(
-      INSIGHTS_CONVERSATION_STORAGE_KEY,
+      key,
       JSON.stringify(stored),
     );
   } catch (error) {
@@ -70,12 +69,17 @@ const persistMessages = (messages: Message[]) => {
   }
 };
 
-const clearStoredMessages = () => {
+const clearStoredMessages = (key: string) => {
   if (globalThis.window === undefined) return;
-  globalThis.localStorage.removeItem(INSIGHTS_CONVERSATION_STORAGE_KEY);
+  globalThis.localStorage.removeItem(key);
 };
 
 const Insights: React.FC = () => {
+  const { user } = useAuth();
+  const storageKey = user?.id 
+    ? `${INSIGHTS_CONVERSATION_STORAGE_KEY}_${user.id}` 
+    : INSIGHTS_CONVERSATION_STORAGE_KEY;
+
   const defaultMessages: Message[] = [
     {
       id: '1',
@@ -87,15 +91,21 @@ const Insights: React.FC = () => {
   ];
   // Initialize from storage to avoid wiping on route changes
   const [messages, setMessages] = useState<Message[]>(
-    () => loadStoredMessages() ?? defaultMessages,
+    () => loadStoredMessages(storageKey) ?? defaultMessages,
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Reload messages when user changes (though usually component remounts)
   useEffect(() => {
-    persistMessages(messages);
-  }, [messages]);
+    const loaded = loadStoredMessages(storageKey);
+    setMessages(loaded ?? defaultMessages);
+  }, [storageKey]);
+
+  useEffect(() => {
+    persistMessages(messages, storageKey);
+  }, [messages, storageKey]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Scrolling should trigger whenever messages or processing state changes
   useEffect(() => {
@@ -194,7 +204,7 @@ const Insights: React.FC = () => {
   };
 
   const handleClearChat = () => {
-    clearStoredMessages();
+    clearStoredMessages(storageKey);
     setMessages(defaultMessages);
   };
 

@@ -190,6 +190,12 @@ function generateRecommendations(chart: PinnedChart): string {
   return 'Share insights with stakeholders for aligned decision-making.';
 }
 
+const getSizeLabel = (size: ChartSize) => {
+  if (size === 'small') return 'S';
+  if (size === 'medium') return 'M';
+  return 'L';
+};
+
 export const DashboardCard: React.FC<DashboardCardProps> = ({
   chart,
   onUnpin,
@@ -230,21 +236,22 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
       timestamp: note.created_at,
     });
 
+    const getDemoAnnotations = (): Annotation[] => {
+      const key = `annotations_${chart.id}`;
+      const saved = localStorage.getItem(key);
+      if (!saved) return [];
+      try {
+        return JSON.parse(saved) as Annotation[];
+      } catch {
+        return [];
+      }
+    };
+
     const loadAnnotations = async () => {
       setAnnotationsError('');
+
       if (isDemoMode) {
-        const key = `annotations_${chart.id}`;
-        const saved = localStorage.getItem(key);
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved) as Annotation[];
-            if (isMounted) setAnnotations(parsed);
-          } catch {
-            if (isMounted) setAnnotations([]);
-          }
-        } else if (isMounted) {
-          setAnnotations([]);
-        }
+        if (isMounted) setAnnotations(getDemoAnnotations());
         return;
       }
 
@@ -452,7 +459,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                   }`}
                 title={`Resize to ${size}`}
               >
-                {size === 'small' ? 'S' : size === 'medium' ? 'M' : 'L'}
+                {getSizeLabel(size)}
               </button>
             ))}
           </div>
