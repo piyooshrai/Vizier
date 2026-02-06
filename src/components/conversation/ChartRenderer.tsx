@@ -378,33 +378,36 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
         };
 
         return (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
+          <div 
+            className="overflow-auto border border-neutral-200 rounded-lg custom-scrollbar"
+            style={{ height }}
+          >
+            <table className="w-full text-sm relative border-collapse">
+              <thead className="sticky top-0 z-10 bg-neutral-50 shadow-sm">
                 <tr className="border-b border-neutral-200">
                   {columns.map((col) => (
                     <th
                       key={col}
-                      className="px-4 py-3 text-left font-medium text-neutral-700 bg-neutral-50"
+                      className="px-4 py-3 text-left font-medium text-neutral-700 whitespace-nowrap bg-neutral-50"
                     >
                       {formatColumnLabel(col) || col}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
-                {data.slice(0, 20).map((row) => {
+              <tbody className="bg-white">
+                {data.map((row) => {
                   const rowKey = deriveRowKey(row);
                   return (
                     <tr
                       key={rowKey}
-                      className="border-b border-neutral-100 hover:bg-neutral-50"
+                      className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition-colors"
                     >
                       {columns.map((col) => {
                         const value = row[col];
                         const displayValue = formatCellValue(value);
                         return (
-                          <td key={col} className="px-4 py-3 text-neutral-900">
+                          <td key={col} className="px-4 py-3 text-neutral-900 whitespace-nowrap">
                             {displayValue}
                           </td>
                         );
@@ -414,10 +417,10 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({
                 })}
               </tbody>
             </table>
-            {data.length > 20 && (
-              <p className="text-sm text-neutral-500 text-center py-3">
-                Showing 20 of {data.length} rows
-              </p>
+            {data.length === 0 && (
+               <div className="flex items-center justify-center h-full text-neutral-500">
+                 No data available
+               </div>
             )}
           </div>
         );
